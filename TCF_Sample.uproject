@@ -1,0 +1,20 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.7",
+	"Category": "",
+	"Description": "",
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "TempestCombatFramework",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/15eff4da8e8348a18a82212ead7e1c46"
+		}
+	]
+}

@@ -1,0 +1,56 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "TempestCombatFramework",
+	"Description": "A Combat Plugin Aimed At Creating a Flexibile & Easy To Modify Combat System",
+	"Category": "Other",
+	"CreatedBy": "Aamn Chahrour & Samrudh Sunil ",
+	"CreatedByURL": "https://www.unrealengine.com/marketplace/en-US/profile/Inherited%20Tempest",
+	"DocsURL": "https://www.wikiful.com/@InheritedTempest/tempest-combat-framework-wiki",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/15eff4da8e8348a18a82212ead7e1c46",
+	"SupportURL": "",
+	"EngineVersion": "5.7.0",
+	"CanContainContent": true,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "TempestCombatFramework",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64"
+			]
+		},
+		{
+			"Name": "TempestCameraSystems",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64"
+			]
+		},
+		{
+			"Name": "TempestCore",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+		{
+			"Name": "Niagara",
+			"Enabled": true
+		},
+		{
+			"Name": "MotionWarping",
+			"Enabled": true
+		}
+	]
+}
