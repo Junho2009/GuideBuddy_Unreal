@@ -6,7 +6,6 @@
 
 ## 当前状态
 
-- 旧项目的 Alba / Login / Puerts / RTT 合同、runs、evidence 和 ledgers 已清理。
 - 当前只保留 GuideBuddy MVP 相关的合同结构、共享约定、模板和 MVP01 草案合同。
 - `MVP01_COMBAT_TELEMETRY_FOUNDATION` 目前是 `draft`，不是已确认执行基线。
 
