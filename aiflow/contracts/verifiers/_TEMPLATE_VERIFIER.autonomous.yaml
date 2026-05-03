@@ -1,0 +1,17 @@
+id: PHASE_OR_FEATURE_ID
+baseline_id: PHASE_OR_FEATURE_ID@v0.1-draft
+status: draft
+brief_ref: aiflow/contracts/briefs/PHASE_OR_FEATURE_ID.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/PHASE_OR_FEATURE_ID.taskpack.yaml
+manifest_ref: aiflow/contracts/manifests/PHASE_OR_FEATURE_ID.manifest.yaml
+release_blocking_checks:
+  - id: SPEC_SYNC
+    title: specs 与 contracts 目标一致
+    automation_level: hybrid
+    blocking: true
+    stimulus: ""
+    observe: ""
+    oracle: ""
+    evidence: ""
+    on_fail: ""
+manual_smoke_checks: []

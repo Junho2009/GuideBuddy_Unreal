@@ -1,0 +1,52 @@
+id: MVP01_COMBAT_TELEMETRY_FOUNDATION
+baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft
+status: draft
+source_specs:
+  - aiflow/specs/PROJECT_OVERVIEW.md
+  - aiflow/specs/GAME_PHASES.md
+  - aiflow/specs/TELEMETRY_AND_COACHING_REQUIREMENTS.md
+  - aiflow/specs/MVP01_COMBAT_TELEMETRY_FOUNDATION.md
+clarification_ref: aiflow/contracts/clarifications/MVP01_COMBAT_TELEMETRY_FOUNDATION.clarification.md
+title: 战斗遥测基础
+one_sentence_goal: 在 SampleDemoShowcaseMap 中记录一次玩家尝试的语义化战斗事件，并输出可供诊断层读取的结构化文件。
+human_confirmation_required: true
+scope:
+  in:
+    - 识别一次玩家尝试的开始与结束。
+    - 记录玩家死亡事件。
+    - 记录玩家关键输入，至少包括闪避与攻击。
+    - 记录敌人 ability / state / attack 激活事件。
+    - 记录伤害事件，包括来源、目标、伤害量、剩余生命和是否致命。
+    - 输出 combat_events.jsonl。
+    - 输出 attempt_summary.json。
+    - 让死亡前关键事件可被人类和脚本复盘。
+  out:
+    - 不生成 LLM 导玩建议。
+    - 不生成 diagnosis.json。
+    - 不做实时 UI 或死亡复盘卡界面。
+    - 不做完整 Blueprint-to-code 迁移。
+    - 不修改战斗数值和平衡。
+    - 不做多关卡、多 Boss 或长期玩家画像。
+acceptance:
+  release_blocking:
+    - 输出目录包含 combat_events.jsonl 和 attempt_summary.json。
+    - JSON / JSONL 可解析。
+    - combat_events.jsonl 至少包含 attempt_start、玩家输入、敌人动作、伤害或死亡。
+    - attempt_summary.json 包含 run_id、map、start_time、end_reason、last_events、damage_summary。
+    - 输出路径不会覆盖上一轮 run。
+  human_smoke:
+    - 人类能通过输出文件大致还原死亡或受击前发生了什么。
+dependencies:
+  upstream:
+    - TempestCombatFramework 示例战斗能在 SampleDemoShowcaseMap 中运行。
+  downstream:
+    - MVP02_DIAGNOSTIC_SIGNAL_LAYER 将读取本阶段输出。
+risks:
+  - 现有 Blueprint 事件边界可能不能直接暴露攻击前摇与命中窗口。
+  - 第一版 actor / ability / state 名称可能偏内部，需要后续显示名映射。
+  - 如果玩家死亡难以稳定复现，验收样例可能需要先降级为受击尝试。
+non_goals:
+  - 全量招式语义标注。
+  - 自动判断玩家水平。
+  - 实时战斗指导。
+  - 云端数据上传。

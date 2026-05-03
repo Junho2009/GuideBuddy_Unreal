@@ -1,0 +1,12 @@
+id: PHASE_OR_FEATURE_ID.run-001
+baseline_id: PHASE_OR_FEATURE_ID@v1.0
+status: draft
+started_at: ""
+finished_at: ""
+environment: ""
+verifier_ref: aiflow/contracts/verifiers/PHASE_OR_FEATURE_ID.verifier.yaml
+results: []
+evidence:
+  raw_root: ""
+  index: ""
+notes: []

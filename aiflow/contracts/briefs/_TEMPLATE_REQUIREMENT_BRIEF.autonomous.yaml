@@ -1,0 +1,19 @@
+id: PHASE_OR_FEATURE_ID
+baseline_id: PHASE_OR_FEATURE_ID@v0.1-draft
+status: draft
+source_specs: []
+clarification_ref: aiflow/contracts/clarifications/PHASE_OR_FEATURE_ID.clarification.md
+title: ""
+one_sentence_goal: ""
+human_confirmation_required: true
+scope:
+  in: []
+  out: []
+acceptance:
+  release_blocking: []
+  human_smoke: []
+dependencies:
+  upstream: []
+  downstream: []
+risks: []
+non_goals: []

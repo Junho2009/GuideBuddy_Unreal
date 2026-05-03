@@ -1,0 +1,42 @@
+id: MVP01_COMBAT_TELEMETRY_FOUNDATION
+baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft
+status: draft
+brief_ref: aiflow/contracts/briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/MVP01_COMBAT_TELEMETRY_FOUNDATION.taskpack.yaml
+verifier_ref: aiflow/contracts/verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml
+project:
+  uproject: TCF_Sample.uproject
+  engine: Unreal Engine 5.7
+  map: /Game/TCF_SampleDemo/SampleDemoShowcaseMap.SampleDemoShowcaseMap
+candidate_source_scopes:
+  - Source/
+  - Plugins/TempestCombatFramework/Source/
+  - Config/
+candidate_runtime_hooks:
+  - UTempestBaseAbilityManagerComponent::OnAbilityActivation
+  - UTempestBaseStateManagerComponent::OnStateActivation
+  - UTempestBaseInputComponent input delegates
+  - UTempestCombatComponent attack / received attack / combat status delegates
+  - UTempestBaseAttributeObject::OnValueUpdated
+  - UTempestBaseTraceObject::OnTraceHitDelegate
+content_assets_read_only_reference:
+  - /Game/TCF_SampleDemo/SampleDemoShowcaseMap
+  - /Game/Integration/BP_GS_Enemy_Katana
+  - /Game/Integration/BP_TCF_GS_GameMode
+  - /Game/Integration/BP_GhostSamuraiCharacter
+  - /Game/Integration/BP_TCF_GS_PlayerController
+expected_outputs:
+  raw_root: Saved/GuideBuddy/Telemetry/<run-id>/
+  files:
+    - Saved/GuideBuddy/Telemetry/<run-id>/combat_events.jsonl
+    - Saved/GuideBuddy/Telemetry/<run-id>/attempt_summary.json
+future_outputs_not_required_in_mvp01:
+  - Saved/GuideBuddy/Telemetry/<run-id>/diagnosis.json
+  - Saved/GuideBuddy/Telemetry/<run-id>/coaching.json
+  - Saved/GuideBuddy/Telemetry/<run-id>/evaluation.json
+contract_evidence:
+  run_record: aiflow/contracts/runs/MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001.yaml
+  evidence_index: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1-draft/run-001/index.md
+notes:
+  - 本 manifest 是草案；正式实现前应根据实际新增模块和文件收紧 source scopes。
+  - Content 资产默认只作为引用调查对象，不在 MVP01 中修改二进制 Blueprint 逻辑。

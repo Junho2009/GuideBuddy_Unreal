@@ -1,0 +1,11 @@
+id: PHASE_OR_FEATURE_ID
+baseline_id: PHASE_OR_FEATURE_ID@v0.1-draft
+status: draft
+brief_ref: aiflow/contracts/briefs/PHASE_OR_FEATURE_ID.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/PHASE_OR_FEATURE_ID.taskpack.yaml
+verifier_ref: aiflow/contracts/verifiers/PHASE_OR_FEATURE_ID.verifier.yaml
+candidate_source_scopes: []
+content_assets_read_only_reference: []
+expected_outputs: {}
+contract_evidence: {}
+notes: []

@@ -52,19 +52,19 @@
 | `MVP03_LLM_COACHING_LOOP` | 未开始 | 让 LLM 基于诊断结果生成恰如其分的导玩建议 |
 | `MVP04_EVALUATION_AND_ITERATION` | 未开始 | 记录指导是否改善玩家表现，并据此迭代指导策略 |
 
-> 更新规则：当 MVP 阶段状态发生变化时，至少同步 `aiflow/CONTEXT.md`、`aiflow/specs/GAME_PHASES.md` 与对应 MVP phase 文档。当前 `aiflow/specs/` 下多数文件仍是旧项目遗留内容，正式实施前需要按本 MVP 重写或新建。
+> 更新规则：当 MVP 阶段状态发生变化时，至少同步 `aiflow/CONTEXT.md`、`aiflow/specs/GAME_PHASES.md` 与对应 MVP phase 文档。当前 `aiflow/specs/` 已重建为 GuideBuddy MVP 的 prose 需求层；正式实施前仍需要从对应 phase prose 编译 Brief / Task Pack / Asset Manifest / Verifier。
 
 ## 项目默认执行基线状态
 
 > 这里的 `Current*` 是项目默认主线指针，不是多人协作时所有 issue 的唯一执行合同。AI 已进入某条 issue 后，应优先使用该 issue 记录中的 `baseline_ref`、`brief_ref`、`taskpack_ref`、`manifest_ref` 与 `verifier_ref`；只有 issue 明确复用项目默认基线，或尚未进入 issue 做分析/合同准备时，才直接使用下面这些默认指针。
 
-- 状态：当前仅完成 MVP 上下文收口，尚未建立正式执行合同。
+- 状态：当前已建立 `MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft` 草案合同组，但尚未由人类确认或冻结。
 - Latest Accepted Baseline：无。迁移来的旧项目 accepted baseline 不适用于本项目。
-- Current Execution Baseline：未冻结。建议下一份基线为 `MVP01_COMBAT_TELEMETRY_FOUNDATION`。
-- Current Brief：未建立。
-- Current Task Pack：未建立。
-- Current Asset Manifest：未建立。
-- Current Verifier：未建立。
+- Current Execution Baseline：未冻结。候选草案为 `MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft`。
+- Current Brief：草案 `aiflow/contracts/briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml`，未 confirmed / frozen。
+- Current Task Pack：草案 `aiflow/contracts/taskpacks/MVP01_COMBAT_TELEMETRY_FOUNDATION.taskpack.yaml`，未 active。
+- Current Asset Manifest：草案 `aiflow/contracts/manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml`，未 active。
+- Current Verifier：草案 `aiflow/contracts/verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml`，未 active。
 - Latest Ledger：无。
 - 多人协作机制：实现性修改前应通过 coordination provider 创建或进入对应 issue，并将新 issue 发布到 provider 配置的远端账本后才视为团队可见预约；issue 记录是 AI/脚本读写的机器账本，人类不需要日常阅读 YAML。开始、进入、检查、验证或关闭 issue 时使用 `aiflow-issue`；交接或接管 owner 时使用 `aiflow-issue-transfer`；合入主干时使用 `aiflow-issue-merge`。
 

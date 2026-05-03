@@ -1,0 +1,71 @@
+id: MVP01_COMBAT_TELEMETRY_FOUNDATION
+baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft
+status: draft
+brief_ref: aiflow/contracts/briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/MVP01_COMBAT_TELEMETRY_FOUNDATION.taskpack.yaml
+manifest_ref: aiflow/contracts/manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml
+release_blocking_checks:
+  - id: SPEC_SYNC
+    title: specs 与 contracts 目标一致
+    automation_level: hybrid
+    blocking: true
+    stimulus: 读取 CONTEXT、GAME_PHASES、MVP01 prose 与本合同组。
+    observe: 目标、范围、非目标、验收口径是否一致。
+    oracle: 不存在互相冲突的 MVP01 范围或状态描述。
+    evidence: aiflow/contracts/runs/MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001.yaml
+    on_fail: 先同步 specs 或合同草案，不进入实现放行。
+  - id: SCOPE_GUARD
+    title: 未越界修改战斗逻辑
+    automation_level: hybrid
+    blocking: true
+    stimulus: 检查本轮改动文件与 manifest scope。
+    observe: 是否修改战斗数值、重写 Blueprint 逻辑或提前实现 LLM/UI。
+    oracle: 改动只落在 MVP01 允许范围内。
+    evidence: aiflow/contracts/runs/MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001.yaml
+    on_fail: 拆分越界改动或回到人类决策。
+  - id: TELEMETRY_OUTPUT_EXISTS
+    title: 遥测输出文件存在
+    automation_level: auto
+    blocking: true
+    stimulus: 在 SampleDemoShowcaseMap 中完成一次测试尝试。
+    observe: Saved/GuideBuddy/Telemetry/<run-id>/ 下的输出文件。
+    oracle: combat_events.jsonl 与 attempt_summary.json 均存在且非空。
+    evidence: Saved/GuideBuddy/Telemetry/<run-id>/
+    on_fail: 检查遥测启用路径、run-id 生成与文件写出逻辑。
+  - id: TELEMETRY_JSON_PARSE
+    title: 遥测 JSON 可解析
+    automation_level: auto
+    blocking: true
+    stimulus: 读取本轮输出的 combat_events.jsonl 与 attempt_summary.json。
+    observe: JSON / JSONL 解析结果。
+    oracle: 所有 JSON 行与 summary 均可解析，无截断或空对象。
+    evidence: Saved/GuideBuddy/Telemetry/<run-id>/
+    on_fail: 修复序列化或文件 flush 问题后重跑。
+  - id: MINIMUM_EVENT_COVERAGE
+    title: 最低事件覆盖
+    automation_level: auto
+    blocking: true
+    stimulus: 分析本轮 combat_events.jsonl。
+    observe: 事件类型集合与时间顺序。
+    oracle: 至少包含 attempt_start、玩家输入、敌人动作或状态、伤害或死亡；事件时间戳单调可读。
+    evidence: Saved/GuideBuddy/Telemetry/<run-id>/combat_events.jsonl
+    on_fail: 补齐缺失挂点或降低样例要求并记录原因。
+  - id: ATTEMPT_SUMMARY_CONTENT
+    title: 尝试摘要可复盘
+    automation_level: auto
+    blocking: true
+    stimulus: 读取 attempt_summary.json。
+    observe: run_id、map、start_time、end_reason、last_events、damage_summary。
+    oracle: 必需字段存在，last_events 能引用死亡或受击前关键事件。
+    evidence: Saved/GuideBuddy/Telemetry/<run-id>/attempt_summary.json
+    on_fail: 修复摘要聚合逻辑后重跑。
+manual_smoke_checks:
+  - id: HUMAN_READABLE_REPLAY
+    title: 人类能读懂死亡前发生了什么
+    automation_level: manual
+    blocking: false
+    stimulus: 人类阅读 combat_events.jsonl 与 attempt_summary.json。
+    observe: 是否能大致还原死亡或受击前数秒的事件链。
+    oracle: 读者能说出最后一次玩家输入、敌人动作和伤害来源。
+    evidence: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1-draft/run-001/index.md
+    on_fail: 增加 display_name 或 summary 字段，不阻塞最小 auto 验收。

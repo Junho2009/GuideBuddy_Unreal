@@ -1,0 +1,14 @@
+id: PHASE_OR_FEATURE_ID.CR-001
+status: draft
+baseline_id: PHASE_OR_FEATURE_ID@v1.0
+reason: ""
+change_summary: ""
+affected_files: []
+required_updates:
+  specs: false
+  brief: false
+  taskpack: false
+  manifest: false
+  verifier: false
+  context: false
+decision_required: true

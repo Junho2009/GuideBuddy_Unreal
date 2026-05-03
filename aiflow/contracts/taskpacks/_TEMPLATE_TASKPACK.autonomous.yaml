@@ -1,0 +1,13 @@
+id: PHASE_OR_FEATURE_ID
+baseline_id: PHASE_OR_FEATURE_ID@v0.1-draft
+status: draft
+brief_ref: aiflow/contracts/briefs/PHASE_OR_FEATURE_ID.brief.yaml
+manifest_ref: aiflow/contracts/manifests/PHASE_OR_FEATURE_ID.manifest.yaml
+verifier_ref: aiflow/contracts/verifiers/PHASE_OR_FEATURE_ID.verifier.yaml
+objective: ""
+execution_notes: []
+tasks: []
+scope_guard:
+  allowed: []
+  forbidden: []
+sync_requirements: []

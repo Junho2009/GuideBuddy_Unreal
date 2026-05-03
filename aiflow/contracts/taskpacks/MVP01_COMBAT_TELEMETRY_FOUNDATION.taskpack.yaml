@@ -1,0 +1,45 @@
+id: MVP01_COMBAT_TELEMETRY_FOUNDATION
+baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft
+status: draft
+brief_ref: aiflow/contracts/briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml
+manifest_ref: aiflow/contracts/manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml
+verifier_ref: aiflow/contracts/verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml
+objective: 建立最小战斗遥测能力，输出一次玩家尝试的语义事件流和尝试摘要。
+execution_notes:
+  - 本 Task Pack 是草案，需要 Brief confirmed / frozen 后才能进入正式实现。
+  - 实现应保持对现有 Blueprint 战斗逻辑的最小侵入。
+  - 优先使用 C++ 与结构化文本输出。
+tasks:
+  - id: T01_DISCOVER_RUNTIME_HOOKS
+    title: 确认可用战斗事件挂点
+    intent: 找到玩家输入、ability/state 激活、伤害、死亡和属性变化的稳定观测边界。
+    expected_result: 形成最小挂点清单，并避免深入每个 Blueprint 图做硬编码。
+  - id: T02_DEFINE_EVENT_SCHEMA
+    title: 定义语义事件与尝试摘要结构
+    intent: 让输出文件可被诊断层和人工复盘稳定消费。
+    expected_result: combat_events.jsonl 与 attempt_summary.json 的字段稳定。
+  - id: T03_IMPLEMENT_TELEMETRY_CAPTURE
+    title: 实现遥测采集
+    intent: 在战斗运行时记录 MVP01 必需事件。
+    expected_result: 一次尝试能产出 attempt_start、玩家输入、敌人动作、伤害或死亡等事件。
+  - id: T04_WRITE_OUTPUT_FILES
+    title: 写出遥测文件
+    intent: 将事件流和摘要写到 Saved/GuideBuddy/Telemetry/<run-id>/。
+    expected_result: 输出不覆盖旧 run，文件可解析。
+  - id: T05_VERIFY_MINIMUM_RUN
+    title: 执行最小验收
+    intent: 使用 Verifier 检查输出文件、格式和最低事件覆盖。
+    expected_result: 生成 run / evidence；若未通过，记录失败原因。
+scope_guard:
+  allowed:
+    - 新增 C++ 遥测、诊断前置数据结构或文件输出代码。
+    - 增加必要配置以启用遥测。
+    - 增加最小日志或调试命令帮助验收。
+  forbidden:
+    - 改动战斗数值和平衡。
+    - 重写现有 Blueprint 战斗逻辑。
+    - 实现 LLM 调用。
+    - 实现 UI 复盘卡。
+sync_requirements:
+  - 若 MVP01 范围或验收变化，先同步 aiflow/specs/MVP01_COMBAT_TELEMETRY_FOUNDATION.md。
+  - 若切换为正式执行基线，同步 aiflow/CONTEXT.md 与 aiflow/specs/GAME_PHASES.md。
