@@ -9,9 +9,17 @@ project:
   engine: Unreal Engine 5.7
   map: /Game/TCF_SampleDemo/SampleDemoShowcaseMap.SampleDemoShowcaseMap
 candidate_source_scopes:
+  - Content/JavaScript/GuideBuddy/
   - Source/
   - Plugins/TempestCombatFramework/Source/
   - Config/
+candidate_scripting_runtime:
+  plugin: Plugins/Puerts/Puerts.uplugin
+  preferred_project_script_root: Content/JavaScript/GuideBuddy/
+  vendor_script_roots_do_not_edit:
+    - Plugins/Puerts/Content/JavaScript/
+    - Content/JavaScript/puerts/
+    - Content/JavaScript/PuertsEditor/
 candidate_runtime_hooks:
   - UTempestBaseAbilityManagerComponent::OnAbilityActivation
   - UTempestBaseStateManagerComponent::OnStateActivation
@@ -39,4 +47,5 @@ contract_evidence:
   evidence_index: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1-draft/run-001/index.md
 notes:
   - 本 manifest 是草案；正式实现前应根据实际新增模块和文件收紧 source scopes。
+  - GuideBuddy 新增逻辑优先放在 TypeScript；Source/ 仅用于必要 native bridge。
   - Content 资产默认只作为引用调查对象，不在 MVP01 中修改二进制 Blueprint 逻辑。

@@ -5,6 +5,7 @@
 - 项目：`GuideBuddy_Unreal` / `TCF_Sample.uproject`
 - 引擎：Unreal Engine 5.7
 - 战斗框架：`TempestCombatFramework`
+- 脚本方案：已引入 `Puerts`，后续 GuideBuddy MVP 新增逻辑优先使用 TypeScript 实现。
 - MVP 场景：`/Game/TCF_SampleDemo/SampleDemoShowcaseMap.SampleDemoShowcaseMap`
 - 目标：做一个魂 like AI 导玩 MVP，基于玩家真实战斗表现给出强针对性指导。
 
@@ -25,7 +26,8 @@ GuideBuddy 的核心闭环是：
 - 诊断层做确定性归因。
 - LLM 负责教学表达，不直接替代诊断层。
 - MVP 先做遥测、诊断、导玩和评估闭环，不先做完整 Blueprint-to-code。
-- 新增可分析逻辑、遥测、诊断和数据导出优先使用 C++ 或结构化文本。
+- 新增可分析逻辑、遥测、诊断、数据导出和导玩编排优先使用 Puerts + TypeScript，以便 AI 后续阅读、修改、diff 和快速迭代。
+- C++ 主要作为必要桥接层：用于启动 Puerts 环境、暴露 TypeScript 无法直接访问的引擎 / TempestCombatFramework delegate、处理性能敏感或必须 native 的边界。
 - 现有 Blueprint 可以继续承载既有战斗资产与配置；新增关键逻辑不放进二进制 Blueprint 图。
 
 ## 当前阶段

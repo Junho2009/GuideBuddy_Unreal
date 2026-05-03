@@ -18,7 +18,8 @@
 - 修改 contracts：读 `aiflow/contracts/README.md` 与 `_shared/` 约定。
 - 准备实现：确认 Brief 已 confirmed / frozen；若仍是 draft，先让用户确认或先更新合同状态。
 - 做验收：读 `aiflow/rules/autonomous-verification.md`。
-- 做 C++ 改动：读 `aiflow/rules/code.md` 与 `aiflow/rules/cpp-source-location.md`。
+- 做 GuideBuddy 运行时逻辑、遥测、诊断或导玩编排：优先读 `aiflow/rules/puerts-typescript.md` 与 `aiflow/rules/code.md`。
+- 做 C++ 桥接或 native fallback：读 `aiflow/rules/code.md` 与 `aiflow/rules/cpp-source-location.md`。
 - 涉及 UE 编辑器、Blueprint 或资产：读 `aiflow/rules/mcp-capabilities.md` 与 `aiflow/rules/mcp-preflight.md`。
 - 执行 shell：读 `aiflow/rules/shell.md`。
 - 提交：读 `aiflow/rules/commit.md` 与 `aiflow/rules/commit-prompts.md`。

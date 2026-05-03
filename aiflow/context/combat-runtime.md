@@ -5,6 +5,15 @@
 - Map：`/Game/TCF_SampleDemo/SampleDemoShowcaseMap.SampleDemoShowcaseMap`
 - Unreal 项目：`TCF_Sample.uproject`
 - 战斗框架：`TempestCombatFramework`
+- 脚本运行时：`Puerts` 已引入，GuideBuddy 新增逻辑优先写 TypeScript。
+
+## Puerts / TypeScript 方向
+
+- Puerts 插件入口：`Plugins/Puerts/Puerts.uplugin`
+- Puerts 默认 JavaScript 根目录通常是 `Content/JavaScript`。
+- GuideBuddy 项目脚本建议放在 `Content/JavaScript/GuideBuddy/`。
+- `Content/JavaScript/puerts/`、`Content/JavaScript/PuertsEditor/`、`Plugins/Puerts/Content/JavaScript/` 属于 Puerts 运行时 / 编辑器侧内容，不放 GuideBuddy 业务逻辑。
+- 若运行时发现 Puerts 未加载，先确认 `TCF_Sample.uproject` 的插件启用状态，再补最小配置。
 
 ## 已知资产入口
 
@@ -30,6 +39,8 @@
 - `Plugins/TempestCombatFramework/Content/Trace`
 
 ## 推荐遥测挂点
+
+优先从 TypeScript 可访问的反射 / delegate 边界订阅事件；若无法直接订阅，再用 C++ 做薄桥接，把以下事件转交 TypeScript 处理、归一化和写出：
 
 - `UTempestBaseAbilityManagerComponent::OnAbilityActivation`
 - `UTempestBaseStateManagerComponent::OnStateActivation`

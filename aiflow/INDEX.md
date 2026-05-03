@@ -42,6 +42,7 @@
 ## 规则
 
 - `aiflow/rules/code.md`
+- `aiflow/rules/puerts-typescript.md`
 - `aiflow/rules/cpp-source-location.md`
 - `aiflow/rules/prose-to-contract.md`
 - `aiflow/rules/spec-writing.md`

@@ -8,7 +8,8 @@ objective: 建立最小战斗遥测能力，输出一次玩家尝试的语义事
 execution_notes:
   - 本 Task Pack 是草案，需要 Brief confirmed / frozen 后才能进入正式实现。
   - 实现应保持对现有 Blueprint 战斗逻辑的最小侵入。
-  - 优先使用 C++ 与结构化文本输出。
+  - 优先使用 Puerts + TypeScript 与结构化文本输出。
+  - C++ 只作为 Puerts 启动、delegate 暴露或 TypeScript 无法触达边界的薄桥接。
 tasks:
   - id: T01_DISCOVER_RUNTIME_HOOKS
     title: 确认可用战斗事件挂点
@@ -32,7 +33,8 @@ tasks:
     expected_result: 生成 run / evidence；若未通过，记录失败原因。
 scope_guard:
   allowed:
-    - 新增 C++ 遥测、诊断前置数据结构或文件输出代码。
+    - 新增 TypeScript 遥测、诊断前置数据结构或文件输出代码。
+    - 新增必要 C++ 薄桥接，让 TypeScript 能接收 TempestCombatFramework 事件。
     - 增加必要配置以启用遥测。
     - 增加最小日志或调试命令帮助验收。
   forbidden:

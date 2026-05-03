@@ -53,6 +53,7 @@
 ## 依赖与衔接
 
 - 依赖现有 TempestCombatFramework 示例战斗可运行。
+- 依赖 Puerts 能加载项目 TypeScript；若某些 TempestCombatFramework 事件无法直接从 TS 访问，可新增薄 C++ 桥接。
 - 后续 MVP02 将读取本阶段输出的事件和摘要。
 - 本阶段不要求修改战斗平衡或原有 Blueprint 行为。
 
