@@ -35,7 +35,7 @@ GuideBuddy 的核心闭环是：
 | Phase | 状态 | 目标 |
 |---|---|---|
 | `MVP00_CONTEXT_ALIGNMENT` | 已完成 | 建立 GuideBuddy MVP 的轻量 aiflow 真源 |
-| `MVP01_COMBAT_TELEMETRY_FOUNDATION` | 草案合同已建立，未冻结 | 在场景中采集语义化战斗事件 |
+| `MVP01_COMBAT_TELEMETRY_FOUNDATION` | 执行中 | 在场景中采集语义化战斗事件 |
 | `MVP02_DIAGNOSTIC_SIGNAL_LAYER` | 未开始 | 把事件流转成死亡原因与操作诊断 |
 | `MVP03_LLM_COACHING_LOOP` | 未开始 | 基于诊断生成恰当导玩建议 |
 | `MVP04_EVALUATION_AND_ITERATION` | 未开始 | 判断指导是否改善玩家表现 |
@@ -43,23 +43,31 @@ GuideBuddy 的核心闭环是：
 ## 默认执行基线
 
 - Latest Accepted Baseline：无。
-- Current Execution Baseline：未冻结。
-- 候选草案：`MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft`
-- Current Brief：`aiflow/contracts/briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml`，状态为 `draft`。
-- Current Task Pack：`aiflow/contracts/taskpacks/MVP01_COMBAT_TELEMETRY_FOUNDATION.taskpack.yaml`，状态为 `draft`。
-- Current Asset Manifest：`aiflow/contracts/manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml`，状态为 `draft`。
-- Current Verifier：`aiflow/contracts/verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml`，状态为 `draft`。
+- Current Execution Baseline：`MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1`
+- 候选草案：无。
+- Current Brief：`aiflow/contracts/briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml`，状态为 `active`。
+- Current Task Pack：`aiflow/contracts/taskpacks/MVP01_COMBAT_TELEMETRY_FOUNDATION.taskpack.yaml`，状态为 `active`。
+- Current Asset Manifest：`aiflow/contracts/manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml`，状态为 `active`。
+- Current Verifier：`aiflow/contracts/verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml`，状态为 `active`。
 - Latest Ledger：无。
 
-在 MVP01 Brief 被确认和冻结前，正式实现默认只允许做澄清、计划、草案调整和只读调查。若用户明确授权进入实现，可先将 MVP01 合同组升级为 confirmed / frozen，再开始代码或资产修改。
+MVP01 已按用户明确授权进入实现。当前实现默认不修改战斗数值、不改二进制 Blueprint 战斗逻辑，不实现 UI / LLM / diagnosis。
 
 ## 当前战斗入口
 
 已知入口和调查结果记录在：
 
 - `aiflow/context/combat-runtime.md`
+- `aiflow/context/mvp01-implementation-handoff.md`
 - `aiflow/specs/MVP01_COMBAT_TELEMETRY_FOUNDATION.md`
 - `aiflow/contracts/manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml`
+
+## 当前交接状态
+
+- 2026-05-03：MVP01 已完成一版本地实现，但用户尚未验收，不能视为 accepted baseline。
+- 已通过 TypeScript 编译和 UE `UnrealEditor` 目标编译。
+- 尚未完成真实地图战斗尝试与 `npm.cmd run verify:mvp01` 验收。
+- 换机继续前先阅读 `aiflow/context/mvp01-implementation-handoff.md`。
 
 ## 同步要求
 

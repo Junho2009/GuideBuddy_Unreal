@@ -1,6 +1,6 @@
 id: MVP01_COMBAT_TELEMETRY_FOUNDATION
-baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft
-status: draft
+baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1
+status: active
 source_specs:
   - aiflow/specs/PROJECT_OVERVIEW.md
   - aiflow/specs/GAME_PHASES.md
@@ -9,7 +9,7 @@ source_specs:
 clarification_ref: aiflow/contracts/clarifications/MVP01_COMBAT_TELEMETRY_FOUNDATION.clarification.md
 title: 战斗遥测基础
 one_sentence_goal: 在 SampleDemoShowcaseMap 中记录一次玩家尝试的语义化战斗事件，并输出可供诊断层读取的结构化文件。
-human_confirmation_required: true
+human_confirmation_required: false
 scope:
   in:
     - 识别一次玩家尝试的开始与结束。
@@ -45,6 +45,10 @@ risks:
   - 现有 Blueprint 事件边界可能不能直接暴露攻击前摇与命中窗口。
   - 第一版 actor / ability / state 名称可能偏内部，需要后续显示名映射。
   - 如果玩家死亡难以稳定复现，验收样例可能需要先降级为受击尝试。
+implementation_defaults:
+  - GuideBuddy 作为项目插件落地，路径为 Plugins/GuideBuddy/。
+  - 插件先只实现 GuideBuddyRuntime 模块；诊断与导玩策略仍保留在 TypeScript 层。
+  - 伤害事件第一版允许通过 Attribute.Health 变化推导，攻击来源先用最近敌方 ability / state / combat status 推断并标记为 inferred。
 non_goals:
   - 全量招式语义标注。
   - 自动判断玩家水平。

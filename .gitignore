@@ -73,8 +73,9 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
+# Node package installs
+node_modules/
 
 # Node/V8 工具链目录（仅限 Puerts ThirdParty，体积大不纳入版本管理）
 Plugins/Puerts/ThirdParty/nodejs_*/
 Plugins/Puerts/ThirdParty/v8_*/
-

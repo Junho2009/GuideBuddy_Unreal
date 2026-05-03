@@ -10,6 +10,7 @@
 
 - `aiflow/context/README.md`：背景目录说明。
 - `aiflow/context/combat-runtime.md`：当前战斗场景、资产入口和遥测挂点。
+- `aiflow/context/mvp01-implementation-handoff.md`：MVP01 当前未验收实现的换机交接记录。
 
 ## 需求层
 

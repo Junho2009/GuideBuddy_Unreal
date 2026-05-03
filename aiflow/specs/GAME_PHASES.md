@@ -5,7 +5,7 @@
 | Phase | 名称 | 目标 | 当前状态 |
 |---|---|---|---|
 | `MVP00_CONTEXT_ALIGNMENT` | 上下文收口 | 将迁移来的 aiflow 项目上下文切换为 GuideBuddy 黑客松 MVP | 已完成 |
-| `MVP01_COMBAT_TELEMETRY_FOUNDATION` | 战斗遥测基础 | 在 `SampleDemoShowcaseMap` 中采集一次尝试所需的语义化战斗事件 | 未开始 |
+| `MVP01_COMBAT_TELEMETRY_FOUNDATION` | 战斗遥测基础 | 在 `SampleDemoShowcaseMap` 中采集一次尝试所需的语义化战斗事件 | 执行中 |
 | `MVP02_DIAGNOSTIC_SIGNAL_LAYER` | 诊断信号层 | 把事件流转成可解释、可指导、可供 LLM 消费的诊断信号 | 未开始 |
 | `MVP03_LLM_COACHING_LOOP` | LLM 导玩闭环 | 基于诊断摘要生成适合玩家水平的低打扰指导 | 未开始 |
 | `MVP04_EVALUATION_AND_ITERATION` | 效果评估与迭代 | 记录指导后的下一次表现，判断目标错误是否减少 | 未开始 |
@@ -27,7 +27,7 @@
 
 - `MVP01_COMBAT_TELEMETRY_FOUNDATION.md`
 
-在该 phase 的 Brief / Task Pack / Asset Manifest / Verifier 未建立并确认前，项目默认主线仍处于“未冻结执行基线”状态。
+该 phase 已按用户确认进入实现，当前执行基线为 `MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1`。
 
 ## 阶段间依赖
 

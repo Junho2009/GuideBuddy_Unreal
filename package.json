@@ -1,0 +1,12 @@
+{
+  "name": "guidebuddy-unreal",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build:guidebuddy": "tsc -p tsconfig.json",
+    "verify:mvp01": "node aiflow/contracts/verifiers/verify_mvp01_telemetry.js"
+  },
+  "devDependencies": {
+    "typescript": "4.7.4"
+  }
+}

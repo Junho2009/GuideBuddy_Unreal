@@ -1,6 +1,6 @@
 id: MVP01_COMBAT_TELEMETRY_FOUNDATION
-baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft
-status: draft
+baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1
+status: active
 brief_ref: aiflow/contracts/briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml
 taskpack_ref: aiflow/contracts/taskpacks/MVP01_COMBAT_TELEMETRY_FOUNDATION.taskpack.yaml
 manifest_ref: aiflow/contracts/manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml
@@ -67,5 +67,5 @@ manual_smoke_checks:
     stimulus: 人类阅读 combat_events.jsonl 与 attempt_summary.json。
     observe: 是否能大致还原死亡或受击前数秒的事件链。
     oracle: 读者能说出最后一次玩家输入、敌人动作和伤害来源。
-    evidence: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1-draft/run-001/index.md
+    evidence: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-001/index.md
     on_fail: 增加 display_name 或 summary 字段，不阻塞最小 auto 验收。

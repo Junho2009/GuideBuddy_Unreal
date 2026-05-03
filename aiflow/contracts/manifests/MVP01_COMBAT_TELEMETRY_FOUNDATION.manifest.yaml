@@ -1,6 +1,6 @@
 id: MVP01_COMBAT_TELEMETRY_FOUNDATION
-baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1-draft
-status: draft
+baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1
+status: active
 brief_ref: aiflow/contracts/briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml
 taskpack_ref: aiflow/contracts/taskpacks/MVP01_COMBAT_TELEMETRY_FOUNDATION.taskpack.yaml
 verifier_ref: aiflow/contracts/verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml
@@ -9,10 +9,11 @@ project:
   engine: Unreal Engine 5.7
   map: /Game/TCF_SampleDemo/SampleDemoShowcaseMap.SampleDemoShowcaseMap
 candidate_source_scopes:
+  - Plugins/GuideBuddy/
+  - TypeScript/GuideBuddy/
   - Content/JavaScript/GuideBuddy/
-  - Source/
-  - Plugins/TempestCombatFramework/Source/
   - Config/
+  - TCF_Sample.uproject
 candidate_scripting_runtime:
   plugin: Plugins/Puerts/Puerts.uplugin
   preferred_project_script_root: Content/JavaScript/GuideBuddy/
@@ -44,8 +45,7 @@ future_outputs_not_required_in_mvp01:
   - Saved/GuideBuddy/Telemetry/<run-id>/evaluation.json
 contract_evidence:
   run_record: aiflow/contracts/runs/MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001.yaml
-  evidence_index: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1-draft/run-001/index.md
+  evidence_index: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-001/index.md
 notes:
-  - 本 manifest 是草案；正式实现前应根据实际新增模块和文件收紧 source scopes。
-  - GuideBuddy 新增逻辑优先放在 TypeScript；Source/ 仅用于必要 native bridge。
+  - GuideBuddy 新增逻辑优先放在 TypeScript；Plugins/GuideBuddy/Source/ 仅用于必要 native bridge。
   - Content 资产默认只作为引用调查对象，不在 MVP01 中修改二进制 Blueprint 逻辑。

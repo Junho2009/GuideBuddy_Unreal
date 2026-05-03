@@ -59,7 +59,14 @@
 
 ## 当前状态
 
-未开始。
+执行中。
+
+本轮实现约定：
+
+- GuideBuddy 作为项目插件落地，路径为 `Plugins/GuideBuddy/`。
+- 插件先实现 `GuideBuddyRuntime` 模块，用作 UE / TempestCombatFramework / Puerts 的薄桥接。
+- 遥测事件 schema、聚合和摘要输出主要由 `TypeScript/GuideBuddy/` 承担，并编译到 `Content/JavaScript/GuideBuddy/`。
+- 伤害事件第一版允许由 `Attribute.Health` 变化推导，攻击来源先用最近敌方 ability / state / combat status 事件推断。
 
 ## 备注
 
