@@ -76,6 +76,31 @@ DerivedDataCache/*
 # Node package installs
 node_modules/
 
+
+
+# Puerts 插件：全部纳入版本管理（覆盖上述全局忽略规则）
+!Plugins/Puerts/
+!Plugins/Puerts/**
+!Plugins/Puerts/**/*.dll
+# Puerts 下 Binaries/Intermediate 仍需忽略
+Plugins/Puerts/Binaries/
+Plugins/Puerts/Intermediate/
+# CSharpParamDefaultValueMetas：仅纳入 .cs 和 .ubtplugin.csproj，其余忽略
+Plugins/Puerts/Source/CSharpParamDefaultValueMetas/*
+!Plugins/Puerts/Source/CSharpParamDefaultValueMetas/CSharpParamDefaultValueMetas.cs
+!Plugins/Puerts/Source/CSharpParamDefaultValueMetas/CSharpParamDefaultValueMetas.ubtplugin.csproj
+!Plugins/Puerts/**/*.so
+!Plugins/Puerts/**/*.dylib
+!Plugins/Puerts/**/*.lib
+!Plugins/Puerts/**/*.a
+!Plugins/Puerts/**/*.obj
+!Plugins/Puerts/**/*.o
+!Plugins/Puerts/**/*.slo
+!Plugins/Puerts/**/*.lo
+!Plugins/Puerts/**/*.exe
+!Plugins/Puerts/**/*.out
+!Plugins/Puerts/**/*.app
+!Plugins/Puerts/**/*.ipa
 # Node/V8 工具链目录（仅限 Puerts ThirdParty，体积大不纳入版本管理）
 Plugins/Puerts/ThirdParty/nodejs_*/
 Plugins/Puerts/ThirdParty/v8_*/
