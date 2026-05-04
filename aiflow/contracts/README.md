@@ -6,8 +6,8 @@
 
 ## 当前状态
 
-- 当前只保留 GuideBuddy MVP 相关的合同结构、共享约定、模板和 MVP01 草案合同。
-- `MVP01_COMBAT_TELEMETRY_FOUNDATION` 目前是 `draft`，不是已确认执行基线。
+- 当前保留 GuideBuddy MVP 相关的合同结构、共享约定、模板和 MVP01 合同。
+- `MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1` 已通过真实 PIE gameplay 验收，结果见 `ledgers/MVP01_COMBAT_TELEMETRY_FOUNDATION.result.md`。
 
 ## 常用目录
 
@@ -36,12 +36,15 @@
 
 ## 当前建议入口
 
-下一步建议从以下草案开始确认：
+已验收合同与证据：
 
 - `clarifications/MVP01_COMBAT_TELEMETRY_FOUNDATION.clarification.md`
 - `briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml`
 - `taskpacks/MVP01_COMBAT_TELEMETRY_FOUNDATION.taskpack.yaml`
 - `manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml`
 - `verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml`
+- `runs/MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001.yaml`
+- `evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-001/index.md`
+- `ledgers/MVP01_COMBAT_TELEMETRY_FOUNDATION.result.md`
 
-这些文件还需要人类确认后，才能作为正式执行合同。
+下一步建议为 `MVP02_DIAGNOSTIC_SIGNAL_LAYER` 编译执行合同。

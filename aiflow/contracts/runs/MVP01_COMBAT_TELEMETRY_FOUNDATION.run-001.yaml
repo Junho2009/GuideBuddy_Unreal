@@ -1,0 +1,62 @@
+id: MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001
+baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1
+status: accepted
+started_at: "2026-05-04T10:24:50+08:00"
+finished_at: "2026-05-04T10:25:25+08:00"
+environment: "Windows 11, Unreal Engine 5.7 PIE, Puerts nodejs_16, TypeScript 4.7.4"
+verifier_ref: aiflow/contracts/verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml
+stimulus:
+  - "Build TypeScript with npm run build:guidebuddy."
+  - "Build UnrealEditor target with UnrealBuildTool."
+  - "Run SampleDemoShowcaseMap in PIE and complete a short real combat attempt."
+  - "Exit PIE so GuideBuddy writes telemetry files."
+  - "Run npm run verify:mvp01 against the latest telemetry output."
+results:
+  - id: TYPESCRIPT_BUILD
+    status: pass
+    evidence: "npm run build:guidebuddy"
+  - id: UNREAL_BUILD
+    status: pass
+    evidence: "UnrealBuildTool UnrealEditor Win64 Development"
+  - id: TELEMETRY_OUTPUT_EXISTS
+    status: pass
+    evidence: Saved/GuideBuddy/Telemetry/20260504022450_UEDPIE_0_SampleDemoShowcaseMap_861420/
+  - id: TELEMETRY_JSON_PARSE
+    status: pass
+    evidence: Saved/GuideBuddy/Telemetry/20260504022450_UEDPIE_0_SampleDemoShowcaseMap_861420/
+  - id: MINIMUM_EVENT_COVERAGE
+    status: pass
+    evidence: Saved/GuideBuddy/Telemetry/20260504022450_UEDPIE_0_SampleDemoShowcaseMap_861420/combat_events.jsonl
+    observed:
+      events: 1912
+      event_types:
+        - attempt_start
+        - state_activated
+        - player_input
+        - ability_activated
+        - combat_status_changed
+        - attribute_changed
+        - damage
+        - attempt_end
+      player_events: 1812
+      enemy_events: 94
+      damage_events: 4
+  - id: ATTEMPT_SUMMARY_CONTENT
+    status: pass
+    evidence: Saved/GuideBuddy/Telemetry/20260504022450_UEDPIE_0_SampleDemoShowcaseMap_861420/attempt_summary.json
+    observed:
+      end_reason: world_cleanup
+      duration_seconds: 34.944321896880865
+      hits_taken: 1
+      total_damage_taken: 50
+      hits_dealt: 3
+      total_damage_dealt: 30
+  - id: GIT_DIFF_CHECK
+    status: pass
+    evidence: "git diff --check"
+evidence:
+  raw_root: Saved/GuideBuddy/Telemetry/20260504022450_UEDPIE_0_SampleDemoShowcaseMap_861420/
+  index: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-001/index.md
+notes:
+  - "This run is a real PIE gameplay smoke, not synthetic telemetry injection."
+  - "The accepted run includes player input, enemy events, combat status changes, health attribute changes, and damage."

@@ -1,6 +1,6 @@
 # MVP01 实现交接记录
 
-最后更新：2026-05-03
+最后更新：2026-05-04
 
 本文档记录当前未验收实现状态，目的是方便在另一台电脑或新的 AI 会话中继续工作。它不是 accepted result ledger，也不能替代 verifier evidence。
 
@@ -8,8 +8,8 @@
 
 - 阶段：`MVP01_COMBAT_TELEMETRY_FOUNDATION`
 - 基线：`MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1`
-- 验收状态：本地实现已完成一版，但用户尚未验收。
-- 运行输出状态：当前机器尚未确认生成真实 gameplay telemetry run。
+- 验收状态：真实 PIE gameplay 验收已通过，accepted run 为 `MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001`。
+- 运行输出状态：已生成 `Saved/GuideBuddy/Telemetry/20260504022450_UEDPIE_0_SampleDemoShowcaseMap_861420/`。
 - 预期遥测根目录：`Saved/GuideBuddy/Telemetry/<run-id>/`
 
 ## 已实现内容
@@ -69,24 +69,28 @@ npm.cmd run build:guidebuddy
 
 注意：`TCF_SampleEditor` 在当前项目中不是可解析的 target。除非后续新增 C++ project target，否则继续使用 `UnrealEditor` target。
 
-## 尚未验证项
+## 验收结果
 
-以下验收仍待完成：
+已通过：
 
-- 启动 Unreal Editor。
-- 打开或运行 `/Game/TCF_SampleDemo/SampleDemoShowcaseMap.SampleDemoShowcaseMap`。
-- 完成一次短战斗尝试，至少包含：
-  - 一次玩家输入
-  - 一次敌人 ability / state / combat event
-  - 一次玩家生命下降；若死亡容易复现，则优先验证死亡
-- 确认生成 `Saved/GuideBuddy/Telemetry/<run-id>/`。
-- 运行：
+```powershell
+npm.cmd run build:guidebuddy
+```
+
+```powershell
+& 'D:\Program Files\Epic Games\UE_5.7\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.exe' UnrealEditor Win64 Development -Project='<repo>\TCF_Sample.uproject' -WaitMutex
+```
 
 ```powershell
 npm.cmd run verify:mvp01
 ```
 
-只有 verifier 通过后，才应创建 `aiflow/contracts/runs/MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001.yaml` 和 evidence index，并把本轮验收标为 accepted。
+证据：
+
+- `aiflow/contracts/runs/MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001.yaml`
+- `aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-001/index.md`
+- `aiflow/contracts/ledgers/MVP01_COMBAT_TELEMETRY_FOUNDATION.result.md`
+- `Saved/GuideBuddy/Telemetry/20260504022450_UEDPIE_0_SampleDemoShowcaseMap_861420/`
 
 ## 换机继续步骤
 
