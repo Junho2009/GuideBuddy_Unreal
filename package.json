@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build:guidebuddy": "tsc -p tsconfig.json",
-    "verify:mvp01": "node aiflow/contracts/verifiers/verify_mvp01_telemetry.js"
+    "verify:mvp01": "node aiflow/contracts/verifiers/verify_mvp01_telemetry.js",
+    "verify:mvp01:death": "node aiflow/contracts/verifiers/verify_mvp01_death_regression.js"
   },
   "devDependencies": {
     "typescript": "4.7.4"

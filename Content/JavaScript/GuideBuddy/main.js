@@ -71,6 +71,7 @@ function handleSignal(signalJson) {
             change_type: payload.change_type
         }));
         rememberEnemyAction(event, payload.actor, String(payload.state_tag || ""));
+        maybeRecordPlayerStateDeath(signal, event, payload.actor, String(payload.state_tag || ""));
         return;
     }
     if (signalType === "combat_status_changed") {
@@ -119,21 +120,91 @@ function maybeRecordDamage(signal, payload, attributeEvent) {
         inferred_from_event_seq: attributeEvent.seq
     }, signalToEventOverride(signal));
     if (actor.role === "player" && newValue <= 0) {
-        deathInfo = {
-            event_seq: damageEvent.seq,
-            time_seconds: damageEvent.time_seconds,
-            iso_time: damageEvent.iso_time,
-            actor,
-            source,
+        recordPlayerDeath(signal, damageEvent, actor, "health_depleted", source, {
+            damage_event_seq: damageEvent.seq,
             remaining_health: newValue
-        };
-        recordEvent("death", {
-            actor,
-            source,
-            damage_event_seq: damageEvent.seq
-        }, signalToEventOverride(signal));
-        finalize("player_death", signal);
+        });
     }
+}
+function maybeRecordPlayerStateDeath(signal, terminalEvent, actor, stateTag) {
+    if (!actor || actor.role !== "player" || deathInfo || !isDeathStateTag(stateTag)) {
+        return;
+    }
+    recordPlayerDeath(signal, terminalEvent, actor, "state_death", inferTerminalDeathSource(terminalEvent.time_seconds));
+}
+function recordPlayerDeath(signal, terminalEvent, actor, deathReason, source, extra = {}) {
+    if (deathInfo) {
+        return;
+    }
+    const evidenceEvents = selectDeathEvidenceEvents(terminalEvent);
+    const terminalTag = getEventTag(terminalEvent);
+    const deathEvent = recordEvent("death", {
+        actor,
+        source,
+        source_confidence: source ? source.confidence : "terminal_state",
+        death_reason: deathReason,
+        terminal_event_seq: terminalEvent.seq,
+        terminal_event_type: terminalEvent.event_type,
+        terminal_tag: terminalTag,
+        evidence_event_seqs: evidenceEvents.map((event) => event.seq),
+        ...extra
+    }, signalToEventOverride(signal));
+    deathInfo = {
+        event_seq: deathEvent.seq,
+        time_seconds: deathEvent.time_seconds,
+        iso_time: deathEvent.iso_time,
+        actor,
+        source,
+        source_confidence: source ? source.confidence : "terminal_state",
+        death_reason: deathReason,
+        terminal_event_seq: terminalEvent.seq,
+        terminal_event_type: terminalEvent.event_type,
+        terminal_tag: terminalTag,
+        evidence_events: evidenceEvents,
+        ...extra
+    };
+    finalize("player_death", signal);
+}
+function inferTerminalDeathSource(timeSeconds) {
+    const recentSource = inferDamageSource(timeSeconds);
+    if (recentSource) {
+        return recentSource;
+    }
+    for (let index = events.length - 1; index >= 0; index -= 1) {
+        const event = events[index];
+        const actor = event.actor;
+        const tag = getEventTag(event).toLowerCase();
+        const isEnemy = event.role === "enemy" || (actor === null || actor === void 0 ? void 0 : actor.role) === "enemy";
+        const isRelevant = tag.includes("attack") || tag.includes("execution") || tag.includes("riposte") || tag.includes("no block");
+        if (timeSeconds - event.time_seconds > 4) {
+            break;
+        }
+        if (isEnemy && isRelevant) {
+            return {
+                time_seconds: event.time_seconds,
+                event_type: event.event_type,
+                actor_name: typeof event.actor_name === "string" ? event.actor_name : actor === null || actor === void 0 ? void 0 : actor.name,
+                actor_path: typeof event.actor_path === "string" ? event.actor_path : actor === null || actor === void 0 ? void 0 : actor.path,
+                tag: getEventTag(event),
+                confidence: "inferred_recent_enemy_action"
+            };
+        }
+    }
+    return undefined;
+}
+function selectDeathEvidenceEvents(terminalEvent) {
+    const windowStart = terminalEvent.time_seconds - 4;
+    const evidenceEvents = events.filter((event) => event.seq <= terminalEvent.seq &&
+        event.time_seconds >= windowStart &&
+        isDeathEvidenceEvent(event));
+    return evidenceEvents.slice(Math.max(0, evidenceEvents.length - 24));
+}
+function isDeathEvidenceEvent(event) {
+    return event.event_type === "damage" ||
+        event.event_type === "attribute_changed" ||
+        event.event_type === "combat_status_changed" ||
+        event.event_type === "ability_activated" ||
+        event.event_type === "state_activated";
 }
 function inferDamageSource(timeSeconds) {
     if (!lastEnemyAction) {
@@ -256,6 +327,12 @@ function sumNumberField(sourceEvents, fieldName) {
 }
 function isHealthAttribute(attributeTag) {
     return attributeTag === "Attribute.Health" || attributeTag.toLowerCase().includes("health");
+}
+function isDeathStateTag(stateTag) {
+    return stateTag === "State.Death" || stateTag.toLowerCase() === "death";
+}
+function getEventTag(event) {
+    return String(event.ability_tag || event.state_tag || event.combat_status_tag || event.attribute_tag || "");
 }
 function parseJsonObject(raw) {
     try {
