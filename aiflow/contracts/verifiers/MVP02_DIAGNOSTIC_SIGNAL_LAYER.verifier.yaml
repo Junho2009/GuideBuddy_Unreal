@@ -91,8 +91,8 @@ manual_smoke_checks:
     title: 游戏中能看到保存状态
     automation_level: manual
     blocking: false
-    stimulus: 在 PIE 或打包游戏中开始战斗并按 F10。
-    observe: 屏幕左上角 GuideBuddy 状态提示。
-    oracle: 能看到采集启动提示和 Diagnosis saved / Save failed 提示。
+    stimulus: 在 PIE 或打包游戏中打完一局，战斗结束界面出现后点击“复盘一下”。
+    observe: GuideBuddy 状态提示与复盘卡展示。
+    oracle: 能看到采集启动提示、Diagnosis saved / Save failed 提示，并最终看到本局复盘建议。
     evidence: 人工验收截图或现场观察。
     on_fail: 调整 on-screen message 时长或改为正式 UI widget。

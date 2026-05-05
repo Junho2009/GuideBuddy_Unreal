@@ -3,14 +3,26 @@
 #include "AIController.h"
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
 #include "HAL/FileManager.h"
 #include "HAL/PlatformProcess.h"
 #include "InputTriggers.h"
+#include "Kismet/GameplayStatics.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+#include "Styling/CoreStyle.h"
+#include "Widgets/Input/SButton.h"
+#include "Widgets/Layout/SBorder.h"
+#include "Widgets/Layout/SBox.h"
+#include "Widgets/Layout/SScrollBox.h"
+#include "Widgets/Layout/SSeparator.h"
+#include "Widgets/SOverlay.h"
+#include "Widgets/SBoxPanel.h"
+#include "Widgets/Text/STextBlock.h"
 
 void UGuideBuddyTelemetryBridge::Initialize(UWorld* InWorld)
 {
@@ -39,8 +51,12 @@ void UGuideBuddyTelemetryBridge::EmitGuideRequest(const FString& Source)
 {
 	const TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 	Payload->SetStringField(TEXT("source"), Source);
-	Payload->SetStringField(TEXT("reason"), TEXT("player_requested_guidance"));
-	Payload->SetStringField(TEXT("button"), TEXT("F10"));
+	Payload->SetStringField(TEXT("reason"), Source == TEXT("battle_end_review_button")
+		? TEXT("battle_end_review_requested")
+		: TEXT("player_requested_guidance"));
+	Payload->SetStringField(TEXT("button"), Source == TEXT("battle_end_review_button")
+		? TEXT("ReviewButton")
+		: TEXT("RuntimeRequest"));
 	Payload->SetObjectField(TEXT("actor"), BuildActorObject(GetPlayerPawn()));
 	EmitSignal(TEXT("guide_request"), Payload);
 }
@@ -249,6 +265,377 @@ void UGuideBuddyTelemetryBridge::ShowRuntimeStatusMessage(const FString& Message
 		const FColor MessageColor = bSuccess ? FColor::Green : FColor::Red;
 		GEngine->AddOnScreenDebugMessage(-1, 6.0f, MessageColor, FString::Printf(TEXT("GuideBuddy: %s"), *Message));
 	}
+}
+
+void UGuideBuddyTelemetryBridge::ShowBattleEndMenu(const FString& Title, const FString& Message)
+{
+	RemoveBattleEndMenu();
+
+	TWeakObjectPtr<UGuideBuddyTelemetryBridge> WeakThis(this);
+	const FLinearColor PanelBackground(0.0f, 0.0f, 0.0f, 0.85f);
+	const FLinearColor MutedText(0.78f, 0.82f, 0.88f, 1.0f);
+	const FLinearColor PrimaryButton(0.20f, 0.42f, 0.95f, 1.0f);
+	const FLinearColor SecondaryButton(0.16f, 0.18f, 0.22f, 1.0f);
+
+	BattleEndWidget = SNew(SOverlay)
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Fill)
+		.VAlign(VAlign_Fill)
+		[
+			SNew(SBorder)
+			.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.82f))
+			.Padding(0)
+			[
+				SNew(SBox)
+				.HAlign(HAlign_Center)
+				.VAlign(VAlign_Center)
+				[
+					SNew(SBox)
+					.WidthOverride(760.0f)
+					[
+						SNew(SBorder)
+						.BorderBackgroundColor(PanelBackground)
+						.Padding(FMargin(40.0f, 34.0f))
+						[
+							SNew(SVerticalBox)
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							[
+								SNew(STextBlock)
+								.Text(FText::FromString(Title.IsEmpty() ? TEXT("战斗结束") : Title))
+								.Font(FCoreStyle::GetDefaultFontStyle("Bold", 32))
+								.ColorAndOpacity(FLinearColor::White)
+							]
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							.Padding(0.0f, 12.0f, 0.0f, 28.0f)
+							[
+								SNew(STextBlock)
+								.Text(FText::FromString(Message))
+								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 18))
+								.ColorAndOpacity(MutedText)
+								.WrapTextAt(680.0f)
+								.LineHeightPercentage(1.25f)
+							]
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							[
+								SNew(SHorizontalBox)
+								+ SHorizontalBox::Slot()
+								.FillWidth(1.0f)
+								.Padding(0.0f, 0.0f, 14.0f, 0.0f)
+								[
+									SNew(SButton)
+									.ButtonColorAndOpacity(SecondaryButton)
+									.ContentPadding(FMargin(18.0f, 12.0f))
+									.OnClicked_Lambda([WeakThis]()
+									{
+										if (WeakThis.IsValid())
+										{
+											WeakThis->RestartChallenge();
+										}
+										return FReply::Handled();
+									})
+									[
+										SNew(SBox)
+										.HAlign(HAlign_Center)
+										[
+											SNew(STextBlock)
+											.Text(FText::FromString(TEXT("重新挑战")))
+											.Font(FCoreStyle::GetDefaultFontStyle("Bold", 18))
+											.ColorAndOpacity(FLinearColor::White)
+										]
+									]
+								]
+								+ SHorizontalBox::Slot()
+								.FillWidth(1.0f)
+								[
+									SNew(SButton)
+									.ButtonColorAndOpacity(PrimaryButton)
+									.ContentPadding(FMargin(18.0f, 12.0f))
+									.OnClicked_Lambda([WeakThis]()
+									{
+										if (WeakThis.IsValid())
+										{
+											WeakThis->RequestBattleEndReview();
+										}
+										return FReply::Handled();
+									})
+									[
+										SNew(SBox)
+										.HAlign(HAlign_Center)
+										[
+											SNew(STextBlock)
+											.Text(FText::FromString(TEXT("复盘一下")))
+											.Font(FCoreStyle::GetDefaultFontStyle("Bold", 18))
+											.ColorAndOpacity(FLinearColor::White)
+										]
+									]
+								]
+							]
+						]
+					]
+				]
+			]
+		];
+
+	if (GEngine && GEngine->GameViewport && BattleEndWidget.IsValid())
+	{
+		GEngine->GameViewport->AddViewportWidgetContent(BattleEndWidget.ToSharedRef(), 1000);
+	}
+
+	if (UWorld* World = WorldPtr.Get())
+	{
+		if (APlayerController* PlayerController = World->GetFirstPlayerController())
+		{
+			FInputModeUIOnly InputMode;
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			PlayerController->SetInputMode(InputMode);
+			PlayerController->SetShowMouseCursor(true);
+		}
+	}
+}
+
+void UGuideBuddyTelemetryBridge::ShowCoachingReviewCard(
+	const FString& Title,
+	const FString& Diagnosis,
+	const FString& Evidence,
+	const FString& NextAction,
+	const FString& SuccessCondition,
+	const FString& DrillTemplateId)
+{
+	RemoveBattleEndMenu();
+
+	TWeakObjectPtr<UGuideBuddyTelemetryBridge> WeakThis(this);
+	const FLinearColor PanelBackground(0.0f, 0.0f, 0.0f, 0.85f);
+	const FLinearColor LabelText(0.48f, 0.66f, 1.0f, 1.0f);
+	const FLinearColor BodyText(0.9f, 0.93f, 0.96f, 1.0f);
+	const FLinearColor MutedText(0.74f, 0.8f, 0.88f, 1.0f);
+	const FLinearColor ActionText(0.77f, 0.96f, 0.74f, 1.0f);
+	const FLinearColor ButtonColor(0.20f, 0.42f, 0.95f, 1.0f);
+
+	BattleEndWidget = SNew(SOverlay)
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Fill)
+		.VAlign(VAlign_Fill)
+		[
+			SNew(SBorder)
+			.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.84f))
+			.Padding(0)
+			[
+				SNew(SBox)
+				.HAlign(HAlign_Center)
+				.VAlign(VAlign_Center)
+				[
+					SNew(SBox)
+					.WidthOverride(820.0f)
+					.MaxDesiredHeight(620.0f)
+					[
+						SNew(SBorder)
+						.BorderBackgroundColor(PanelBackground)
+						.Padding(FMargin(42.0f, 34.0f))
+						[
+							SNew(SVerticalBox)
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							[
+								SNew(STextBlock)
+								.Text(FText::FromString(Title.IsEmpty() ? TEXT("本局复盘") : Title))
+								.Font(FCoreStyle::GetDefaultFontStyle("Bold", 30))
+								.ColorAndOpacity(FLinearColor::White)
+							]
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							.Padding(0.0f, 18.0f, 0.0f, 0.0f)
+							[
+								SNew(SSeparator)
+								.Thickness(1.0f)
+							]
+							+ SVerticalBox::Slot()
+							.FillHeight(1.0f)
+							.Padding(0.0f, 20.0f, 0.0f, 22.0f)
+							[
+								SNew(SScrollBox)
+								+ SScrollBox::Slot()
+								[
+									SNew(SVerticalBox)
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(TEXT("主要问题")))
+										.Font(FCoreStyle::GetDefaultFontStyle("Bold", 15))
+										.ColorAndOpacity(LabelText)
+									]
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									.Padding(0.0f, 6.0f, 0.0f, 18.0f)
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(Diagnosis))
+										.Font(FCoreStyle::GetDefaultFontStyle("Regular", 19))
+										.ColorAndOpacity(BodyText)
+										.WrapTextAt(720.0f)
+										.LineHeightPercentage(1.25f)
+									]
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(TEXT("关键证据")))
+										.Font(FCoreStyle::GetDefaultFontStyle("Bold", 15))
+										.ColorAndOpacity(LabelText)
+									]
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									.Padding(0.0f, 6.0f, 0.0f, 18.0f)
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(Evidence))
+										.Font(FCoreStyle::GetDefaultFontStyle("Regular", 18))
+										.ColorAndOpacity(MutedText)
+										.WrapTextAt(720.0f)
+										.LineHeightPercentage(1.25f)
+									]
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(TEXT("下一局只练")))
+										.Font(FCoreStyle::GetDefaultFontStyle("Bold", 15))
+										.ColorAndOpacity(LabelText)
+									]
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									.Padding(0.0f, 6.0f, 0.0f, 18.0f)
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(NextAction))
+										.Font(FCoreStyle::GetDefaultFontStyle("Bold", 20))
+										.ColorAndOpacity(ActionText)
+										.WrapTextAt(720.0f)
+										.LineHeightPercentage(1.25f)
+									]
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(TEXT("成功条件")))
+										.Font(FCoreStyle::GetDefaultFontStyle("Bold", 15))
+										.ColorAndOpacity(LabelText)
+									]
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									.Padding(0.0f, 6.0f, 0.0f, 18.0f)
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(SuccessCondition))
+										.Font(FCoreStyle::GetDefaultFontStyle("Regular", 18))
+										.ColorAndOpacity(BodyText)
+										.WrapTextAt(720.0f)
+										.LineHeightPercentage(1.25f)
+									]
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(TEXT("针对性练习配置")))
+										.Font(FCoreStyle::GetDefaultFontStyle("Bold", 15))
+										.ColorAndOpacity(LabelText)
+									]
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									.Padding(0.0f, 6.0f, 0.0f, 0.0f)
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(DrillTemplateId.IsEmpty() ? TEXT("等待生成") : DrillTemplateId))
+										.Font(FCoreStyle::GetDefaultFontStyle("Regular", 18))
+										.ColorAndOpacity(MutedText)
+										.WrapTextAt(720.0f)
+									]
+								]
+							]
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							[
+								SNew(SButton)
+								.ButtonColorAndOpacity(ButtonColor)
+								.ContentPadding(FMargin(20.0f, 12.0f))
+								.OnClicked_Lambda([WeakThis]()
+								{
+									if (WeakThis.IsValid())
+									{
+										WeakThis->RestartChallenge();
+									}
+									return FReply::Handled();
+								})
+								[
+									SNew(SBox)
+									.HAlign(HAlign_Center)
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(TEXT("重新挑战")))
+										.Font(FCoreStyle::GetDefaultFontStyle("Bold", 18))
+										.ColorAndOpacity(FLinearColor::White)
+									]
+								]
+							]
+						]
+					]
+				]
+			]
+		];
+
+	if (GEngine && GEngine->GameViewport && BattleEndWidget.IsValid())
+	{
+		GEngine->GameViewport->AddViewportWidgetContent(BattleEndWidget.ToSharedRef(), 1000);
+	}
+
+	if (UWorld* World = WorldPtr.Get())
+	{
+		if (APlayerController* PlayerController = World->GetFirstPlayerController())
+		{
+			FInputModeUIOnly InputMode;
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			PlayerController->SetInputMode(InputMode);
+			PlayerController->SetShowMouseCursor(true);
+		}
+	}
+}
+
+void UGuideBuddyTelemetryBridge::RemoveBattleEndMenu()
+{
+	if (GEngine && GEngine->GameViewport && BattleEndWidget.IsValid())
+	{
+		GEngine->GameViewport->RemoveViewportWidgetContent(BattleEndWidget.ToSharedRef());
+	}
+	BattleEndWidget.Reset();
+}
+
+void UGuideBuddyTelemetryBridge::RestartChallenge()
+{
+	RemoveBattleEndMenu();
+
+	UWorld* World = WorldPtr.Get();
+	if (!World)
+	{
+		return;
+	}
+
+	if (APlayerController* PlayerController = World->GetFirstPlayerController())
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		PlayerController->SetShowMouseCursor(false);
+	}
+
+	const FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(World, true);
+	UGameplayStatics::OpenLevel(World, FName(*CurrentLevelName), false);
+}
+
+void UGuideBuddyTelemetryBridge::RequestBattleEndReview()
+{
+	ShowRuntimeStatusMessage(TEXT("正在复盘这一局..."), true);
+	EmitGuideRequest(TEXT("battle_end_review_button"));
 }
 
 void UGuideBuddyTelemetryBridge::HandleBufferedInput(UInputAction* FiredBufferedInput)

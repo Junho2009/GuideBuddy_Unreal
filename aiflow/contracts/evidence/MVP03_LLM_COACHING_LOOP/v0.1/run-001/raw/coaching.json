@@ -1,0 +1,216 @@
+{
+  "schema_version": "guidebuddy.coaching.v1",
+  "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+  "generated_at": "2026-05-05T12:00:00.000Z",
+  "source_files": {
+    "run_directory": "D:/Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/CoachingVerifier/MVP03_LLM_COACHING_LOOP/run-001-posture-break",
+    "attempt_summary_json": "D:/Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/CoachingVerifier/MVP03_LLM_COACHING_LOOP/run-001-posture-break/attempt_summary.json",
+    "diagnosis_json": "D:/Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/CoachingVerifier/MVP03_LLM_COACHING_LOOP/run-001-posture-break/diagnosis.json"
+  },
+  "provider": {
+    "kind": "local_rule_template",
+    "source_kind": "verifier",
+    "llm_api_called": false,
+    "replaceable_with_llm": true,
+    "status": "mock_provider"
+  },
+  "player_level_assumption": {
+    "level": "novice",
+    "reason": "No long-term player model is available in MVP03, so the generator defaults to one explicit expression level."
+  },
+  "llm_input_summary": {
+    "summary_schema_version": "guidebuddy.llm_input_summary.v1",
+    "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+    "map": "UEDPIE_0_SampleDemoShowcaseMap",
+    "end_reason": "world_cleanup",
+    "duration_seconds": 41.80322630703449,
+    "diagnosis": {
+      "primary_failure": "posture_break_into_execution",
+      "category": "fatal_attack_attribution",
+      "confidence": 0.88,
+      "deterministic_summary": "Player death is attributed to a terminal death state followed by an enemy execution signal."
+    },
+    "practice_objective_seed": {
+      "focus": "avoid_posture_break_into_execution",
+      "target_error": "posture_break_into_execution",
+      "candidate_drill_focuses": [
+        "avoid_execution_setup",
+        "recover_before_terminal_state",
+        "respond_to_enemy_special_attack"
+      ],
+      "measurable_metrics": [
+        {
+          "id": "terminal_execution_count",
+          "unit": "count",
+          "direction": "lower_is_better"
+        },
+        {
+          "id": "enemy_execution_after_player_death",
+          "unit": "count",
+          "direction": "lower_is_better"
+        },
+        {
+          "id": "defensive_input_before_execution_window",
+          "unit": "boolean",
+          "direction": "higher_is_better"
+        }
+      ]
+    },
+    "evidence": {
+      "event_seqs": [
+        1257,
+        1258,
+        1259,
+        1260,
+        1262,
+        1263,
+        1264,
+        1265
+      ],
+      "signals": [
+        {
+          "id": "terminal_death_state",
+          "event_seq": 1299,
+          "event_type": "state_activated",
+          "time_seconds": 34.54528030753136,
+          "tag": "State.Death",
+          "actor_role": "player",
+          "confidence": 0.9
+        },
+        {
+          "id": "enemy_execution_signal",
+          "event_seq": 1298,
+          "event_type": "ability_activated",
+          "time_seconds": 34.54528030753136,
+          "tag": "Ability.Executed",
+          "actor_role": "player",
+          "confidence": 0.88
+        }
+      ]
+    },
+    "constraints": {
+      "one_main_issue_only": true,
+      "no_raw_event_log": true,
+      "no_unreal_scene_creation": true,
+      "drill_spec_must_use_whitelist": true
+    }
+  },
+  "review_card": {
+    "language": "zh-CN",
+    "card_type": "post_attempt_single_issue",
+    "title": "先避开处决窗口",
+    "diagnosis_sentence": "这次主要问题是架势崩溃后被处决。",
+    "evidence_line": "证据：关键事件 #1299（State.Death，player）支持该判断，诊断置信度 88%。",
+    "next_action": "下一局只练一件事：看到敌人进入处决或特殊动作前兆时，先不要贪输出，立刻停手后撤或防御。",
+    "success_condition": "失败窗口内不再出现处决信号，或处决前 1.5 秒内出现防御/闪避输入。",
+    "confidence": {
+      "value": 0.88,
+      "label": "高"
+    },
+    "prompt_strength": "direct",
+    "player_level": "novice"
+  },
+  "practice_objective": {
+    "schema_version": "guidebuddy.practice_objective.v1",
+    "id": "practice.posture_break_into_execution.avoid_execution_setup",
+    "target_error": "posture_break_into_execution",
+    "focus": "avoid_execution_setup",
+    "player_level": "novice",
+    "observable_action": "Stop attacking and create a defensive input or distance before the execution window.",
+    "coaching_instruction": "下一局只练一件事：看到敌人进入处决或特殊动作前兆时，先不要贪输出，立刻停手后撤或防御。",
+    "evidence_event_seqs": [
+      1257,
+      1258,
+      1259,
+      1260,
+      1262,
+      1263,
+      1264,
+      1265
+    ],
+    "measurable_metrics": [
+      {
+        "id": "terminal_execution_count",
+        "unit": "count",
+        "direction": "lower_is_better"
+      },
+      {
+        "id": "enemy_execution_after_player_death",
+        "unit": "count",
+        "direction": "lower_is_better"
+      },
+      {
+        "id": "defensive_input_before_execution_window",
+        "unit": "boolean",
+        "direction": "higher_is_better"
+      }
+    ],
+    "success_criteria": [
+      {
+        "metric_id": "terminal_execution_count",
+        "operator": "<=",
+        "threshold": 0
+      },
+      {
+        "metric_id": "defensive_input_before_execution_window",
+        "operator": "==",
+        "threshold": true
+      }
+    ]
+  },
+  "drill_spec_candidate": {
+    "schema_version": "guidebuddy.drill_spec_candidate.v1",
+    "status": "candidate_requires_mvp04_validation",
+    "template_whitelist_version": "guidebuddy.drill_templates.v0.1",
+    "template_id": "single_enemy_execution_response",
+    "objective_ref": "practice.posture_break_into_execution.avoid_execution_setup",
+    "parameters": {
+      "target_error": "posture_break_into_execution",
+      "focus": "avoid_execution_setup",
+      "player_level": "novice",
+      "enemy_count": 1,
+      "repetition_goal": 5,
+      "success_window_seconds": 1.5,
+      "max_consecutive_failures": 3,
+      "metric_ids": [
+        "terminal_execution_count",
+        "enemy_execution_after_player_death",
+        "defensive_input_before_execution_window"
+      ]
+    },
+    "validation": {
+      "template_whitelist_passed": true,
+      "parameter_whitelist_passed": true,
+      "allowed_template_ids": [
+        "single_enemy_execution_response",
+        "single_enemy_overcommit_punish",
+        "single_enemy_dodge_timing",
+        "single_enemy_last_hit_review",
+        "telemetry_capture_repeat"
+      ],
+      "allowed_parameter_names": [
+        "target_error",
+        "focus",
+        "player_level",
+        "enemy_count",
+        "repetition_goal",
+        "success_window_seconds",
+        "max_consecutive_failures",
+        "metric_ids"
+      ]
+    },
+    "safety": {
+      "llm_may_not_create_unreal_assets": true,
+      "llm_may_not_execute_console_commands": true,
+      "requires_mvp04_validation": true
+    }
+  },
+  "final": {
+    "status": "coaching_ready",
+    "primary_failure": "posture_break_into_execution",
+    "main_issue_count": 1,
+    "advice_focus": "avoid_execution_setup",
+    "practice_objective_id": "practice.posture_break_into_execution.avoid_execution_setup",
+    "drill_template_id": "single_enemy_execution_response"
+  }
+}

@@ -7,7 +7,7 @@
 | `MVP00_CONTEXT_ALIGNMENT` | 上下文收口 | 将迁移来的 aiflow 项目上下文切换为 GuideBuddy 黑客松 MVP | 已完成 |
 | `MVP01_COMBAT_TELEMETRY_FOUNDATION` | 战斗遥测基础 | 在 `SampleDemoShowcaseMap` 中采集一次尝试所需的语义化战斗事件 | 已验收 |
 | `MVP02_DIAGNOSTIC_SIGNAL_LAYER` | 诊断信号层 | 把事件流转成可解释、可指导、可验证的诊断信号，并预留可选 LLM 复核 | 已验收 |
-| `MVP03_LLM_COACHING_LOOP` | LLM 导玩与练习目标 | 基于诊断摘要生成适合玩家水平的指导、最小练习目标和 Drill Spec 草案 | 未开始 |
+| `MVP03_LLM_COACHING_LOOP` | LLM 导玩与练习目标 | 基于诊断摘要生成适合玩家水平的指导、最小练习目标和 Drill Spec 草案 | 已验收 |
 | `MVP04_ADAPTIVE_DRILL_GENERATION` | 自适应针对性练习场 | 根据 Drill Spec 用受控模板生成专门练习当前问题的训练场 | 未开始 |
 | `MVP05_EVALUATION_AND_ITERATION` | 效果评估与迭代 | 记录指导或练习后的表现，判断目标错误是否减少并迭代策略 | 未开始 |
 
@@ -27,9 +27,9 @@
 
 下一份建议编译的执行合同入口是：
 
-- `MVP03_LLM_COACHING_LOOP.md`
+- `MVP04_ADAPTIVE_DRILL_GENERATION.md`
 
-`MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1` 已通过自动验收，证据见 `aiflow/contracts/runs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001.yaml`。
+`MVP03_LLM_COACHING_LOOP@v0.1` 已通过自动验收，证据见 `aiflow/contracts/runs/MVP03_LLM_COACHING_LOOP.run-001.yaml`。
 
 ## 阶段间依赖
 

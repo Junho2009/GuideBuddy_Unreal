@@ -86,7 +86,14 @@ MVP 至少区分三种表达强度：
 
 ## 当前状态
 
-未开始。
+已验收。
+
+- Baseline：`MVP03_LLM_COACHING_LOOP@v0.1`
+- Accepted Run：`aiflow/contracts/runs/MVP03_LLM_COACHING_LOOP.run-001.yaml`
+- Evidence Index：`aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/index.md`
+- 实现入口：`TypeScript/GuideBuddy/coaching.ts`
+- 运行时输出：战斗结束界面“复盘一下”触发 `guide_request` 时会在 `guide_requests/request-001/` 下写出 `coaching.json`，并展示复盘卡
+- 自动验收：`npm.cmd run verify:mvp03`
 
 ## 备注
 

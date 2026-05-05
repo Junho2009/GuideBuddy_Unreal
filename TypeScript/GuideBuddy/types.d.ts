@@ -27,4 +27,13 @@ interface GuideBuddyBridge {
   GetLastError(): string;
   GetTelemetryStorageDescription?(): string;
   ShowRuntimeStatusMessage?(message: string, isSuccess: boolean): void;
+  ShowBattleEndMenu?(title: string, message: string): void;
+  ShowCoachingReviewCard?(
+    title: string,
+    diagnosis: string,
+    evidence: string,
+    nextAction: string,
+    successCondition: string,
+    drillTemplateId: string
+  ): void;
 }

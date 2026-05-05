@@ -1,0 +1,98 @@
+id: MVP03_LLM_COACHING_LOOP
+baseline_id: MVP03_LLM_COACHING_LOOP@v0.1
+status: active
+brief_ref: aiflow/contracts/briefs/MVP03_LLM_COACHING_LOOP.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/MVP03_LLM_COACHING_LOOP.taskpack.yaml
+manifest_ref: aiflow/contracts/manifests/MVP03_LLM_COACHING_LOOP.manifest.yaml
+release_blocking_checks:
+  - id: SPEC_SYNC
+    title: specs 与 contracts 目标一致
+    automation_level: hybrid
+    blocking: true
+    stimulus: 读取 CONTEXT、GAME_PHASES、MVP03 prose 与本合同组。
+    observe: 目标、范围、非目标和验收路径是否一致。
+    oracle: 不存在互相冲突的 MVP03 范围或状态描述。
+    evidence: aiflow/contracts/runs/MVP03_LLM_COACHING_LOOP.run-001.yaml
+    on_fail: 先同步 specs 或合同，再进入验收放行。
+  - id: COACHING_INPUT_PARSE
+    title: attempt summary 与 diagnosis 可解析
+    automation_level: auto
+    blocking: true
+    stimulus: 读取复制后的 MVP02 raw fixture。
+    observe: attempt_summary.json 与 diagnosis.json。
+    oracle: JSON 可解析，并提供 coaching 输入。
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/
+    on_fail: 修复输入读取或 fixture 复制逻辑。
+  - id: COACHING_OUTPUT_SCHEMA
+    title: coaching.json schema 完整
+    automation_level: auto
+    blocking: true
+    stimulus: 运行 TypeScript coaching 生成器。
+    observe: coaching.json。
+    oracle: 包含 provider、llm_input_summary、review_card、practice_objective、drill_spec_candidate 与 final。
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+    on_fail: 修复 coaching 输出结构。
+  - id: HIGH_SIGNAL_LLM_INPUT_SUMMARY
+    title: LLM 输入摘要不携带完整事件日志
+    automation_level: auto
+    blocking: true
+    stimulus: 读取 coaching.json llm_input_summary。
+    observe: 摘要字段与 evidence.signals。
+    oracle: 摘要只包含少量诊断证据，不包含 combat_events.jsonl 或 last_events。
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+    on_fail: 收窄输入摘要。
+  - id: SINGLE_ISSUE_REVIEW_CARD
+    title: 单问题复盘卡
+    automation_level: auto
+    blocking: true
+    stimulus: 使用 posture_break_into_execution fixture 生成 coaching.json。
+    observe: review_card 和 final.main_issue_count。
+    oracle: 输出一句诊断、一条证据、一个下一步动作、一个成功条件，且 main_issue_count=1。
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+    on_fail: 收敛文案和问题选择逻辑。
+  - id: PRACTICE_OBJECTIVE
+    title: practice_objective 可供 MVP05 评估
+    automation_level: auto
+    blocking: true
+    stimulus: 读取 coaching.json practice_objective。
+    observe: id、target_error、focus、measurable_metrics 与 success_criteria。
+    oracle: 字段存在并映射到可评估指标。
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+    on_fail: 补齐目标结构。
+  - id: DRILL_SPEC_CANDIDATE_WHITELIST
+    title: Drill Spec 草案白名单受控
+    automation_level: auto
+    blocking: true
+    stimulus: 读取 coaching.json drill_spec_candidate。
+    observe: template_id、parameters 与 validation。
+    oracle: template_id 与 parameter names 均在白名单内，且安全边界为不创建 Unreal 资产。
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+    on_fail: 修复模板映射或参数过滤。
+  - id: INSUFFICIENT_EVIDENCE_COACHING_GUARD
+    title: 证据不足时不强行指导战斗归因
+    automation_level: auto
+    blocking: true
+    stimulus: 使用 synthetic insufficient_evidence diagnosis。
+    observe: final.status 与 drill_spec_candidate.template_id。
+    oracle: status=insufficient_evidence，template_id=telemetry_capture_repeat。
+    evidence: Saved/GuideBuddy/CoachingVerifier/MVP03_LLM_COACHING_LOOP/insufficient-evidence/coaching.json
+    on_fail: 修复 fallback 逻辑，避免猜测归因。
+  - id: RUNTIME_GUIDE_REQUEST_COACHING
+    title: 运行时指导请求生成 coaching 快照
+    automation_level: auto
+    blocking: true
+    stimulus: 使用 fake GuideBuddyBridge 重放真实 gameplay 片段并发送 guide_request。
+    observe: guide_requests/request-001/coaching.json。
+    oracle: coaching.json 被写出，且 primary_failure 与 runtime diagnosis 对齐。
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/runtime_request_verifier.json
+    on_fail: 修复运行时 writeRunFiles 或 coaching provider 调用。
+manual_smoke_checks:
+  - id: HUMAN_READABLE_REVIEW_CARD
+    title: 人类能看懂下一局练什么
+    automation_level: manual
+    blocking: false
+    stimulus: 人类阅读 coaching.json review_card。
+    observe: 建议是否短、具体、只要求一个动作。
+    oracle: 读者能说出下一局只该练什么，以及成功条件是什么。
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/index.md
+    on_fail: 调整本地模板或后续 LLM prompt。

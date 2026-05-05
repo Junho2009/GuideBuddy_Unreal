@@ -28,9 +28,9 @@ tasks:
     intent: 自动检查 schema、主诊断、证据保留、practice_objective_seed 和 insufficient_evidence guard。
     expected_result: npm run verify:mvp02 通过并归档 evidence / run record。
   - id: T05_RUNTIME_GUIDE_REQUEST
-    title: 接入运行时指导按钮
-    intent: 让玩家在战斗中主动请求指导，并即时生成诊断快照。
-    expected_result: 按 F10 触发 guide_request，写出 guide_requests/request-001/diagnosis.json。
+    title: 接入运行时复盘按钮
+    intent: 让玩家在战斗结束界面主动请求复盘，并即时生成诊断快照。
+    expected_result: 点击“复盘一下”触发 guide_request，写出 guide_requests/request-001/diagnosis.json。
 scope_guard:
   allowed:
     - 新增 TypeScript/GuideBuddy/diagnosis.ts。

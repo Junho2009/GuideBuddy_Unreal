@@ -45,8 +45,19 @@ interface RuntimeTerminalFailure {
 interface RuntimeWriteResult {
   targetDirectory: string;
   diagnosis: JsonRecord;
+  coaching: JsonRecord;
 }
 
+const coachingRuntime = require("./coaching") as {
+  buildCoaching(
+    runDirectory: string,
+    summaryPath: string,
+    diagnosisPath: string,
+    summary: JsonRecord,
+    diagnosis: JsonRecord,
+    options?: JsonRecord
+  ): JsonRecord;
+};
 const puerts = require("puerts") as PuertsModule;
 const maybeBridge = puerts.argv.getByName("GuideBuddyBridge") as GuideBuddyBridge | undefined;
 
@@ -62,12 +73,14 @@ const runDirectory = joinPath(telemetryRoot, runId);
 const events: CombatEvent[] = [];
 let sequence = 0;
 let finalized = false;
+let battleEnded = false;
+let battleEndReason: string | undefined;
 let lastEnemyAction: LastEnemyAction | undefined;
 let deathInfo: JsonRecord | undefined;
 let guideRequestCount = 0;
 
 bridge.CreateDirectoryTree(runDirectory);
-showRuntimeStatus(`Telemetry started. Press F10 for diagnosis. Output: ${runDirectory}`, true);
+showRuntimeStatus(`GuideBuddy ready. Battle-end menu will appear after this attempt. Output: ${runDirectory}`, true);
 
 recordEvent("attempt_start", {
   map: String(initialContext.map || ""),
@@ -100,12 +113,16 @@ function handleSignal(signalJson: string): void {
   }
 
   if (signalType === "bridge_shutdown") {
-    finalize(String(payload.reason || "bridge_shutdown"), signal);
+    finalize(battleEndReason || String(payload.reason || "bridge_shutdown"), signal);
     return;
   }
 
   if (signalType === "guide_request") {
     handleGuideRequest(signal, payload);
+    return;
+  }
+
+  if (battleEnded) {
     return;
   }
 
@@ -140,6 +157,7 @@ function handleSignal(signalJson: string): void {
     }));
     rememberEnemyAction(event, payload.actor as ActorInfo | undefined, String(payload.state_tag || ""));
     maybeRecordPlayerStateDeath(signal, event, payload.actor as ActorInfo | undefined, String(payload.state_tag || ""));
+    maybeRecordEnemyStateDeath(signal, event, payload.actor as ActorInfo | undefined, String(payload.state_tag || ""));
     return;
   }
 
@@ -210,6 +228,14 @@ function maybeRecordDamage(signal: TelemetrySignal, payload: JsonRecord, attribu
       damage_event_seq: damageEvent.seq,
       remaining_health: newValue
     });
+    return;
+  }
+
+  if (actor.role === "enemy" && newValue <= 0) {
+    recordEnemyDefeated(signal, damageEvent, actor, "health_depleted", {
+      damage_event_seq: damageEvent.seq,
+      remaining_health: newValue
+    });
   }
 }
 
@@ -219,6 +245,14 @@ function maybeRecordPlayerStateDeath(signal: TelemetrySignal, terminalEvent: Com
   }
 
   recordPlayerDeath(signal, terminalEvent, actor, "state_death", inferTerminalDeathSource(terminalEvent.time_seconds));
+}
+
+function maybeRecordEnemyStateDeath(signal: TelemetrySignal, terminalEvent: CombatEvent, actor: ActorInfo | undefined, stateTag: string): void {
+  if (!actor || actor.role !== "enemy" || battleEnded || !isDeathStateTag(stateTag)) {
+    return;
+  }
+
+  recordEnemyDefeated(signal, terminalEvent, actor, "state_death");
 }
 
 function recordPlayerDeath(
@@ -262,7 +296,34 @@ function recordPlayerDeath(
     ...extra
   };
 
-  finalize("player_death", signal);
+  battleEnded = true;
+  battleEndReason = "player_death";
+  showBattleEndMenu();
+}
+
+function recordEnemyDefeated(
+  signal: TelemetrySignal,
+  terminalEvent: CombatEvent,
+  actor: ActorInfo,
+  defeatReason: string,
+  extra: JsonRecord = {}
+): void {
+  if (battleEnded) {
+    return;
+  }
+
+  recordEvent("enemy_defeated", {
+    actor,
+    defeat_reason: defeatReason,
+    terminal_event_seq: terminalEvent.seq,
+    terminal_event_type: terminalEvent.event_type,
+    terminal_tag: getEventTag(terminalEvent),
+    ...extra
+  }, signalToEventOverride(signal));
+
+  battleEnded = true;
+  battleEndReason = "enemy_defeated";
+  showBattleEndMenu();
 }
 
 function inferTerminalDeathSource(timeSeconds: number): LastEnemyAction | undefined {
@@ -413,7 +474,8 @@ function writeGuideRequestSnapshot(endReason: string, signal: TelemetrySignal, g
   const result = writeRunFiles(snapshotDirectory, endReason, snapshotEvents);
   if (result) {
     showRuntimeStatus(formatDiagnosisSavedMessage("Guidance request", result), true);
-    console.log(`[GuideBuddy] guide request diagnosis written: ${snapshotDirectory}`);
+    showCoachingCard(result);
+    console.log(`[GuideBuddy] guide request coaching written: ${snapshotDirectory}`);
   }
 }
 
@@ -435,16 +497,23 @@ function writeRunFiles(targetDirectory: string, endReason: string, sourceEvents:
   const combatEventsPath = joinPath(targetDirectory, "combat_events.jsonl");
   const attemptSummaryPath = joinPath(targetDirectory, "attempt_summary.json");
   const diagnosisPath = joinPath(targetDirectory, "diagnosis.json");
+  const coachingPath = joinPath(targetDirectory, "coaching.json");
   const summary = buildSummary(endReason, combatEventsPath, attemptSummaryPath, sourceEvents);
   const diagnosis = buildRuntimeDiagnosis(targetDirectory, combatEventsPath, attemptSummaryPath, sourceEvents, summary);
+  const coaching = coachingRuntime.buildCoaching(targetDirectory, attemptSummaryPath, diagnosisPath, summary, diagnosis, {
+    playerLevel: "novice",
+    provider: "local_rule_template",
+    sourceKind: "runtime"
+  });
   const jsonl = `${sourceEvents.map((event) => JSON.stringify(event)).join("\n")}\n`;
 
   bridge.CreateDirectoryTree(targetDirectory);
   const wroteEvents = bridge.WriteUtf8File(combatEventsPath, jsonl);
   const wroteSummary = bridge.WriteUtf8File(attemptSummaryPath, `${JSON.stringify(summary, null, 2)}\n`);
   const wroteDiagnosis = bridge.WriteUtf8File(diagnosisPath, `${JSON.stringify(diagnosis, null, 2)}\n`);
+  const wroteCoaching = bridge.WriteUtf8File(coachingPath, `${JSON.stringify(coaching, null, 2)}\n`);
 
-  if (!wroteEvents || !wroteSummary || !wroteDiagnosis) {
+  if (!wroteEvents || !wroteSummary || !wroteDiagnosis || !wroteCoaching) {
     const errorMessage = `Save failed: ${bridge.GetLastError()}`;
     showRuntimeStatus(errorMessage, false);
     console.error(`[GuideBuddy] Runtime output write failed: ${bridge.GetLastError()}`);
@@ -453,7 +522,8 @@ function writeRunFiles(targetDirectory: string, endReason: string, sourceEvents:
 
   return {
     targetDirectory,
-    diagnosis
+    diagnosis,
+    coaching
   };
 }
 
@@ -1093,12 +1163,55 @@ function runtimeMetricsFor(primaryFailure: unknown): JsonRecord[] {
 
 function formatDiagnosisSavedMessage(prefix: string, result: RuntimeWriteResult): string {
   const finalDiagnosis = result.diagnosis.final as JsonRecord | undefined;
+  const reviewCard = result.coaching.review_card as JsonRecord | undefined;
   const primaryFailure = String(finalDiagnosis?.primary_failure || "unknown");
   const confidence = Number(finalDiagnosis?.confidence || 0);
   const focus = String((finalDiagnosis?.practice_objective_seed as JsonRecord | undefined)?.focus || "");
+  const action = String(reviewCard?.next_action || "");
   const shortFocus = focus.length > 0 ? ` Focus: ${focus}.` : "";
+  const shortAction = action.length > 0 ? ` Coaching ready.` : "";
 
-  return `${prefix}: ${primaryFailure} (${Math.round(confidence * 100)}%).${shortFocus} Saved: ${result.targetDirectory}`;
+  return `${prefix}: ${primaryFailure} (${Math.round(confidence * 100)}%).${shortFocus}${shortAction}`;
+}
+
+function showCoachingCard(result: RuntimeWriteResult): void {
+  const reviewCard = result.coaching.review_card as JsonRecord | undefined;
+  if (!reviewCard) {
+    return;
+  }
+
+  const nextAction = String(reviewCard.next_action || "");
+  const successCondition = String(reviewCard.success_condition || "");
+  if (nextAction.length > 0) {
+    showRuntimeStatus(`Coaching: ${nextAction}`, true);
+  }
+
+  if (successCondition.length > 0) {
+    showRuntimeStatus(`Goal: ${successCondition}`, true);
+  }
+
+  if (typeof bridge.ShowCoachingReviewCard === "function") {
+    bridge.ShowCoachingReviewCard(
+      String(reviewCard.title || "复盘结果"),
+      String(reviewCard.diagnosis_sentence || ""),
+      String(reviewCard.evidence_line || ""),
+      nextAction,
+      successCondition,
+      String((result.coaching.drill_spec_candidate as JsonRecord | undefined)?.template_id || "")
+    );
+  }
+}
+
+function showBattleEndMenu(): void {
+  if (typeof bridge.ShowBattleEndMenu === "function") {
+    bridge.ShowBattleEndMenu(
+      "战斗结束",
+      "这一局已经记录完成。重新挑战会重置当前场景；复盘一下会自动生成诊断、导玩建议和针对性练习配置。"
+    );
+    return;
+  }
+
+  showRuntimeStatus("Battle ended. Review UI is unavailable on this bridge; restart the editor after rebuilding GuideBuddyRuntime.", false);
 }
 
 function sumNumberField(sourceEvents: CombatEvent[], fieldName: string): number {

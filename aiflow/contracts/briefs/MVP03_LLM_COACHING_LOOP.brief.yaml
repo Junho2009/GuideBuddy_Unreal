@@ -1,0 +1,58 @@
+id: MVP03_LLM_COACHING_LOOP
+baseline_id: MVP03_LLM_COACHING_LOOP@v0.1
+status: active
+source_specs:
+  - aiflow/specs/PROJECT_OVERVIEW.md
+  - aiflow/specs/GAME_PHASES.md
+  - aiflow/specs/TELEMETRY_AND_COACHING_REQUIREMENTS.md
+  - aiflow/specs/MVP03_LLM_COACHING_LOOP.md
+clarification_ref: aiflow/contracts/clarifications/MVP03_LLM_COACHING_LOOP.clarification.md
+title: LLM 导玩与练习目标闭环
+one_sentence_goal: 读取 MVP02 的 diagnosis.json 和 attempt_summary.json，生成短导玩建议、机器可读 practice_objective 与受控 Drill Spec 草案。
+human_confirmation_required: false
+scope:
+  in:
+    - 读取 attempt_summary.json 与 diagnosis.json。
+    - 构造高信号 llm_input_summary，不把完整 combat_events.jsonl 或 last_events 直接交给生成器。
+    - 生成 coaching.json。
+    - 输出单问题 post-attempt review_card，包含一句诊断、一条证据、下一局只练一个动作、置信度提示和成功条件。
+    - 输出 practice_objective。
+    - 输出 drill_spec_candidate，且只能引用白名单模板与参数名。
+    - 未配置真实 LLM API 时，使用可替换的 local_rule_template provider 通过验收。
+    - 运行时 guide_request 快照写出 coaching.json。
+  out:
+    - 不调用真实 LLM API。
+    - 不让 LLM 直接创建 Unreal 场景、Blueprint、资产或控制台命令。
+    - 不生成正式训练场；MVP03 只生成 Drill Spec candidate。
+    - 不做多轮聊天或实时战斗内提示。
+    - 不修改战斗数值、二进制 Blueprint 战斗逻辑或关卡资产。
+acceptance:
+  release_blocking:
+    - TypeScript 构建通过。
+    - coaching.json 可解析，schema_version 为 guidebuddy.coaching.v1。
+    - provider.llm_api_called=false，且 provider 可替换。
+    - llm_input_summary 存在，且不携带完整事件日志。
+    - review_card 包含中文一句诊断、证据、下一步动作与成功条件。
+    - 每次建议只聚焦一个 primary_failure。
+    - practice_objective 存在并包含可评估指标。
+    - drill_spec_candidate 只使用白名单 template_id 和 parameter names。
+    - insufficient_evidence 输入不会被强行生成战斗归因。
+    - 运行时 guide_request 写出 guide_requests/request-001/coaching.json。
+  human_smoke:
+    - 人类能从 review_card 直接看懂下一局只该练什么。
+dependencies:
+  upstream:
+    - MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1 已验收。
+    - MVP02 raw evidence 至少包含 attempt_summary.json 与 diagnosis.json。
+  downstream:
+    - MVP04_ADAPTIVE_DRILL_GENERATION 将读取 drill_spec_candidate 并做模板级验证与执行。
+    - MVP05_EVALUATION_AND_ITERATION 将读取 practice_objective 和 coaching 结果评估后续尝试。
+risks:
+  - 第一版 provider 是本地规则模板，表达质量有限，但调用边界保持可替换。
+  - 玩家水平暂时使用 player_level_assumption，尚未接长期画像。
+  - drill_spec_candidate 仍需 MVP04 侧做真实模板映射与安全验证。
+non_goals:
+  - 真实 LLM API 接入。
+  - 训练场生成。
+  - 实时语音或战斗中弹窗教练。
+  - 攻略百科或自由聊天。

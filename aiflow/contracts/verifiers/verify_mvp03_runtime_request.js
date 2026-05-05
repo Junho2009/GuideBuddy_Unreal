@@ -20,7 +20,7 @@ const runtimeEvidencePath = path.join(
   "aiflow",
   "contracts",
   "evidence",
-  "MVP02_DIAGNOSTIC_SIGNAL_LAYER",
+  "MVP03_LLM_COACHING_LOOP",
   "v0.1",
   "run-001",
   "runtime_request_verifier.json"
@@ -53,37 +53,8 @@ function readJsonl(filePath) {
     });
 }
 
-function verifyReadableZh(diagnosis) {
-  const readableZh = diagnosis.readable_zh || {};
-  const summary = readableZh.summary;
-  const practiceSuggestion = readableZh.practice_suggestion;
-  const evidence = readableZh.evidence;
-
-  if (readableZh.language !== "zh-CN") {
-    fail("Runtime guide request diagnosis is missing readable_zh.language=zh-CN.", {
-      readable_zh: readableZh
-    });
-  }
-
-  if (typeof summary !== "string" || !/[\u4e00-\u9fff]/.test(summary)) {
-    fail("Runtime guide request diagnosis is missing a Chinese readable_zh.summary.", {
-      summary
-    });
-  }
-
-  if (typeof practiceSuggestion !== "string" || !/[\u4e00-\u9fff]/.test(practiceSuggestion)) {
-    fail("Runtime guide request diagnosis is missing a Chinese readable_zh.practice_suggestion.", {
-      practice_suggestion: practiceSuggestion
-    });
-  }
-
-  if (!Array.isArray(evidence) || evidence.length === 0 || !evidence.some((line) => typeof line === "string" && /[\u4e00-\u9fff]/.test(line))) {
-    fail("Runtime guide request diagnosis is missing Chinese readable_zh.evidence lines.", {
-      evidence
-    });
-  }
-
-  return summary;
+function hasChineseText(value) {
+  return typeof value === "string" && /[\u4e00-\u9fff]/.test(value);
 }
 
 function buildSignal(event) {
@@ -157,6 +128,7 @@ function runRuntimeGuideRequestReplay(events) {
   const writtenFiles = new Map();
   let telemetryCallback;
   let battleEndMenuShown = false;
+  let coachingCardShown = false;
 
   const fakeBridge = {
     OnTelemetrySignal: {
@@ -193,7 +165,7 @@ function runRuntimeGuideRequestReplay(events) {
       battleEndMenuShown = true;
     },
     ShowCoachingReviewCard() {
-      return undefined;
+      coachingCardShown = true;
     }
   };
 
@@ -249,7 +221,7 @@ function runRuntimeGuideRequestReplay(events) {
     }
   }));
 
-  return { writtenFiles, battleEndMenuShown };
+  return { writtenFiles, battleEndMenuShown, coachingCardShown };
 }
 
 function runRuntimeEnemyDefeatReplay() {
@@ -356,6 +328,50 @@ function runRuntimeEnemyDefeatReplay() {
   return { writtenFiles, battleEndMenuShown };
 }
 
+function verifyCoaching(coaching, diagnosis) {
+  const reviewCard = coaching.review_card || {};
+  const drillSpec = coaching.drill_spec_candidate || {};
+  const provider = coaching.provider || {};
+
+  if (coaching.schema_version !== "guidebuddy.coaching.v1") {
+    fail("Runtime guide request coaching has unexpected schema_version.", {
+      schema_version: coaching.schema_version
+    });
+  }
+
+  if (provider.llm_api_called !== false) {
+    fail("Runtime guide request must not call a real LLM API in MVP03.", {
+      provider
+    });
+  }
+
+  if (coaching.final?.primary_failure !== diagnosis.final?.primary_failure) {
+    fail("Runtime coaching primary failure must follow runtime diagnosis.", {
+      coaching_final: coaching.final,
+      diagnosis_final: diagnosis.final
+    });
+  }
+
+  if (!hasChineseText(reviewCard.next_action) || !hasChineseText(reviewCard.evidence_line)) {
+    fail("Runtime coaching should include player-readable Chinese review-card content.", {
+      review_card: reviewCard
+    });
+  }
+
+  if (drillSpec.validation?.template_whitelist_passed !== true || drillSpec.validation?.parameter_whitelist_passed !== true) {
+    fail("Runtime coaching drill_spec_candidate must pass template and parameter whitelists.", {
+      drill_spec_candidate: drillSpec
+    });
+  }
+
+  return {
+    primary_failure: coaching.final.primary_failure,
+    advice_focus: coaching.final.advice_focus,
+    drill_template_id: drillSpec.template_id,
+    next_action: reviewCard.next_action
+  };
+}
+
 if (!fs.existsSync(runtimePath)) {
   fail(`Compiled runtime does not exist. Run npm run build:guidebuddy first: ${runtimePath}`);
 }
@@ -369,6 +385,8 @@ const fixtureEvents = readJsonl(fixtureEventsPath)
 const replayResult = runRuntimeGuideRequestReplay(fixtureEvents);
 const enemyDefeatReplayResult = runRuntimeEnemyDefeatReplay();
 const { writtenFiles } = replayResult;
+const coachingEntry = [...writtenFiles.entries()]
+  .find(([filePath]) => filePath.includes("/guide_requests/request-001/coaching.json"));
 const diagnosisEntry = [...writtenFiles.entries()]
   .find(([filePath]) => filePath.includes("/guide_requests/request-001/diagnosis.json"));
 const eventsEntry = [...writtenFiles.entries()]
@@ -376,8 +394,9 @@ const eventsEntry = [...writtenFiles.entries()]
 const summaryEntry = [...writtenFiles.entries()]
   .find(([filePath]) => filePath.includes("/guide_requests/request-001/attempt_summary.json"));
 
-if (!diagnosisEntry || !eventsEntry || !summaryEntry) {
-  fail("Runtime guide request did not write all expected snapshot files.", {
+if (!coachingEntry || !diagnosisEntry || !eventsEntry || !summaryEntry) {
+  fail("Runtime guide request did not write all expected MVP03 snapshot files.", {
+    wrote_coaching: Boolean(coachingEntry),
     wrote_diagnosis: Boolean(diagnosisEntry),
     wrote_events: Boolean(eventsEntry),
     wrote_summary: Boolean(summaryEntry),
@@ -406,27 +425,15 @@ if (enemyDefeatSummary.end_reason !== "enemy_defeated") {
   });
 }
 
+const coaching = JSON.parse(coachingEntry[1]);
 const diagnosis = JSON.parse(diagnosisEntry[1]);
 const snapshotEvents = eventsEntry[1].trim().split(/\r?\n/).filter(Boolean).map(JSON.parse);
 const snapshotSummary = JSON.parse(summaryEntry[1]);
+const observed = verifyCoaching(coaching, diagnosis);
 
-if (diagnosis.schema_version !== "guidebuddy.diagnosis.v1") {
-  fail("Runtime guide request diagnosis has unexpected schema_version.", {
-    schema_version: diagnosis.schema_version
-  });
+if (!replayResult.coachingCardShown) {
+  fail("Runtime replay did not show the coaching review card after review.");
 }
-
-if (!diagnosis.final || diagnosis.final.primary_failure === "insufficient_evidence") {
-  fail("Runtime guide request should diagnose the recent player damage window.", {
-    final: diagnosis.final
-  });
-}
-
-if (!Array.isArray(diagnosis.deterministic?.evidence_event_seqs) || diagnosis.deterministic.evidence_event_seqs.length === 0) {
-  fail("Runtime guide request diagnosis did not preserve evidence_event_seqs.");
-}
-
-const readableZhSummary = verifyReadableZh(diagnosis);
 
 if (!snapshotEvents.some((event) => event.event_type === "guide_request")) {
   fail("Runtime guide request snapshot did not include guide_request event.");
@@ -443,12 +450,12 @@ const stableEvidence = {
   fixture: toDisplayPath(fixtureEventsPath),
   replayed_events: fixtureEvents.length,
   snapshot_events: snapshotEvents.length,
-  expected_snapshot_suffix: "guide_requests/request-001/diagnosis.json",
+  expected_snapshot_suffix: "guide_requests/request-001/coaching.json",
   trigger: "battle_end_review_button",
   enemy_defeat_menu: true,
-  primary_failure: diagnosis.final.primary_failure,
-  confidence: diagnosis.final.confidence,
-  readable_zh_summary: readableZhSummary,
+  primary_failure: observed.primary_failure,
+  advice_focus: observed.advice_focus,
+  drill_template_id: observed.drill_template_id,
   end_reason: snapshotSummary.end_reason
 };
 
@@ -457,6 +464,6 @@ fs.writeFileSync(runtimeEvidencePath, `${JSON.stringify(stableEvidence, null, 2)
 
 console.log(JSON.stringify({
   ...stableEvidence,
-  diagnosis_path: diagnosisEntry[0],
+  coaching_path: coachingEntry[0],
   runtime_evidence: toDisplayPath(runtimeEvidencePath)
 }, null, 2));

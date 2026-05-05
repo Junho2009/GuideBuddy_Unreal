@@ -1,0 +1,50 @@
+id: MVP03_LLM_COACHING_LOOP
+baseline_id: MVP03_LLM_COACHING_LOOP@v0.1
+status: active
+brief_ref: aiflow/contracts/briefs/MVP03_LLM_COACHING_LOOP.brief.yaml
+manifest_ref: aiflow/contracts/manifests/MVP03_LLM_COACHING_LOOP.manifest.yaml
+verifier_ref: aiflow/contracts/verifiers/MVP03_LLM_COACHING_LOOP.verifier.yaml
+objective: 把 MVP02 诊断结果转成玩家下一局能执行的一条建议、可评估 practice_objective 和 MVP04 可消费的 Drill Spec candidate。
+execution_notes:
+  - 第一版使用 TypeScript local_rule_template provider，不调用真实 LLM API。
+  - 生成器必须保留未来 LLM provider 的边界：输入摘要、provider metadata、结构化输出和安全约束。
+  - 自动验收基于已归档 MVP02 evidence，不依赖打开 Unreal Editor。
+tasks:
+  - id: T01_DEFINE_COACHING_SCHEMA
+    title: 定义 coaching.json 结构
+    intent: 固定 provider、llm_input_summary、review_card、practice_objective、drill_spec_candidate 与 final 字段。
+    expected_result: MVP04/MVP05 能稳定读取结构化建议和练习目标。
+  - id: T02_IMPLEMENT_REPLACEABLE_PROVIDER
+    title: 实现可替换生成器
+    intent: 使用本地规则模板把 primary_failure 映射成短建议，同时保留未来真实 LLM 的调用边界。
+    expected_result: 不配置 API 时仍可生成可验收 coaching.json。
+  - id: T03_ADD_CLI_AND_NPM_ENTRY
+    title: 增加 coaching 命令入口
+    intent: 允许对任意 run 目录生成 coaching.json。
+    expected_result: npm run coach:mvp03 可构建并运行生成器。
+  - id: T04_WRITE_VERIFIER
+    title: 增加 MVP03 verifier
+    intent: 自动检查 schema、输入摘要、单问题复盘卡、practice_objective、Drill Spec 白名单和 insufficient evidence guard。
+    expected_result: npm run verify:mvp03 通过并归档 evidence / run record。
+  - id: T05_RUNTIME_GUIDE_REQUEST_COACHING
+    title: 接入运行时 coaching 快照
+    intent: 玩家在战斗结束界面点击“复盘一下”生成 guide_request 时，同步保存 coaching.json 并展示复盘卡。
+    expected_result: guide_requests/request-001/coaching.json 存在且与 runtime diagnosis 对齐，运行时复盘卡展示本局建议。
+scope_guard:
+  allowed:
+    - 新增 TypeScript/GuideBuddy/coaching.ts。
+    - 新增 Content/JavaScript/GuideBuddy/coaching.js 编译产物。
+    - 更新 TypeScript/GuideBuddy/main.ts 和 Content/JavaScript/GuideBuddy/main.js 以写出 coaching.json。
+    - 新增 MVP03 contracts、verifier、run 与 evidence。
+    - 更新 package.json npm scripts。
+    - 同步 aiflow 上下文与阶段状态。
+  forbidden:
+    - 调用真实 LLM API。
+    - 生成正式训练场或改动 Unreal 资产。
+    - 修改战斗数值和二进制 Blueprint 战斗逻辑。
+    - 输出自由形式 Unreal 控制命令。
+sync_requirements:
+  - 更新 aiflow/CONTEXT.md 当前执行基线。
+  - 更新 aiflow/specs/GAME_PHASES.md 的 MVP03 状态。
+  - 更新 aiflow/specs/MVP03_LLM_COACHING_LOOP.md 当前状态。
+  - 归档 verifier evidence 与 run record。

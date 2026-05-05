@@ -13,7 +13,6 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
 #include "GameplayTagContainer.h"
-#include "InputCoreTypes.h"
 #include "InputAction.h"
 #include "JsEnv.h"
 #include "Modules/ModuleManager.h"
@@ -129,7 +128,6 @@ private:
 		}
 
 		DiscoverAndPoll(false);
-		PollGuideRequestInput();
 		return true;
 	}
 
@@ -215,26 +213,6 @@ private:
 		}
 
 		PollActorState(World);
-	}
-
-	void PollGuideRequestInput()
-	{
-		UWorld* World = ActiveWorld.Get();
-		if (!World || !Bridge.IsValid())
-		{
-			return;
-		}
-
-		APlayerController* PlayerController = World->GetFirstPlayerController();
-		if (!PlayerController)
-		{
-			return;
-		}
-
-		if (PlayerController->WasInputKeyJustPressed(EKeys::F10))
-		{
-			Bridge->EmitGuideRequest(TEXT("keyboard_f10"));
-		}
 	}
 
 	void BindInputDelegates(UWorld* World)

@@ -39,6 +39,6 @@ notes:
   - MVP02 只读取 MVP01 输出，不修改原始战斗采集逻辑。
   - 自动验收复制 MVP01 accepted raw evidence 到 Saved verifier work root 后生成 diagnosis.json。
   - 证据归档包含 combat_events.jsonl、attempt_summary.json 和 diagnosis.json。
-  - 运行时指导按钮第一版绑定为 F10，后续可替换为正式 UI 按钮或手柄映射。
+  - 运行时 guide_request 现在由战斗结束界面的“复盘一下”按钮触发，后续可补手柄映射。
   - 编辑器 PIE 继续写入项目 Saved 目录；打包游戏写入可执行文件所在目录下的 GuideBuddy/Telemetry。
   - 运行时通过 on-screen debug message 显示采集启动与保存状态。

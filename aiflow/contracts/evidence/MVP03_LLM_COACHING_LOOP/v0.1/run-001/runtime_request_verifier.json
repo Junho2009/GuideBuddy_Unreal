@@ -3,11 +3,11 @@
   "fixture": "aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/raw/combat_events.jsonl",
   "replayed_events": 1301,
   "snapshot_events": 1302,
-  "expected_snapshot_suffix": "guide_requests/request-001/diagnosis.json",
+  "expected_snapshot_suffix": "guide_requests/request-001/coaching.json",
   "trigger": "battle_end_review_button",
   "enemy_defeat_menu": true,
   "primary_failure": "posture_break_into_execution",
-  "confidence": 0.88,
-  "readable_zh_summary": "已找到可诊断的失败窗口。本次主要问题：架势崩溃后被处决。诊断置信度：高（88%）。",
+  "advice_focus": "avoid_execution_setup",
+  "drill_template_id": "single_enemy_execution_response",
   "end_reason": "guide_request"
 }

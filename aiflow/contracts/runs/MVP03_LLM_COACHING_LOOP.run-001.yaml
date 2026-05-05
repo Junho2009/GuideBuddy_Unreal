@@ -1,0 +1,52 @@
+id: MVP03_LLM_COACHING_LOOP.run-001
+baseline_id: MVP03_LLM_COACHING_LOOP@v0.1
+status: accepted
+started_at: "2026-05-05T12:00:00.000Z"
+finished_at: "2026-05-05T12:00:00.000Z"
+environment: "Windows, Node.js verifier, MVP02 archived diagnosis fixture"
+verifier_ref: aiflow/contracts/verifiers/MVP03_LLM_COACHING_LOOP.verifier.yaml
+stimulus:
+  - "Copy accepted MVP02 run-001 attempt_summary.json and diagnosis.json into a verifier work directory."
+  - "Run the compiled GuideBuddy coaching runtime to generate coaching.json."
+  - "Verify player-readable review card, high-signal LLM input summary, practice_objective, and whitelist-safe drill_spec_candidate."
+  - "Run an insufficient-evidence fixture and verify the generator stays cautious."
+results:
+  - id: COACHING_INPUT_PARSE
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/
+  - id: COACHING_OUTPUT_SCHEMA
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+  - id: HIGH_SIGNAL_LLM_INPUT_SUMMARY
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+  - id: SINGLE_ISSUE_REVIEW_CARD
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+    observed:
+      primary_failure: posture_break_into_execution
+      next_action: "下一局只练一件事：看到敌人进入处决或特殊动作前兆时，先不要贪输出，立刻停手后撤或防御。"
+  - id: PRACTICE_OBJECTIVE
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+    observed:
+      practice_objective_id: practice.posture_break_into_execution.avoid_execution_setup
+  - id: DRILL_SPEC_CANDIDATE_WHITELIST
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/coaching.json
+    observed:
+      drill_template_id: single_enemy_execution_response
+  - id: INSUFFICIENT_EVIDENCE_COACHING_GUARD
+    status: pass
+    evidence: Saved/GuideBuddy/CoachingVerifier/MVP03_LLM_COACHING_LOOP/insufficient-evidence/coaching.json
+    observed:
+      status: insufficient_evidence
+      drill_template_id: telemetry_capture_repeat
+evidence:
+  raw_root: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/
+  index: aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/index.md
+  verifier_work_root: Saved/GuideBuddy/CoachingVerifier/MVP03_LLM_COACHING_LOOP/
+notes:
+  - "MVP03 keeps the LLM boundary replaceable by using a local deterministic provider for accepted verification."
+  - "The accepted fixture inherits MVP02 posture_break_into_execution diagnosis and turns it into one short player action."
+  - "No Unreal asset, Blueprint, console command, or free-form scene instruction is emitted by the Drill Spec candidate."

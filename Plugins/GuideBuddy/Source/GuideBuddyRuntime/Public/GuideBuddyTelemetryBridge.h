@@ -8,6 +8,7 @@
 
 class AActor;
 class FJsonObject;
+class SWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGuideBuddyTelemetrySignal, FString, SignalJson);
 
@@ -58,6 +59,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GuideBuddy|Telemetry")
 	void ShowRuntimeStatusMessage(const FString& Message, bool bSuccess);
 
+	UFUNCTION(BlueprintCallable, Category = "GuideBuddy|Telemetry")
+	void ShowBattleEndMenu(const FString& Title, const FString& Message);
+
+	UFUNCTION(BlueprintCallable, Category = "GuideBuddy|Telemetry")
+	void ShowCoachingReviewCard(
+		const FString& Title,
+		const FString& Diagnosis,
+		const FString& Evidence,
+		const FString& NextAction,
+		const FString& SuccessCondition,
+		const FString& DrillTemplateId);
+
 	UFUNCTION()
 	void HandleBufferedInput(UInputAction* FiredBufferedInput);
 
@@ -68,6 +81,9 @@ public:
 	void HandleInputTriggerEvent(FInputActionInstance InputActionInstance);
 
 private:
+	void RemoveBattleEndMenu();
+	void RestartChallenge();
+	void RequestBattleEndReview();
 	bool ShouldEmitInputSignal(const FString& InputKey, double NowSeconds);
 	void EmitInputSignal(const FString& Source, UInputAction* InputAction, const FString& TriggerEvent, const FString& WatchListTag);
 	FString SerializeJsonObject(const TSharedPtr<FJsonObject>& JsonObject) const;
@@ -77,4 +93,5 @@ private:
 	double SessionStartPlatformSeconds = 0.0;
 	FString LastError;
 	TMap<FString, double> LastInputEmitSecondsByKey;
+	TSharedPtr<SWidget> BattleEndWidget;
 };

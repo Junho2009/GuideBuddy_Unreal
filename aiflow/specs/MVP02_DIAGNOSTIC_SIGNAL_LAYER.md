@@ -92,7 +92,7 @@
 - Accepted Run：`aiflow/contracts/runs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001.yaml`
 - Evidence Index：`aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/index.md`
 - 实现入口：`TypeScript/GuideBuddy/diagnosis.ts`
-- 运行时按钮：`F10` 触发 `guide_request`
+- 运行时按钮：战斗结束界面“复盘一下”触发 `guide_request`
 - 运行时保存位置：编辑器 PIE 使用 `Saved/GuideBuddy/Telemetry/`，打包游戏使用 `<game-exe-directory>/GuideBuddy/Telemetry/`
 - 自动验收：`npm.cmd run verify:mvp02`
 

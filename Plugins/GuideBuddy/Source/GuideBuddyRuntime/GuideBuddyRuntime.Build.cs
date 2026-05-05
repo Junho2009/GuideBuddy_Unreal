@@ -19,6 +19,8 @@ public class GuideBuddyRuntime : ModuleRules
 				"Json",
 				"JsEnv",
 				"Puerts",
+				"Slate",
+				"SlateCore",
 				"TempestCombatFramework",
 				"TempestCore"
 			});
