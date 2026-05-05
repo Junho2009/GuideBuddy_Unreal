@@ -21,7 +21,8 @@
 - `aiflow/specs/MVP01_COMBAT_TELEMETRY_FOUNDATION.md`
 - `aiflow/specs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.md`
 - `aiflow/specs/MVP03_LLM_COACHING_LOOP.md`
-- `aiflow/specs/MVP04_EVALUATION_AND_ITERATION.md`
+- `aiflow/specs/MVP04_ADAPTIVE_DRILL_GENERATION.md`
+- `aiflow/specs/MVP05_EVALUATION_AND_ITERATION.md`
 - `aiflow/specs/_TEMPLATE_PHASE_PROSE.md`
 
 ## 合同层

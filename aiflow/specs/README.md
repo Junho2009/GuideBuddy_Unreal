@@ -8,11 +8,12 @@
 
 - `PROJECT_OVERVIEW.md`：项目总览与 MVP 口径
 - `GAME_PHASES.md`：阶段路线图与当前状态
-- `TELEMETRY_AND_COACHING_REQUIREMENTS.md`：贯穿四个阶段的数据、诊断、导玩与评估要求
+- `TELEMETRY_AND_COACHING_REQUIREMENTS.md`：贯穿各阶段的数据、诊断、导玩、练习目标与评估要求
 - `MVP01_COMBAT_TELEMETRY_FOUNDATION.md`：语义化战斗遥测基础
 - `MVP02_DIAGNOSTIC_SIGNAL_LAYER.md`：诊断信号层
 - `MVP03_LLM_COACHING_LOOP.md`：LLM 导玩闭环
-- `MVP04_EVALUATION_AND_ITERATION.md`：指导效果评估与迭代
+- `MVP04_ADAPTIVE_DRILL_GENERATION.md`：自适应针对性练习场生成
+- `MVP05_EVALUATION_AND_ITERATION.md`：指导与练习效果评估迭代
 - `_TEMPLATE_PHASE_PROSE.md`：后续 phase prose 模板
 
 ## 写作边界

@@ -2,11 +2,15 @@
 
 ## 文档目的
 
-本文规定 GuideBuddy MVP 四个阶段共同遵守的数据与导玩要求。
+本文规定 GuideBuddy MVP 各阶段共同遵守的数据、诊断、导玩、练习目标与训练场生成要求。
 
 目标不是采集一切，而是让系统能回答一个核心问题：
 
 **玩家这一次为什么失败，下一次最应该改哪一个动作。**
+
+针对性练习场扩展还需要回答：
+
+**系统应该给玩家搭一个怎样的最小练习环境，专门练这个动作。**
 
 ## 数据采集原则
 
@@ -44,7 +48,9 @@ Saved/GuideBuddy/Telemetry/<run-id>/
 - `attempt_summary.json`：本次尝试摘要，供诊断层和 LLM 前处理读取。
 - `diagnosis.json`：诊断结果，从 MVP02 起生成。
 - `coaching.json`：导玩建议，从 MVP03 起生成。
-- `evaluation.json`：指导效果评估，从 MVP04 起生成。
+- `drill_spec.json`：结构化练习场配置，从 MVP03 起可生成草案，从 MVP04 起由 UE 侧执行。
+- `drill_session.json`：实际生成或运行的练习场记录，从 MVP04 起生成。
+- `evaluation.json`：指导与练习效果评估，从 MVP05 起生成。
 
 ## 诊断优先级
 
@@ -59,6 +65,24 @@ MVP 只优先解决少数能形成明显教学价值的问题：
 
 其它问题可以记录为 `unknown` 或 `insufficient_evidence`，不要为了显得聪明而强行归因。
 
+## 诊断层 LLM 复核边界
+
+MVP02 的主诊断路径应保持确定性、可复现、可由 verifier 检查。可以预留可选 LLM review，但本阶段最低闭环暂不要求接入真实 LLM API。
+
+可选 LLM review 只能做：
+
+- 对确定性候选诊断排序。
+- 说明哪个练习方向对当前玩家更值得优先尝试。
+- 标记证据不足或不确定点。
+- 生成面向后续导玩的补充说明。
+
+可选 LLM review 不能做：
+
+- 绕过确定性候选，凭空创建主失败标签。
+- 直接覆盖 `diagnosis.primary_failure`。
+- 直接消费未筛选的完整原始事件流。
+- 让 MVP02 的自动验收依赖外部 API 可用性。
+
 ## LLM 输入要求
 
 LLM 不应直接消费完整原始事件流。
@@ -71,6 +95,7 @@ LLM 不应直接消费完整原始事件流。
 - 少量关键证据事件
 - 目标问题的指标
 - 本次只希望玩家改善的一个动作
+- 诊断层给出的 `practice_objective_seed`
 
 ## 导玩输出要求
 
@@ -83,8 +108,26 @@ LLM 不应直接消费完整原始事件流。
 - 下一局只练一个动作
 - 指导强度或玩家水平
 - 诊断信心
+- 机器可读 `practice_objective`
+- 可选的 `drill_spec_candidate`
 
 MVP 默认采用死亡后卡片或尝试后复盘，不在战斗中频繁打断玩家。
+
+## Drill Spec 要求
+
+LLM 可以提出 Drill Spec 草案，但不能直接自由创建 Unreal 资产、Blueprint 或场景逻辑。Drill Spec 必须只包含 UE 侧白名单允许的模板和参数。
+
+最低包含：
+
+- `practice_objective_id`：本次只练的目标。
+- `failure_label`：来自诊断层的主要失败标签。
+- `arena_template`：白名单训练场模板。
+- `enemy_archetype`：白名单敌人类型。
+- `pattern_weights`：敌人招式或行为权重。
+- `success_metrics`：可由遥测评估的成功条件。
+- `constraints`：敌人数、时长、环境干扰、难度上限等安全约束。
+
+Drill Spec 不能包含自由脚本、任意文件路径、任意 Blueprint 类名、任意控制台命令或无法由 verifier 检查的开放式指令。
 
 ## 评估要求
 

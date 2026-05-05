@@ -15,9 +15,9 @@ GuideBuddy 的核心闭环是：
 玩家战斗尝试
   -> 语义化战斗事件
   -> 诊断信号
-  -> LLM 导玩建议
-  -> 下一次尝试
-  -> 指导效果评估
+  -> LLM 导玩建议与最小练习目标
+  -> 下一次尝试或针对性练习场
+  -> 指导 / 练习效果评估
 ```
 
 ## 当前原则
@@ -25,6 +25,7 @@ GuideBuddy 的核心闭环是：
 - 游戏侧记录事实。
 - 诊断层做确定性归因。
 - LLM 负责教学表达，不直接替代诊断层。
+- LLM 可以生成结构化练习目标和 Drill Spec，但不直接自由创建 Unreal 场景；UE 侧只执行白名单模板和受控参数。
 - MVP 先做遥测、诊断、导玩和评估闭环，不先做完整 Blueprint-to-code。
 - 新增可分析逻辑、遥测、诊断、数据导出和导玩编排优先使用 Puerts + TypeScript，以便 AI 后续阅读、修改、diff 和快速迭代。
 - C++ 主要作为必要桥接层：用于启动 Puerts 环境、暴露 TypeScript 无法直接访问的引擎 / TempestCombatFramework delegate、处理性能敏感或必须 native 的边界。
@@ -36,9 +37,10 @@ GuideBuddy 的核心闭环是：
 |---|---|---|
 | `MVP00_CONTEXT_ALIGNMENT` | 已完成 | 建立 GuideBuddy MVP 的轻量 aiflow 真源 |
 | `MVP01_COMBAT_TELEMETRY_FOUNDATION` | 已验收 | 在场景中采集语义化战斗事件 |
-| `MVP02_DIAGNOSTIC_SIGNAL_LAYER` | 未开始 | 把事件流转成死亡原因与操作诊断 |
-| `MVP03_LLM_COACHING_LOOP` | 未开始 | 基于诊断生成恰当导玩建议 |
-| `MVP04_EVALUATION_AND_ITERATION` | 未开始 | 判断指导是否改善玩家表现 |
+| `MVP02_DIAGNOSTIC_SIGNAL_LAYER` | 未开始 | 把事件流转成死亡原因与操作诊断，并预留可选 LLM 复核 |
+| `MVP03_LLM_COACHING_LOOP` | 未开始 | 基于诊断生成导玩建议、最小练习目标和 Drill Spec 草案 |
+| `MVP04_ADAPTIVE_DRILL_GENERATION` | 未开始 | 基于 Drill Spec 生成受控的针对性练习场 |
+| `MVP05_EVALUATION_AND_ITERATION` | 未开始 | 判断指导或练习是否改善玩家表现 |
 
 ## 默认执行基线
 
