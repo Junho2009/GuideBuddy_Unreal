@@ -1,0 +1,53 @@
+id: MVP01_COMBAT_TELEMETRY_FOUNDATION.run-002
+baseline_id: MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1
+status: accepted
+started_at: "2026-05-05T07:17:06.647Z"
+finished_at: "2026-05-05T07:17:48.262Z"
+environment: "Windows, Unreal Engine 5.7 PIE telemetry output, Node.js verifier"
+verifier_ref: aiflow/contracts/verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml
+stimulus:
+  - "Run SampleDemoShowcaseMap in PIE and complete a short real combat attempt."
+  - "Exit PIE so GuideBuddy writes telemetry files."
+  - "Run npm run verify:mvp01 against the latest telemetry output."
+results:
+  - id: TELEMETRY_OUTPUT_EXISTS
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/raw/
+  - id: TELEMETRY_JSON_PARSE
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/raw/
+  - id: MINIMUM_EVENT_COVERAGE
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/raw/combat_events.jsonl
+    observed:
+      events: 1399
+      event_types:
+        - "attempt_start"
+        - "state_activated"
+        - "player_input"
+        - "ability_activated"
+        - "combat_status_changed"
+        - "attribute_changed"
+        - "damage"
+        - "attempt_end"
+      player_events: 1325
+      enemy_events: 70
+      damage_events: 2
+  - id: ATTEMPT_SUMMARY_CONTENT
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/raw/attempt_summary.json
+    observed:
+      end_reason: world_cleanup
+      duration_seconds: 41.80322630703449
+      hits_taken: 1
+      total_damage_taken: 50
+      hits_dealt: 1
+      total_damage_dealt: 10
+evidence:
+  source_root: Saved/GuideBuddy/Telemetry/20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178/
+  raw_root: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/raw/
+  index: aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/index.md
+notes:
+  - "This run is a real PIE gameplay smoke, not synthetic telemetry injection."
+  - "The accepted run includes player input, enemy events, combat status changes, health attribute changes, and damage."
+  - "Raw evidence is archived under aiflow/contracts/evidence rather than versioning the Saved runtime directory directly."
