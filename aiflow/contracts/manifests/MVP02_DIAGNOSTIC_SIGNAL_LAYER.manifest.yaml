@@ -1,0 +1,44 @@
+id: MVP02_DIAGNOSTIC_SIGNAL_LAYER
+baseline_id: MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1
+status: active
+brief_ref: aiflow/contracts/briefs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/MVP02_DIAGNOSTIC_SIGNAL_LAYER.taskpack.yaml
+verifier_ref: aiflow/contracts/verifiers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.verifier.yaml
+project:
+  uproject: TCF_Sample.uproject
+  engine: Unreal Engine 5.7
+  map: /Game/TCF_SampleDemo/SampleDemoShowcaseMap.SampleDemoShowcaseMap
+candidate_source_scopes:
+  - TypeScript/GuideBuddy/diagnosis.ts
+  - TypeScript/GuideBuddy/main.ts
+  - Content/JavaScript/GuideBuddy/diagnosis.js
+  - Content/JavaScript/GuideBuddy/main.js
+  - Plugins/GuideBuddy/Source/GuideBuddyRuntime/
+  - aiflow/contracts/verifiers/verify_mvp02_diagnosis.js
+  - aiflow/contracts/verifiers/verify_mvp02_runtime_request.js
+  - package.json
+input_scopes:
+  - Saved/GuideBuddy/Telemetry/<run-id>/combat_events.jsonl
+  - Saved/GuideBuddy/Telemetry/<run-id>/attempt_summary.json
+  - aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/raw/
+expected_outputs:
+  editor_raw_root: Saved/GuideBuddy/Telemetry/<run-id>/
+  packaged_raw_root: <game-exe-directory>/GuideBuddy/Telemetry/<run-id>/
+  files:
+    - Saved/GuideBuddy/Telemetry/<run-id>/diagnosis.json
+    - Saved/GuideBuddy/Telemetry/<run-id>/guide_requests/request-001/combat_events.jsonl
+    - Saved/GuideBuddy/Telemetry/<run-id>/guide_requests/request-001/attempt_summary.json
+    - Saved/GuideBuddy/Telemetry/<run-id>/guide_requests/request-001/diagnosis.json
+  verifier_work_root: Saved/GuideBuddy/DiagnosticsVerifier/MVP02_DIAGNOSTIC_SIGNAL_LAYER/
+  contract_evidence_root: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/
+contract_evidence:
+  run_record: aiflow/contracts/runs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001.yaml
+  evidence_index: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/index.md
+  runtime_request_verifier: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/runtime_request_verifier.json
+notes:
+  - MVP02 只读取 MVP01 输出，不修改原始战斗采集逻辑。
+  - 自动验收复制 MVP01 accepted raw evidence 到 Saved verifier work root 后生成 diagnosis.json。
+  - 证据归档包含 combat_events.jsonl、attempt_summary.json 和 diagnosis.json。
+  - 运行时指导按钮第一版绑定为 F10，后续可替换为正式 UI 按钮或手柄映射。
+  - 编辑器 PIE 继续写入项目 Saved 目录；打包游戏写入可执行文件所在目录下的 GuideBuddy/Telemetry。
+  - 运行时通过 on-screen debug message 显示采集启动与保存状态。

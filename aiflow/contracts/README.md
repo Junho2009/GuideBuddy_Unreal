@@ -6,8 +6,9 @@
 
 ## 当前状态
 
-- 当前保留 GuideBuddy MVP 相关的合同结构、共享约定、模板和 MVP01 合同。
+- 当前保留 GuideBuddy MVP 相关的合同结构、共享约定、模板、MVP01 合同和 MVP02 合同。
 - `MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1` 已通过真实 PIE gameplay 验收，结果见 `ledgers/MVP01_COMBAT_TELEMETRY_FOUNDATION.result.md`。
+- `MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1` 已通过自动诊断验收，结果见 `ledgers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.result.md`。
 
 ## 常用目录
 
@@ -46,5 +47,13 @@
 - `runs/MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001.yaml`
 - `evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-001/index.md`
 - `ledgers/MVP01_COMBAT_TELEMETRY_FOUNDATION.result.md`
+- `clarifications/MVP02_DIAGNOSTIC_SIGNAL_LAYER.clarification.md`
+- `briefs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.brief.yaml`
+- `taskpacks/MVP02_DIAGNOSTIC_SIGNAL_LAYER.taskpack.yaml`
+- `manifests/MVP02_DIAGNOSTIC_SIGNAL_LAYER.manifest.yaml`
+- `verifiers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.verifier.yaml`
+- `runs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001.yaml`
+- `evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/index.md`
+- `ledgers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.result.md`
 
-下一步建议为 `MVP02_DIAGNOSTIC_SIGNAL_LAYER` 编译执行合同。
+下一步建议为 `MVP03_LLM_COACHING_LOOP` 编译执行合同。

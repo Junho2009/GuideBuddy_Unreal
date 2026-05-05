@@ -1,0 +1,83 @@
+id: MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001
+baseline_id: MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1
+status: accepted
+started_at: "2026-05-05T10:23:45.401Z"
+finished_at: "2026-05-05T10:23:45.401Z"
+environment: "Windows, Node.js verifier, MVP01 archived gameplay fixture"
+verifier_ref: aiflow/contracts/verifiers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.verifier.yaml
+stimulus:
+  - "Copy accepted MVP01 run-002 raw gameplay evidence into a verifier work directory."
+  - "Run the compiled GuideBuddy diagnosis runtime to generate diagnosis.json."
+  - "Verify deterministic attribution, evidence preservation, practice_objective_seed, readable_zh, and disabled llm_review placeholder."
+  - "Run an insufficient-evidence fixture and verify it remains insufficient_evidence."
+results:
+  - id: DIAGNOSIS_INPUT_PARSE
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/
+  - id: DIAGNOSIS_OUTPUT_SCHEMA
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/diagnosis.json
+  - id: DETERMINISTIC_FATAL_ATTRIBUTION
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/diagnosis.json
+    observed:
+      primary_failure: posture_break_into_execution
+      confidence: 0.88
+      evidence_event_seqs:
+        - "1257"
+        - "1258"
+        - "1259"
+        - "1260"
+        - "1262"
+        - "1263"
+        - "1264"
+        - "1265"
+        - "1266"
+        - "1268"
+        - "1269"
+        - "1270"
+        - "1271"
+        - "1272"
+        - "1286"
+        - "1294"
+        - "1295"
+        - "1298"
+        - "1299"
+        - "1300"
+        - "1301"
+        - "1302"
+        - "1304"
+        - "1305"
+        - "1306"
+        - "1307"
+        - "1308"
+        - "1311"
+        - "1312"
+        - "1313"
+        - "1314"
+        - "1315"
+  - id: PRACTICE_OBJECTIVE_SEED
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/diagnosis.json
+    observed:
+      practice_focus: avoid_posture_break_into_execution
+  - id: READABLE_ZH_SUMMARY
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/diagnosis.json
+    observed:
+      summary: "已找到可诊断的失败窗口。本次主要问题：架势崩溃后被处决。诊断置信度：高（88%）。"
+  - id: INSUFFICIENT_EVIDENCE_GUARD
+    status: pass
+    evidence: Saved/GuideBuddy/DiagnosticsVerifier/MVP02_DIAGNOSTIC_SIGNAL_LAYER/insufficient-evidence/diagnosis.json
+    observed:
+      primary_failure: insufficient_evidence
+      status: insufficient_evidence
+      readable_zh_summary: "未找到明确死亡或失败窗口。本次主要问题：证据不足，暂不强行归因。诊断置信度：无（0%）。"
+evidence:
+  raw_root: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/
+  index: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/index.md
+  verifier_work_root: Saved/GuideBuddy/DiagnosticsVerifier/MVP02_DIAGNOSTIC_SIGNAL_LAYER/
+notes:
+  - "The accepted MVP02 run uses a copied MVP01 gameplay fixture so the verifier is deterministic and does not require opening Unreal Editor."
+  - "The fixture contains State.Death followed by enemy execution signals, allowing MVP02 to verify fatal attribution and evidence preservation."
+  - "No real LLM API is used in MVP02."

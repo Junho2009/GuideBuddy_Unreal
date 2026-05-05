@@ -1,0 +1,98 @@
+id: MVP02_DIAGNOSTIC_SIGNAL_LAYER
+baseline_id: MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1
+status: active
+brief_ref: aiflow/contracts/briefs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/MVP02_DIAGNOSTIC_SIGNAL_LAYER.taskpack.yaml
+manifest_ref: aiflow/contracts/manifests/MVP02_DIAGNOSTIC_SIGNAL_LAYER.manifest.yaml
+release_blocking_checks:
+  - id: SPEC_SYNC
+    title: specs 与 contracts 目标一致
+    automation_level: hybrid
+    blocking: true
+    stimulus: 读取 CONTEXT、GAME_PHASES、MVP02 prose 与本合同组。
+    observe: 目标、范围、非目标和验收口径是否一致。
+    oracle: 不存在互相冲突的 MVP02 范围或状态描述。
+    evidence: aiflow/contracts/runs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001.yaml
+    on_fail: 先同步 specs 或合同，不进入验收放行。
+  - id: DIAGNOSIS_INPUT_PARSE
+    title: 输入事件与摘要可解析
+    automation_level: auto
+    blocking: true
+    stimulus: 读取复制后的 MVP01 raw fixture。
+    observe: combat_events.jsonl 与 attempt_summary.json。
+    oracle: JSON / JSONL 可解析，并能提供诊断输入。
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/
+    on_fail: 修复输入读取或 fixture 复制逻辑。
+  - id: DIAGNOSIS_OUTPUT_SCHEMA
+    title: diagnosis.json schema 完整
+    automation_level: auto
+    blocking: true
+    stimulus: 运行 TypeScript 诊断器。
+    observe: diagnosis.json。
+    oracle: 包含 deterministic、final、practice_objective_seed、llm_review。
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/diagnosis.json
+    on_fail: 修复诊断输出结构。
+  - id: DETERMINISTIC_FATAL_ATTRIBUTION
+    title: 确定性死亡归因
+    automation_level: auto
+    blocking: true
+    stimulus: 使用包含 State.Death 与 enemy execution 的 MVP01 gameplay fixture。
+    observe: final.primary_failure、confidence、evidence_event_seqs。
+    oracle: primary_failure 为 posture_break_into_execution，且证据包含 State.Death 和 execution 事件。
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/diagnosis.json
+    on_fail: 修复终止事件、处决事件或证据窗口选择逻辑。
+  - id: PRACTICE_OBJECTIVE_SEED
+    title: 练习目标种子可供 MVP03 消费
+    automation_level: auto
+    blocking: true
+    stimulus: 读取 diagnosis.json final.practice_objective_seed。
+    observe: focus、target_error、evidence_window、measurable_metrics。
+    oracle: 字段存在且机器可读。
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/raw/diagnosis.json
+    on_fail: 补齐 seed 字段。
+  - id: INSUFFICIENT_EVIDENCE_GUARD
+    title: 证据不足时不强行归因
+    automation_level: auto
+    blocking: true
+    stimulus: 使用无死亡、无伤害的最小 fixture。
+    observe: final.primary_failure 与 final.status。
+    oracle: 均为 insufficient_evidence。
+    evidence: Saved/GuideBuddy/DiagnosticsVerifier/MVP02_DIAGNOSTIC_SIGNAL_LAYER/insufficient-evidence/diagnosis.json
+    on_fail: 修复 fallback 规则，避免臆测归因。
+  - id: RUNTIME_GUIDE_REQUEST_SNAPSHOT
+    title: 运行时指导按钮生成诊断快照
+    automation_level: auto
+    blocking: true
+    stimulus: 使用 fake GuideBuddyBridge 重放真实 gameplay 片段并发送 guide_request 信号。
+    observe: guide_requests/request-001/ 下的 combat_events.jsonl、attempt_summary.json 与 diagnosis.json。
+    oracle: 三个文件均被写出，summary.end_reason 为 guide_request，diagnosis 不为 insufficient_evidence。
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/runtime_request_verifier.json
+    on_fail: 修复 C++ guide_request 发射或 TypeScript 快照写出逻辑。
+  - id: UNREAL_EDITOR_TARGET_BUILD
+    title: UnrealEditor 目标编译通过
+    automation_level: auto
+    blocking: true
+    stimulus: 运行 UnrealBuildTool UnrealEditor Win64 Development。
+    observe: GuideBuddyRuntime C++ 模块编译与链接结果。
+    oracle: Result: Succeeded。
+    evidence: C:/Users/Administrator/AppData/Local/UnrealBuildTool/Log.txt
+    on_fail: 修复 C++ 编译错误或关闭 Live Coding 后重试。
+manual_smoke_checks:
+  - id: HUMAN_READABLE_DIAGNOSIS
+    title: 人类能读懂主诊断与证据
+    automation_level: manual
+    blocking: false
+    stimulus: 人类阅读 diagnosis.json。
+    observe: 是否能看懂主诊断、证据窗口和下一步练习焦点。
+    oracle: 读者能说出本次为什么失败，以及后续应优先练什么。
+    evidence: aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/index.md
+    on_fail: 增加显示名映射或更短摘要，不阻塞自动验收。
+  - id: IN_GAME_SAVE_STATUS
+    title: 游戏中能看到保存状态
+    automation_level: manual
+    blocking: false
+    stimulus: 在 PIE 或打包游戏中开始战斗并按 F10。
+    observe: 屏幕左上角 GuideBuddy 状态提示。
+    oracle: 能看到采集启动提示和 Diagnosis saved / Save failed 提示。
+    evidence: 人工验收截图或现场观察。
+    on_fail: 调整 on-screen message 时长或改为正式 UI widget。

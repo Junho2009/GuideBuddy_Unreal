@@ -23,6 +23,7 @@ public:
 	void Initialize(UWorld* InWorld);
 	void EmitBridgeStarted();
 	void EmitBridgeShutdown(const FString& Reason);
+	void EmitGuideRequest(const FString& Source);
 	void EmitSignal(const FString& SignalType, const TSharedPtr<FJsonObject>& Payload);
 
 	TSharedPtr<FJsonObject> BuildActorObject(const AActor* Actor) const;
@@ -35,6 +36,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GuideBuddy|Telemetry")
 	FString GetTelemetryRootDirectory() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GuideBuddy|Telemetry")
+	FString GetTelemetryStorageDescription() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GuideBuddy|Telemetry")
 	FString GetProjectSavedDirectory() const;
@@ -50,6 +54,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GuideBuddy|Telemetry")
 	FString GetLastError() const { return LastError; }
+
+	UFUNCTION(BlueprintCallable, Category = "GuideBuddy|Telemetry")
+	void ShowRuntimeStatusMessage(const FString& Message, bool bSuccess);
 
 	UFUNCTION()
 	void HandleBufferedInput(UInputAction* FiredBufferedInput);

@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "fixture": "aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/raw/combat_events.jsonl",
+  "replayed_events": 545,
+  "snapshot_events": 547,
+  "expected_snapshot_suffix": "guide_requests/request-001/diagnosis.json",
+  "primary_failure": "fatal_attack_attribution",
+  "confidence": 0.64,
+  "readable_zh_summary": "已找到可诊断的失败窗口。本次主要问题：致命攻击来源归因。诊断置信度：中（64%）。",
+  "end_reason": "guide_request"
+}

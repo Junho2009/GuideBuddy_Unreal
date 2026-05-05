@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "build:guidebuddy": "tsc -p tsconfig.json",
+    "diagnose:mvp02": "npm run build:guidebuddy && node Content/JavaScript/GuideBuddy/diagnosis.js",
     "verify:mvp01": "node aiflow/contracts/verifiers/verify_mvp01_telemetry.js",
-    "verify:mvp01:death": "node aiflow/contracts/verifiers/verify_mvp01_death_regression.js"
+    "verify:mvp01:death": "node aiflow/contracts/verifiers/verify_mvp01_death_regression.js",
+    "verify:mvp02": "npm run build:guidebuddy && node aiflow/contracts/verifiers/verify_mvp02_diagnosis.js && node aiflow/contracts/verifiers/verify_mvp02_runtime_request.js",
+    "verify:mvp02:runtime": "npm run build:guidebuddy && node aiflow/contracts/verifiers/verify_mvp02_runtime_request.js"
   },
   "devDependencies": {
     "typescript": "4.7.4"

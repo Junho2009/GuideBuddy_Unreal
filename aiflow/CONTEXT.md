@@ -37,23 +37,23 @@ GuideBuddy 的核心闭环是：
 |---|---|---|
 | `MVP00_CONTEXT_ALIGNMENT` | 已完成 | 建立 GuideBuddy MVP 的轻量 aiflow 真源 |
 | `MVP01_COMBAT_TELEMETRY_FOUNDATION` | 已验收 | 在场景中采集语义化战斗事件 |
-| `MVP02_DIAGNOSTIC_SIGNAL_LAYER` | 未开始 | 把事件流转成死亡原因与操作诊断，并预留可选 LLM 复核 |
+| `MVP02_DIAGNOSTIC_SIGNAL_LAYER` | 已验收 | 把事件流转成死亡原因与操作诊断，并预留可选 LLM 复核 |
 | `MVP03_LLM_COACHING_LOOP` | 未开始 | 基于诊断生成导玩建议、最小练习目标和 Drill Spec 草案 |
 | `MVP04_ADAPTIVE_DRILL_GENERATION` | 未开始 | 基于 Drill Spec 生成受控的针对性练习场 |
 | `MVP05_EVALUATION_AND_ITERATION` | 未开始 | 判断指导或练习是否改善玩家表现 |
 
 ## 默认执行基线
 
-- Latest Accepted Baseline：`MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1`
-- Current Execution Baseline：待编译 `MVP02_DIAGNOSTIC_SIGNAL_LAYER`
+- Latest Accepted Baseline：`MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1`
+- Current Execution Baseline：待编译 `MVP03_LLM_COACHING_LOOP`
 - 候选草案：无。
-- Current Brief：`aiflow/contracts/briefs/MVP01_COMBAT_TELEMETRY_FOUNDATION.brief.yaml`，状态为 `active`。
-- Current Task Pack：`aiflow/contracts/taskpacks/MVP01_COMBAT_TELEMETRY_FOUNDATION.taskpack.yaml`，状态为 `active`。
-- Current Asset Manifest：`aiflow/contracts/manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml`，状态为 `active`。
-- Current Verifier：`aiflow/contracts/verifiers/MVP01_COMBAT_TELEMETRY_FOUNDATION.verifier.yaml`，状态为 `active`。
-- Latest Ledger：`aiflow/contracts/ledgers/MVP01_COMBAT_TELEMETRY_FOUNDATION.result.md`
+- Current Brief：`aiflow/contracts/briefs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.brief.yaml`，状态为 `active`。
+- Current Task Pack：`aiflow/contracts/taskpacks/MVP02_DIAGNOSTIC_SIGNAL_LAYER.taskpack.yaml`，状态为 `active`。
+- Current Asset Manifest：`aiflow/contracts/manifests/MVP02_DIAGNOSTIC_SIGNAL_LAYER.manifest.yaml`，状态为 `active`。
+- Current Verifier：`aiflow/contracts/verifiers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.verifier.yaml`，状态为 `active`。
+- Latest Ledger：`aiflow/contracts/ledgers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.result.md`
 
-MVP01 已通过真实 PIE gameplay 验收。当前实现默认不修改战斗数值、不改二进制 Blueprint 战斗逻辑，不实现 UI / LLM / diagnosis。
+MVP01 已通过真实 PIE gameplay 验收；MVP02 已基于 MVP01 归档 gameplay fixture 通过自动诊断验收。当前实现默认不修改战斗数值、不改二进制 Blueprint 战斗逻辑，不实现 UI / LLM API。
 
 ## 当前战斗入口
 
@@ -63,6 +63,7 @@ MVP01 已通过真实 PIE gameplay 验收。当前实现默认不修改战斗数
 - `aiflow/context/mvp01-implementation-handoff.md`
 - `aiflow/specs/MVP01_COMBAT_TELEMETRY_FOUNDATION.md`
 - `aiflow/contracts/manifests/MVP01_COMBAT_TELEMETRY_FOUNDATION.manifest.yaml`
+- `aiflow/contracts/manifests/MVP02_DIAGNOSTIC_SIGNAL_LAYER.manifest.yaml`
 
 ## 当前交接状态
 
@@ -70,6 +71,7 @@ MVP01 已通过真实 PIE gameplay 验收。当前实现默认不修改战斗数
 - 2026-05-04：补齐 Puerts `nodejs_16` 后，UE `UnrealEditor` 目标编译通过。
 - 2026-05-04：真实 PIE gameplay run `20260504022450_UEDPIE_0_SampleDemoShowcaseMap_861420` 通过 `npm.cmd run verify:mvp01`。
 - 验收证据见 `aiflow/contracts/runs/MVP01_COMBAT_TELEMETRY_FOUNDATION.run-001.yaml`。
+- 2026-05-05：MVP02 诊断信号层通过 `npm.cmd run verify:mvp02`，基于 MVP01 归档 gameplay fixture 生成 `diagnosis.json`，accepted run 为 `aiflow/contracts/runs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001.yaml`。
 
 ## 同步要求
 

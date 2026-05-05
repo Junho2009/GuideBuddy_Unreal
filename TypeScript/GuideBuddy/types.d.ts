@@ -25,4 +25,6 @@ interface GuideBuddyBridge {
   CreateDirectoryTree(absolutePath: string): boolean;
   WriteUtf8File(absolutePath: string, contents: string): boolean;
   GetLastError(): string;
+  GetTelemetryStorageDescription?(): string;
+  ShowRuntimeStatusMessage?(message: string, isSuccess: boolean): void;
 }

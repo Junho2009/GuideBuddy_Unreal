@@ -21,6 +21,9 @@
 - 能在证据不足时输出 `unknown` 或 `insufficient_evidence`。
 - 能输出 `practice_objective_seed`，为后续 LLM 选择最小练习目标提供机器可读输入。
 - 为可选 LLM review 预留输入摘要与输出字段，但本阶段最低实现不接入真实 LLM API。
+- 能在运行时通过玩家指导按钮触发当前战斗片段诊断快照。
+- 能在游戏中显示数据采集与诊断保存状态。
+- 打包游戏中诊断数据默认保存在游戏 exe 所在目录的 `GuideBuddy/Telemetry/` 子目录。
 
 ## 推荐扩展诊断
 
@@ -71,6 +74,8 @@
 - 输出包含必需字段。
 - 至少一个预设样例能得到预期诊断标签。
 - 未配置 LLM API 时，自动验收仍能完整通过。
+- 运行时 `guide_request` 能写出 `guide_requests/request-001/diagnosis.json`。
+- UnrealEditor 目标编译通过。
 
 ## 依赖与衔接
 
@@ -81,7 +86,15 @@
 
 ## 当前状态
 
-未开始。
+已验收。
+
+- Baseline：`MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1`
+- Accepted Run：`aiflow/contracts/runs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001.yaml`
+- Evidence Index：`aiflow/contracts/evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/index.md`
+- 实现入口：`TypeScript/GuideBuddy/diagnosis.ts`
+- 运行时按钮：`F10` 触发 `guide_request`
+- 运行时保存位置：编辑器 PIE 使用 `Saved/GuideBuddy/Telemetry/`，打包游戏使用 `<game-exe-directory>/GuideBuddy/Telemetry/`
+- 自动验收：`npm.cmd run verify:mvp02`
 
 ## 备注
 
@@ -110,3 +123,15 @@
   }
 }
 ```
+
+## 诊断记录中文说明
+
+`diagnosis.json` 必须包含 `readable_zh` 字段，用于让开发者或玩家支持人员直接打开文件时能够快速理解诊断结果，而不需要先交给 LLM 或专用工具解析。
+
+`readable_zh` 至少包含：
+- `summary`：一句中文速读结论，说明本次主要问题和置信度。
+- `primary_failure_label`：面向人阅读的中文问题标签。
+- `evidence`：中文证据列表，引用关键事件序号、事件类型、标签、角色和时间。
+- `practice_suggestion`：下一轮战斗可以优先验证或练习的中文建议。
+
+机器可读字段 `deterministic`、`final`、`practice_objective_seed` 和 `llm_review` 仍然保留为权威结构化输入；`readable_zh` 是便于人工快速验收和排查的解释层。

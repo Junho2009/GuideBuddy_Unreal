@@ -1,0 +1,51 @@
+id: MVP02_DIAGNOSTIC_SIGNAL_LAYER
+baseline_id: MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1
+status: active
+brief_ref: aiflow/contracts/briefs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.brief.yaml
+manifest_ref: aiflow/contracts/manifests/MVP02_DIAGNOSTIC_SIGNAL_LAYER.manifest.yaml
+verifier_ref: aiflow/contracts/verifiers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.verifier.yaml
+objective: 建立确定性诊断层，把 MVP01 事件流转换为可供导玩和练习目标生成消费的 diagnosis.json。
+execution_notes:
+  - 优先使用 TypeScript 实现诊断逻辑，保持 AI 后续可读可改。
+  - MVP02 不依赖打开 Unreal Editor；自动验收使用已归档真实 gameplay evidence 的复制件。
+  - 诊断器必须保守，证据不足时输出 insufficient_evidence。
+  - llm_review 字段只作为后续扩展占位，本阶段不调用 API。
+tasks:
+  - id: T01_DEFINE_DIAGNOSIS_SCHEMA
+    title: 定义 diagnosis.json 结构
+    intent: 固定 deterministic、final、practice_objective_seed、llm_review 等消费字段。
+    expected_result: MVP03 可直接读取诊断摘要和练习目标种子。
+  - id: T02_IMPLEMENT_DETERMINISTIC_RULES
+    title: 实现确定性归因规则
+    intent: 基于死亡事件、敌人动作、玩家输入和证据窗口进行保守诊断。
+    expected_result: 处决死亡 fixture 得到 posture_break_into_execution，证据不足时不强行归因。
+  - id: T03_ADD_CLI_AND_NPM_ENTRY
+    title: 增加诊断命令入口
+    intent: 允许对任意 run 目录生成 diagnosis.json。
+    expected_result: npm run diagnose:mvp02 可构建并运行诊断器。
+  - id: T04_WRITE_VERIFIER
+    title: 增加 MVP02 verifier
+    intent: 自动检查 schema、主诊断、证据保留、practice_objective_seed 和 insufficient_evidence guard。
+    expected_result: npm run verify:mvp02 通过并归档 evidence / run record。
+  - id: T05_RUNTIME_GUIDE_REQUEST
+    title: 接入运行时指导按钮
+    intent: 让玩家在战斗中主动请求指导，并即时生成诊断快照。
+    expected_result: 按 F10 触发 guide_request，写出 guide_requests/request-001/diagnosis.json。
+scope_guard:
+  allowed:
+    - 新增 TypeScript/GuideBuddy/diagnosis.ts。
+    - 新增 Content/JavaScript/GuideBuddy/diagnosis.js 编译产物。
+    - 新增 MVP02 contracts、verifier、run 和 evidence。
+    - 更新 package.json npm scripts。
+    - 同步 aiflow 上下文与阶段状态。
+    - 新增 C++ 运行时按键轮询与 TypeScript guide_request 快照写出。
+  forbidden:
+    - 修改战斗数值和平衡。
+    - 重写现有 Blueprint 战斗逻辑。
+    - 调用真实 LLM API。
+    - 实现 UI 或 Drill Spec 正式生成。
+sync_requirements:
+  - 更新 aiflow/CONTEXT.md 当前执行基线。
+  - 更新 aiflow/specs/GAME_PHASES.md 的 MVP02 状态。
+  - 更新 aiflow/specs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.md 当前状态。
+  - 归档 verifier evidence 与 run record。

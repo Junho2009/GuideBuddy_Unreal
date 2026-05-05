@@ -1,0 +1,63 @@
+id: MVP02_DIAGNOSTIC_SIGNAL_LAYER
+baseline_id: MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1
+status: active
+readability_appendix:
+  zh_diagnosis_record:
+    - diagnosis.json must include readable_zh.language=zh-CN.
+    - readable_zh.summary must provide a Chinese one-line diagnosis summary.
+    - readable_zh.evidence must provide Chinese evidence lines with event references.
+    - readable_zh.practice_suggestion must provide a Chinese next-step suggestion.
+source_specs:
+  - aiflow/specs/PROJECT_OVERVIEW.md
+  - aiflow/specs/GAME_PHASES.md
+  - aiflow/specs/TELEMETRY_AND_COACHING_REQUIREMENTS.md
+  - aiflow/specs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.md
+clarification_ref: aiflow/contracts/clarifications/MVP02_DIAGNOSTIC_SIGNAL_LAYER.clarification.md
+title: 诊断信号层
+one_sentence_goal: 读取 MVP01 战斗事件流和尝试摘要，生成保守、可解释、可验证的 diagnosis.json，并为 MVP03 预留 practice_objective_seed 与 llm_review 字段。
+human_confirmation_required: false
+scope:
+  in:
+    - 读取 combat_events.jsonl 与 attempt_summary.json。
+    - 输出 diagnosis.json。
+    - 归因玩家死亡或明显失败，第一版至少覆盖处决死亡归因。
+    - 保留诊断证据窗口和 evidence_event_seqs。
+    - 输出 practice_objective_seed。
+    - 证据不足时输出 insufficient_evidence。
+    - 保留 llm_review 占位字段，默认 enabled: false。
+    - 在运行时支持玩家按指导按钮生成当前战斗片段的诊断快照。
+    - 在游戏画面显示采集启动、保存成功或保存失败状态。
+    - 打包游戏中默认保存到游戏 exe 所在目录的 GuideBuddy/Telemetry/ 子目录。
+  out:
+    - 不调用真实 LLM API。
+    - 不生成最终玩家可读导玩话术。
+    - 不生成 Drill Spec 正式草案。
+    - 不修改战斗数值、Blueprint 二进制逻辑或关卡资产。
+    - 不做 UI 复盘卡。
+acceptance:
+  release_blocking:
+    - TypeScript 构建通过。
+    - diagnosis.json 可解析。
+    - diagnosis.json 包含 deterministic、final、practice_objective_seed 与 llm_review。
+    - 已归档 gameplay fixture 能得到 posture_break_into_execution。
+    - 诊断证据包含 State.Death 与敌人 execution 事件。
+    - 证据不足样本不会强行归因，必须输出 insufficient_evidence。
+    - 运行时 guide_request 信号会写出 guide_requests/request-001/combat_events.jsonl、attempt_summary.json 与 diagnosis.json。
+    - UnrealEditor 目标编译通过。
+  human_smoke:
+    - 人类能从 diagnosis.json 看懂主诊断、证据窗口和下一步练习焦点。
+dependencies:
+  upstream:
+    - MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1 已验收。
+    - MVP01 raw evidence 至少包含 combat_events.jsonl 与 attempt_summary.json。
+  downstream:
+    - MVP03_LLM_COACHING_LOOP 将读取 diagnosis.json 和 practice_objective_seed。
+risks:
+  - 当前真实 fixture 主要覆盖处决死亡；其他诊断类型仍需要更多 gameplay 样本。
+  - 第一版 tag 仍偏内部名称，玩家可读表达需要 MVP03 或显示名映射补充。
+  - MVP01 事件边界仍可能缺少完整攻击前摇或防御窗口信息。
+non_goals:
+  - 复杂机器学习模型。
+  - 长期玩家画像。
+  - 实时战斗提示。
+  - LLM 主诊断路径。

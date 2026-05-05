@@ -2,8 +2,10 @@
 
 #include "AIController.h"
 #include "Dom/JsonObject.h"
+#include "Engine/Engine.h"
 #include "GameFramework/Pawn.h"
 #include "HAL/FileManager.h"
+#include "HAL/PlatformProcess.h"
 #include "InputTriggers.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -31,6 +33,16 @@ void UGuideBuddyTelemetryBridge::EmitBridgeShutdown(const FString& Reason)
 	const TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 	Payload->SetStringField(TEXT("reason"), Reason);
 	EmitSignal(TEXT("bridge_shutdown"), Payload);
+}
+
+void UGuideBuddyTelemetryBridge::EmitGuideRequest(const FString& Source)
+{
+	const TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+	Payload->SetStringField(TEXT("source"), Source);
+	Payload->SetStringField(TEXT("reason"), TEXT("player_requested_guidance"));
+	Payload->SetStringField(TEXT("button"), TEXT("F10"));
+	Payload->SetObjectField(TEXT("actor"), BuildActorObject(GetPlayerPawn()));
+	EmitSignal(TEXT("guide_request"), Payload);
 }
 
 void UGuideBuddyTelemetryBridge::EmitSignal(const FString& SignalType, const TSharedPtr<FJsonObject>& Payload)
@@ -143,15 +155,30 @@ FString UGuideBuddyTelemetryBridge::GetInitialContextJson() const
 	Context->SetStringField(TEXT("map"), GetMapName());
 	Context->SetStringField(TEXT("iso_time"), FDateTime::UtcNow().ToIso8601());
 	Context->SetStringField(TEXT("telemetry_root"), GetTelemetryRootDirectory());
+	Context->SetStringField(TEXT("telemetry_storage"), GetTelemetryStorageDescription());
 	Context->SetObjectField(TEXT("player"), BuildActorObject(GetPlayerPawn()));
 	return SerializeJsonObject(Context);
 }
 
 FString UGuideBuddyTelemetryBridge::GetTelemetryRootDirectory() const
 {
-	FString RootDirectory = FPaths::ProjectSavedDir() / TEXT("GuideBuddy") / TEXT("Telemetry");
+	FString RootDirectory;
+#if WITH_EDITOR
+	RootDirectory = FPaths::ProjectSavedDir() / TEXT("GuideBuddy") / TEXT("Telemetry");
+#else
+	RootDirectory = FString(FPlatformProcess::BaseDir()) / TEXT("GuideBuddy") / TEXT("Telemetry");
+#endif
 	FPaths::NormalizeFilename(RootDirectory);
 	return RootDirectory;
+}
+
+FString UGuideBuddyTelemetryBridge::GetTelemetryStorageDescription() const
+{
+#if WITH_EDITOR
+	return TEXT("project_saved_directory");
+#else
+	return TEXT("executable_directory");
+#endif
 }
 
 FString UGuideBuddyTelemetryBridge::GetProjectSavedDirectory() const
@@ -211,6 +238,17 @@ bool UGuideBuddyTelemetryBridge::WriteUtf8File(const FString& AbsolutePath, cons
 		LastError = FString::Printf(TEXT("Failed to write UTF-8 file: %s"), *AbsolutePath);
 	}
 	return bSaved;
+}
+
+void UGuideBuddyTelemetryBridge::ShowRuntimeStatusMessage(const FString& Message, bool bSuccess)
+{
+	UE_LOG(LogTemp, Log, TEXT("[GuideBuddy] %s"), *Message);
+
+	if (GEngine)
+	{
+		const FColor MessageColor = bSuccess ? FColor::Green : FColor::Red;
+		GEngine->AddOnScreenDebugMessage(-1, 6.0f, MessageColor, FString::Printf(TEXT("GuideBuddy: %s"), *Message));
+	}
 }
 
 void UGuideBuddyTelemetryBridge::HandleBufferedInput(UInputAction* FiredBufferedInput)
