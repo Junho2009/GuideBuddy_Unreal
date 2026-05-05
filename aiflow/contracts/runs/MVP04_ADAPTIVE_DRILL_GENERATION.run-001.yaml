@@ -1,0 +1,59 @@
+id: MVP04_ADAPTIVE_DRILL_GENERATION.run-001
+baseline_id: MVP04_ADAPTIVE_DRILL_GENERATION@v0.1
+status: accepted
+started_at: "2026-05-05T14:30:00.000Z"
+finished_at: "2026-05-05T14:30:00.000Z"
+environment: "Windows, Node.js verifier, MVP03 archived coaching fixture"
+verifier_ref: aiflow/contracts/verifiers/MVP04_ADAPTIVE_DRILL_GENERATION.verifier.yaml
+stimulus:
+  - "Copy accepted MVP03 run-001 attempt_summary.json, diagnosis.json, and coaching.json into a verifier work directory."
+  - "Run the compiled GuideBuddy drill runtime to generate drill_spec.json and drill_session.json."
+  - "Verify schema, source traceability, template whitelist, parameter whitelist, safe ranges, and readable objective."
+  - "Run rejection fixtures for unsupported template, unknown parameter, unsafe string, and insufficient evidence."
+  - "Replay a runtime guide request and confirm drill_spec.json and drill_session.json are written beside coaching.json."
+results:
+  - id: DRILL_INPUT_PARSE
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/coaching.json
+  - id: DRILL_OUTPUT_SCHEMA
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/
+  - id: SOURCE_TRACEABILITY
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/drill_session.json
+  - id: TEMPLATE_WHITELIST
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/drill_spec.json
+    observed:
+      template_id: single_enemy_execution_response
+  - id: PARAMETER_WHITELIST
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/drill_session.json
+    observed:
+      metric_ids: "terminal_execution_count, enemy_execution_after_player_death, defensive_input_before_execution_window"
+  - id: REJECT_UNSUPPORTED_TEMPLATE
+    status: pass
+    evidence: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/reject-unsupported-template/
+  - id: REJECT_UNKNOWN_PARAMETER
+    status: pass
+    evidence: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/reject-unknown-parameter/
+  - id: REJECT_UNSAFE_FIELDS
+    status: pass
+    evidence: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/reject-unsafe-fields/
+  - id: REJECT_INSUFFICIENT_EVIDENCE
+    status: pass
+    evidence: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/reject-insufficient-evidence/
+  - id: RUNTIME_DRILL_ARTIFACTS
+    status: pass
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/runtime_request_verifier.json
+    observed:
+      drill_template_id: single_enemy_execution_response
+      expected_snapshot_suffix: guide_requests/request-001/drill_session.json
+evidence:
+  raw_root: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/
+  index: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/index.md
+  verifier_work_root: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/
+notes:
+  - "MVP04 v0.1 validates and normalizes the MVP03 candidate; it does not generate or mutate Unreal assets."
+  - "The drill session links back to source attempt, diagnosis, coaching, and practice objective."
+  - "Unsafe free-form scene instructions are rejected before a formal Drill Spec is written."

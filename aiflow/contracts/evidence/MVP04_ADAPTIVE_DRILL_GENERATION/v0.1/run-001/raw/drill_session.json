@@ -1,0 +1,85 @@
+{
+  "schema_version": "guidebuddy.drill_session.v1",
+  "session_id": "session.20260505071706_uedpie_0_sampledemoshowcasemap_706178.avoid_execution_setup",
+  "drill_id": "drill.20260505071706_uedpie_0_sampledemoshowcasemap_706178.practice_posture_break_into_execution_avoid_execution_setup",
+  "generated_at": "2026-05-05T14:30:00.000Z",
+  "status": "ready_for_controlled_template",
+  "source_kind": "verifier",
+  "output_directory": "D:/Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/run-001-execution-response",
+  "files": {
+    "drill_spec_json": "D:/Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/run-001-execution-response/drill_spec.json",
+    "drill_session_json": "D:/Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/run-001-execution-response/drill_session.json"
+  },
+  "source_refs": {
+    "source_attempt_run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+    "source_diagnosis_json": "D:/Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/CoachingVerifier/MVP03_LLM_COACHING_LOOP/run-001-posture-break/diagnosis.json",
+    "source_coaching_json": "D:/Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/run-001-execution-response/coaching.json",
+    "practice_objective_id": "practice.posture_break_into_execution.avoid_execution_setup",
+    "evidence_event_seqs": [
+      1257,
+      1258,
+      1259,
+      1260,
+      1262,
+      1263,
+      1264,
+      1265
+    ]
+  },
+  "template_request": {
+    "template_id": "single_enemy_execution_response",
+    "arena_template": "single_enemy_execution_response",
+    "enemy_archetype": "sample_demo_single_enemy",
+    "normalized_parameters": {
+      "target_error": "posture_break_into_execution",
+      "focus": "avoid_execution_setup",
+      "player_level": "novice",
+      "enemy_count": 1,
+      "repetition_goal": 5,
+      "success_window_seconds": 1.5,
+      "max_consecutive_failures": 3,
+      "metric_ids": [
+        "terminal_execution_count",
+        "enemy_execution_after_player_death",
+        "defensive_input_before_execution_window"
+      ]
+    },
+    "random_seed": 40404,
+    "pattern_weights": {
+      "execution_response_window": 0.7,
+      "basic_pressure": 0.3
+    },
+    "success_metrics": {
+      "repetition_goal": 5,
+      "success_window_seconds": 1.5,
+      "max_terminal_execution_count": 0,
+      "require_defensive_input_before_execution_window": true,
+      "max_consecutive_failures": 3
+    },
+    "constraints": {
+      "max_enemies": 1,
+      "disable_extra_hazards": true,
+      "difficulty": 0.35,
+      "reset_between_repetitions": true,
+      "allow_freeform_assets": false,
+      "allow_console_commands": false
+    }
+  },
+  "readable_zh": {
+    "title": "处决窗口反应练习",
+    "objective": "只练一件事：架势崩溃或处决前兆出现时，停止贪刀并立刻防御或后撤。",
+    "source_diagnosis": "这次主要问题是架势崩溃后被处决。",
+    "success_condition": "失败窗口内不再出现处决信号，或处决前 1.5 秒内出现防御/闪避输入。"
+  },
+  "final": {
+    "status": "drill_ready",
+    "template_id": "single_enemy_execution_response",
+    "practice_objective_id": "practice.posture_break_into_execution.avoid_execution_setup",
+    "primary_failure": "posture_break_into_execution",
+    "metric_ids": [
+      "terminal_execution_count",
+      "enemy_execution_after_player_death",
+      "defensive_input_before_execution_window"
+    ]
+  }
+}

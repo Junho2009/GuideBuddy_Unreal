@@ -5,13 +5,15 @@
   "scripts": {
     "build:guidebuddy": "tsc -p tsconfig.json",
     "coach:mvp03": "npm run build:guidebuddy && node Content/JavaScript/GuideBuddy/coaching.js",
+    "drill:mvp04": "npm run build:guidebuddy && node Content/JavaScript/GuideBuddy/drill.js",
     "diagnose:mvp02": "npm run build:guidebuddy && node Content/JavaScript/GuideBuddy/diagnosis.js",
     "verify:mvp01": "node aiflow/contracts/verifiers/verify_mvp01_telemetry.js",
     "verify:mvp01:death": "node aiflow/contracts/verifiers/verify_mvp01_death_regression.js",
     "verify:mvp02": "npm run build:guidebuddy && node aiflow/contracts/verifiers/verify_mvp02_diagnosis.js && node aiflow/contracts/verifiers/verify_mvp02_runtime_request.js",
     "verify:mvp02:runtime": "npm run build:guidebuddy && node aiflow/contracts/verifiers/verify_mvp02_runtime_request.js",
     "verify:mvp03": "npm run build:guidebuddy && node aiflow/contracts/verifiers/verify_mvp03_coaching.js && node aiflow/contracts/verifiers/verify_mvp03_runtime_request.js",
-    "verify:mvp03:runtime": "npm run build:guidebuddy && node aiflow/contracts/verifiers/verify_mvp03_runtime_request.js"
+    "verify:mvp03:runtime": "npm run build:guidebuddy && node aiflow/contracts/verifiers/verify_mvp03_runtime_request.js",
+    "verify:mvp04": "npm run build:guidebuddy && node aiflow/contracts/verifiers/verify_mvp04_drill.js"
   },
   "devDependencies": {
     "typescript": "4.7.4"

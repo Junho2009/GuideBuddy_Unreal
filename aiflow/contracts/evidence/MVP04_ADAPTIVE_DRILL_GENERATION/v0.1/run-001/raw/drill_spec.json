@@ -1,0 +1,70 @@
+{
+  "schema_version": "guidebuddy.drill_spec.v1",
+  "drill_id": "drill.20260505071706_uedpie_0_sampledemoshowcasemap_706178.practice_posture_break_into_execution_avoid_execution_setup",
+  "generated_at": "2026-05-05T14:30:00.000Z",
+  "source_attempt_run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+  "source_diagnosis_id": "diagnosis.20260505071706_uedpie_0_sampledemoshowcasemap_706178.posture_break_into_execution",
+  "source_coaching_path": "D:/Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/run-001-execution-response/coaching.json",
+  "practice_objective_id": "practice.posture_break_into_execution.avoid_execution_setup",
+  "primary_failure": "posture_break_into_execution",
+  "template_id": "single_enemy_execution_response",
+  "arena_template": "single_enemy_execution_response",
+  "enemy_archetype": "sample_demo_single_enemy",
+  "random_seed": 40404,
+  "pattern_weights": {
+    "execution_response_window": 0.7,
+    "basic_pressure": 0.3
+  },
+  "success_metrics": {
+    "repetition_goal": 5,
+    "success_window_seconds": 1.5,
+    "max_terminal_execution_count": 0,
+    "require_defensive_input_before_execution_window": true,
+    "max_consecutive_failures": 3
+  },
+  "constraints": {
+    "max_enemies": 1,
+    "disable_extra_hazards": true,
+    "difficulty": 0.35,
+    "reset_between_repetitions": true,
+    "allow_freeform_assets": false,
+    "allow_console_commands": false
+  },
+  "telemetry_eval_hooks": {
+    "metric_ids": [
+      "terminal_execution_count",
+      "enemy_execution_after_player_death",
+      "defensive_input_before_execution_window"
+    ],
+    "success_criteria": [
+      {
+        "metric_id": "terminal_execution_count",
+        "operator": "<=",
+        "threshold": 0
+      },
+      {
+        "metric_id": "defensive_input_before_execution_window",
+        "operator": "==",
+        "threshold": true
+      }
+    ]
+  },
+  "validation": {
+    "validator_version": "guidebuddy.drill_validator.v0.1",
+    "template_whitelist_version": "guidebuddy.drill_templates.v0.1",
+    "supported_template_ids": [
+      "single_enemy_execution_response"
+    ],
+    "allowed_parameter_names": [
+      "target_error",
+      "focus",
+      "player_level",
+      "enemy_count",
+      "repetition_goal",
+      "success_window_seconds",
+      "max_consecutive_failures",
+      "metric_ids"
+    ],
+    "candidate_validation_status": "passed"
+  }
+}

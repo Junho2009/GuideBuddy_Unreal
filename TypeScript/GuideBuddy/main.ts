@@ -46,6 +46,9 @@ interface RuntimeWriteResult {
   targetDirectory: string;
   diagnosis: JsonRecord;
   coaching: JsonRecord;
+  drillSpec?: JsonRecord;
+  drillSession?: JsonRecord;
+  drillError?: string;
 }
 
 const coachingRuntime = require("./coaching") as {
@@ -57,6 +60,17 @@ const coachingRuntime = require("./coaching") as {
     diagnosis: JsonRecord,
     options?: JsonRecord
   ): JsonRecord;
+};
+const drillRuntime = require("./drill") as {
+  buildDrillArtifacts(
+    outputDirectory: string,
+    coachingPath: string,
+    coaching: JsonRecord,
+    options?: JsonRecord
+  ): {
+    drillSpec: JsonRecord;
+    drillSession: JsonRecord;
+  };
 };
 const puerts = require("puerts") as PuertsModule;
 const maybeBridge = puerts.argv.getByName("GuideBuddyBridge") as GuideBuddyBridge | undefined;
@@ -498,6 +512,8 @@ function writeRunFiles(targetDirectory: string, endReason: string, sourceEvents:
   const attemptSummaryPath = joinPath(targetDirectory, "attempt_summary.json");
   const diagnosisPath = joinPath(targetDirectory, "diagnosis.json");
   const coachingPath = joinPath(targetDirectory, "coaching.json");
+  const drillSpecPath = joinPath(targetDirectory, "drill_spec.json");
+  const drillSessionPath = joinPath(targetDirectory, "drill_session.json");
   const summary = buildSummary(endReason, combatEventsPath, attemptSummaryPath, sourceEvents);
   const diagnosis = buildRuntimeDiagnosis(targetDirectory, combatEventsPath, attemptSummaryPath, sourceEvents, summary);
   const coaching = coachingRuntime.buildCoaching(targetDirectory, attemptSummaryPath, diagnosisPath, summary, diagnosis, {
@@ -505,6 +521,20 @@ function writeRunFiles(targetDirectory: string, endReason: string, sourceEvents:
     provider: "local_rule_template",
     sourceKind: "runtime"
   });
+  let drillSpec: JsonRecord | undefined;
+  let drillSession: JsonRecord | undefined;
+  let drillError: string | undefined;
+
+  try {
+    const drillArtifacts = drillRuntime.buildDrillArtifacts(targetDirectory, coachingPath, coaching, {
+      sourceKind: "runtime"
+    });
+    drillSpec = drillArtifacts.drillSpec;
+    drillSession = drillArtifacts.drillSession;
+  } catch (error) {
+    drillError = error instanceof Error ? error.message : String(error);
+  }
+
   const jsonl = `${sourceEvents.map((event) => JSON.stringify(event)).join("\n")}\n`;
 
   bridge.CreateDirectoryTree(targetDirectory);
@@ -512,8 +542,10 @@ function writeRunFiles(targetDirectory: string, endReason: string, sourceEvents:
   const wroteSummary = bridge.WriteUtf8File(attemptSummaryPath, `${JSON.stringify(summary, null, 2)}\n`);
   const wroteDiagnosis = bridge.WriteUtf8File(diagnosisPath, `${JSON.stringify(diagnosis, null, 2)}\n`);
   const wroteCoaching = bridge.WriteUtf8File(coachingPath, `${JSON.stringify(coaching, null, 2)}\n`);
+  const wroteDrillSpec = drillSpec ? bridge.WriteUtf8File(drillSpecPath, `${JSON.stringify(drillSpec, null, 2)}\n`) : true;
+  const wroteDrillSession = drillSession ? bridge.WriteUtf8File(drillSessionPath, `${JSON.stringify(drillSession, null, 2)}\n`) : true;
 
-  if (!wroteEvents || !wroteSummary || !wroteDiagnosis || !wroteCoaching) {
+  if (!wroteEvents || !wroteSummary || !wroteDiagnosis || !wroteCoaching || !wroteDrillSpec || !wroteDrillSession) {
     const errorMessage = `Save failed: ${bridge.GetLastError()}`;
     showRuntimeStatus(errorMessage, false);
     console.error(`[GuideBuddy] Runtime output write failed: ${bridge.GetLastError()}`);
@@ -523,7 +555,10 @@ function writeRunFiles(targetDirectory: string, endReason: string, sourceEvents:
   return {
     targetDirectory,
     diagnosis,
-    coaching
+    coaching,
+    drillSpec,
+    drillSession,
+    drillError
   };
 }
 
@@ -1170,8 +1205,9 @@ function formatDiagnosisSavedMessage(prefix: string, result: RuntimeWriteResult)
   const action = String(reviewCard?.next_action || "");
   const shortFocus = focus.length > 0 ? ` Focus: ${focus}.` : "";
   const shortAction = action.length > 0 ? ` Coaching ready.` : "";
+  const drillStatus = result.drillSpec ? " Drill ready." : result.drillError ? " Drill skipped." : "";
 
-  return `${prefix}: ${primaryFailure} (${Math.round(confidence * 100)}%).${shortFocus}${shortAction}`;
+  return `${prefix}: ${primaryFailure} (${Math.round(confidence * 100)}%).${shortFocus}${shortAction}${drillStatus}`;
 }
 
 function showCoachingCard(result: RuntimeWriteResult): void {

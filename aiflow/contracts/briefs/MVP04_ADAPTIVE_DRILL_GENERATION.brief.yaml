@@ -1,0 +1,57 @@
+id: MVP04_ADAPTIVE_DRILL_GENERATION
+baseline_id: MVP04_ADAPTIVE_DRILL_GENERATION@v0.1
+status: active
+source_specs:
+  - aiflow/specs/PROJECT_OVERVIEW.md
+  - aiflow/specs/GAME_PHASES.md
+  - aiflow/specs/TELEMETRY_AND_COACHING_REQUIREMENTS.md
+  - aiflow/specs/MVP04_ADAPTIVE_DRILL_GENERATION.md
+clarification_ref: aiflow/contracts/clarifications/MVP04_ADAPTIVE_DRILL_GENERATION.clarification.md
+title: 自适应针对性练习场生成
+one_sentence_goal: 读取 MVP03 coaching.json 中的 practice_objective 与 drill_spec_candidate，验证白名单并生成正式 drill_spec.json 与 drill_session.json。
+human_confirmation_required: false
+scope:
+  in:
+    - 读取 accepted MVP03 coaching.json 或运行时 guide request coaching.json。
+    - 验证 candidate 只使用受支持的白名单模板与参数。
+    - 首版仅支持 single_enemy_execution_response 模板。
+    - 生成 guidebuddy.drill_spec.v1。
+    - 生成 guidebuddy.drill_session.v1，记录模板、参数、来源诊断、来源 coaching 与关联尝试。
+    - 非白名单字段、危险字段或危险字符串必须被拒绝。
+    - 运行时 guide request 可同步写出 drill_spec.json 与 drill_session.json。
+  out:
+    - 不让 LLM 直接创建 Unreal 场景、Blueprint、资产或控制台命令。
+    - 不修改二进制 Blueprint、关卡资产或战斗数值。
+    - 不实现完整训练关卡编辑器。
+    - 不做多敌人复杂 encounter 编排。
+    - 不做 MVP05 的练习效果评估。
+acceptance:
+  release_blocking:
+    - TypeScript 构建通过。
+    - drill_spec.json 可解析，schema_version 为 guidebuddy.drill_spec.v1。
+    - drill_session.json 可解析，schema_version 为 guidebuddy.drill_session.v1。
+    - 生成结果能关联回 source attempt、diagnosis、coaching 和 practice objective。
+    - 仅支持 single_enemy_execution_response 模板，且 enemy_count=1。
+    - 所有参数都来自 MVP04 白名单并被规范化到安全范围。
+    - 非白名单 template_id 会被拒绝。
+    - 非白名单参数名会被拒绝。
+    - 危险字段或危险字符串会被拒绝。
+    - insufficient_evidence coaching 不会生成正式训练场。
+    - 运行时 guide_request 写出 drill_spec.json 与 drill_session.json。
+  human_smoke:
+    - 人类能从 drill_session.json 看懂本次练习只训练一个失败问题。
+dependencies:
+  upstream:
+    - MVP03_LLM_COACHING_LOOP@v0.1 已验收。
+    - MVP03 raw evidence 至少包含 coaching.json、diagnosis.json 与 attempt_summary.json。
+  downstream:
+    - MVP05_EVALUATION_AND_ITERATION 将读取 drill_session.json 和后续 telemetry 判断是否改善。
+risks:
+  - 首版只生成受控模板请求和 session 元数据，真实 UE 场景入口仍是下一层接入风险。
+  - 当前模板只覆盖 posture_break_into_execution -> avoid_execution_setup。
+  - Drill Spec 的成功指标依赖后续 MVP05 把 telemetry 指标正式评估出来。
+non_goals:
+  - 真实关卡编辑器。
+  - 多模板覆盖。
+  - 长期训练课程。
+  - 在线服务化。

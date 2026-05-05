@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "fixture": "aiflow/contracts/evidence/MVP01_COMBAT_TELEMETRY_FOUNDATION/v0.1/run-002/raw/combat_events.jsonl",
+  "replayed_events": 1301,
+  "expected_snapshot_suffix": "guide_requests/request-001/drill_session.json",
+  "trigger": "battle_end_review_button",
+  "primary_failure": "posture_break_into_execution",
+  "practice_objective_id": "practice.posture_break_into_execution.avoid_execution_setup",
+  "drill_template_id": "single_enemy_execution_response",
+  "drill_spec_path": "Z:/GuideBuddy/MVP04RuntimeRequestTest/20260505143810_UEDPIE_0_SampleDemoShowcaseMap_390756/guide_requests/request-001/drill_spec.json",
+  "drill_session_path": "Z:/GuideBuddy/MVP04RuntimeRequestTest/20260505143810_UEDPIE_0_SampleDemoShowcaseMap_390756/guide_requests/request-001/drill_session.json"
+}

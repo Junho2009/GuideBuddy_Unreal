@@ -111,7 +111,7 @@
 
 ## 当前状态
 
-未开始。
+已验收。`MVP04_ADAPTIVE_DRILL_GENERATION@v0.1` 已通过 `npm.cmd run verify:mvp04`，accepted run 为 `aiflow/contracts/runs/MVP04_ADAPTIVE_DRILL_GENERATION.run-001.yaml`。
 
 ## 备注
 

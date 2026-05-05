@@ -1,0 +1,700 @@
+{
+  "schema_version": "guidebuddy.attempt_summary.v1",
+  "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+  "map": "UEDPIE_0_SampleDemoShowcaseMap",
+  "start_time": "2026-05-05T07:17:06.647Z",
+  "end_time": "2026-05-05T07:17:48.262Z",
+  "duration_seconds": 41.80322630703449,
+  "end_reason": "world_cleanup",
+  "death_info": null,
+  "last_events": [
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1380,
+      "event_type": "player_input",
+      "time_seconds": 38.0789897069335,
+      "iso_time": "2026-05-05T07:17:44.504Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "HoldAttack_Input",
+      "trigger_event": "Started",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "HoldAttack_Input",
+        "path": "/TempestCombatFramework/Input/HoldAttack_Input.HoldAttack_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1381,
+      "event_type": "player_input",
+      "time_seconds": 38.0789897069335,
+      "iso_time": "2026-05-05T07:17:44.504Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "Attack_Input",
+      "trigger_event": "Started",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "Attack_Input",
+        "path": "/TempestCombatFramework/Input/Attack_Input.Attack_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1382,
+      "event_type": "player_input",
+      "time_seconds": 38.0789897069335,
+      "iso_time": "2026-05-05T07:17:44.504Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "Attack_Input",
+      "trigger_event": "Triggered",
+      "watchlist_tag": "List.One",
+      "input": {
+        "is_valid": true,
+        "name": "Attack_Input",
+        "path": "/TempestCombatFramework/Input/Attack_Input.Attack_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1383,
+      "event_type": "player_input",
+      "time_seconds": 38.0789897069335,
+      "iso_time": "2026-05-05T07:17:44.504Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "Attack_Input",
+      "trigger_event": "Triggered",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "Attack_Input",
+        "path": "/TempestCombatFramework/Input/Attack_Input.Attack_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1384,
+      "event_type": "player_input",
+      "time_seconds": 38.20478440821171,
+      "iso_time": "2026-05-05T07:17:44.629Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "<none>",
+      "trigger_event": "Released",
+      "watchlist_tag": "List.One",
+      "input": {
+        "is_valid": false
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1385,
+      "event_type": "player_input",
+      "time_seconds": 38.20478440821171,
+      "iso_time": "2026-05-05T07:17:44.629Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "Attack_Input",
+      "trigger_event": "Completed",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "Attack_Input",
+        "path": "/TempestCombatFramework/Input/Attack_Input.Attack_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1386,
+      "event_type": "player_input",
+      "time_seconds": 38.20478440821171,
+      "iso_time": "2026-05-05T07:17:44.629Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "HoldAttack_Input",
+      "trigger_event": "Canceled",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "HoldAttack_Input",
+        "path": "/TempestCombatFramework/Input/HoldAttack_Input.HoldAttack_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1387,
+      "event_type": "player_input",
+      "time_seconds": 38.20478440821171,
+      "iso_time": "2026-05-05T07:17:44.629Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "AttackRelease_Input",
+      "trigger_event": "Triggered",
+      "watchlist_tag": "List.One",
+      "input": {
+        "is_valid": true,
+        "name": "AttackRelease_Input",
+        "path": "/Game/Integration/AttackRelease_Input.AttackRelease_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1388,
+      "event_type": "player_input",
+      "time_seconds": 38.20478440821171,
+      "iso_time": "2026-05-05T07:17:44.629Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "AttackRelease_Input",
+      "trigger_event": "Triggered",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "AttackRelease_Input",
+        "path": "/Game/Integration/AttackRelease_Input.AttackRelease_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1389,
+      "event_type": "player_input",
+      "time_seconds": 38.21339640766382,
+      "iso_time": "2026-05-05T07:17:44.637Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "AttackRelease_Input",
+      "trigger_event": "Completed",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "AttackRelease_Input",
+        "path": "/Game/Integration/AttackRelease_Input.AttackRelease_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1390,
+      "event_type": "player_input",
+      "time_seconds": 39.71093090623617,
+      "iso_time": "2026-05-05T07:17:46.135Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "TurnMouseUp_Input",
+      "trigger_event": "Started",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "TurnMouseUp_Input",
+        "path": "/TempestCombatFramework/Input/TurnMouseUp_Input.TurnMouseUp_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1391,
+      "event_type": "player_input",
+      "time_seconds": 39.71093090623617,
+      "iso_time": "2026-05-05T07:17:46.135Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "TurnMouseSideways_Input",
+      "trigger_event": "Started",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "TurnMouseSideways_Input",
+        "path": "/TempestCombatFramework/Input/TurnMouseSideways_Input.TurnMouseSideways_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1392,
+      "event_type": "player_input",
+      "time_seconds": 39.71093090623617,
+      "iso_time": "2026-05-05T07:17:46.135Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "TurnMouseSideways_Input",
+      "trigger_event": "Triggered",
+      "watchlist_tag": "List.One",
+      "input": {
+        "is_valid": true,
+        "name": "TurnMouseSideways_Input",
+        "path": "/TempestCombatFramework/Input/TurnMouseSideways_Input.TurnMouseSideways_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1393,
+      "event_type": "player_input",
+      "time_seconds": 39.71093090623617,
+      "iso_time": "2026-05-05T07:17:46.135Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "TurnMouseSideways_Input",
+      "trigger_event": "Triggered",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "TurnMouseSideways_Input",
+        "path": "/TempestCombatFramework/Input/TurnMouseSideways_Input.TurnMouseSideways_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1394,
+      "event_type": "player_input",
+      "time_seconds": 39.71093090623617,
+      "iso_time": "2026-05-05T07:17:46.135Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "TurnMouseUp_Input",
+      "trigger_event": "Triggered",
+      "watchlist_tag": "List.One",
+      "input": {
+        "is_valid": true,
+        "name": "TurnMouseUp_Input",
+        "path": "/TempestCombatFramework/Input/TurnMouseUp_Input.TurnMouseUp_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1395,
+      "event_type": "player_input",
+      "time_seconds": 39.71093090623617,
+      "iso_time": "2026-05-05T07:17:46.135Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "TurnMouseUp_Input",
+      "trigger_event": "Triggered",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "TurnMouseUp_Input",
+        "path": "/TempestCombatFramework/Input/TurnMouseUp_Input.TurnMouseUp_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1396,
+      "event_type": "player_input",
+      "time_seconds": 39.719264306128025,
+      "iso_time": "2026-05-05T07:17:46.142Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "TurnMouseSideways_Input",
+      "trigger_event": "Completed",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "TurnMouseSideways_Input",
+        "path": "/TempestCombatFramework/Input/TurnMouseSideways_Input.TurnMouseSideways_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1397,
+      "event_type": "player_input",
+      "time_seconds": 39.719264306128025,
+      "iso_time": "2026-05-05T07:17:46.142Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "<none>",
+      "trigger_event": "Released",
+      "watchlist_tag": "List.One",
+      "input": {
+        "is_valid": false
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1398,
+      "event_type": "player_input",
+      "time_seconds": 39.719264306128025,
+      "iso_time": "2026-05-05T07:17:46.142Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "actor": {
+        "is_valid": true,
+        "name": "BP_GhostSamuraiCharacter_C_0",
+        "path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+        "class_name": "BP_GhostSamuraiCharacter_C",
+        "class_path": "/Game/Integration/BP_GhostSamuraiCharacter.BP_GhostSamuraiCharacter_C",
+        "role": "player",
+        "location": {
+          "x": -296.37969791596805,
+          "y": -23845.467122046124,
+          "z": 192
+        }
+      },
+      "role": "player",
+      "actor_name": "BP_GhostSamuraiCharacter_C_0",
+      "actor_path": "/Game/TCF_SampleDemo/UEDPIE_0_SampleDemoShowcaseMap.SampleDemoShowcaseMap:PersistentLevel.BP_GhostSamuraiCharacter_C_0",
+      "input_name": "TurnMouseUp_Input",
+      "trigger_event": "Completed",
+      "watchlist_tag": "",
+      "input": {
+        "is_valid": true,
+        "name": "TurnMouseUp_Input",
+        "path": "/TempestCombatFramework/Input/TurnMouseUp_Input.TurnMouseUp_Input",
+        "class_name": "InputAction",
+        "class_path": "/Script/EnhancedInput.InputAction"
+      }
+    },
+    {
+      "schema_version": "guidebuddy.combat_event.v1",
+      "run_id": "20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178",
+      "seq": 1399,
+      "event_type": "attempt_end",
+      "time_seconds": 41.80322630703449,
+      "iso_time": "2026-05-05T07:17:48.262Z",
+      "map": "UEDPIE_0_SampleDemoShowcaseMap",
+      "end_reason": "world_cleanup"
+    }
+  ],
+  "damage_summary": {
+    "hits_taken": 1,
+    "total_damage_taken": 50,
+    "hits_dealt": 1,
+    "total_damage_dealt": 10,
+    "fatal_damage": null
+  },
+  "event_counts": {
+    "attempt_start": 1,
+    "state_activated": 72,
+    "player_input": 1256,
+    "ability_activated": 40,
+    "combat_status_changed": 18,
+    "attribute_changed": 9,
+    "damage": 2,
+    "attempt_end": 1
+  },
+  "output_files": {
+    "combat_events_jsonl": "../../../../../../Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/Telemetry/20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178/combat_events.jsonl",
+    "attempt_summary_json": "../../../../../../Dev/Unreal/Projs/GuideBuddy_Unreal/Saved/GuideBuddy/Telemetry/20260505071706_UEDPIE_0_SampleDemoShowcaseMap_706178/attempt_summary.json"
+  }
+}

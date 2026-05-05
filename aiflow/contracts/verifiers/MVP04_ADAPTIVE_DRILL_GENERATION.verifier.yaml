@@ -1,0 +1,116 @@
+id: MVP04_ADAPTIVE_DRILL_GENERATION
+baseline_id: MVP04_ADAPTIVE_DRILL_GENERATION@v0.1
+status: active
+brief_ref: aiflow/contracts/briefs/MVP04_ADAPTIVE_DRILL_GENERATION.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/MVP04_ADAPTIVE_DRILL_GENERATION.taskpack.yaml
+manifest_ref: aiflow/contracts/manifests/MVP04_ADAPTIVE_DRILL_GENERATION.manifest.yaml
+release_blocking_checks:
+  - id: SPEC_SYNC
+    title: specs 与 contracts 目标一致
+    automation_level: hybrid
+    blocking: true
+    stimulus: 读取 CONTEXT、GAME_PHASES、MVP04 prose 与本合同组。
+    observe: 目标、范围、非目标和验收路径是否一致。
+    oracle: 不存在互相冲突的 MVP04 范围或状态描述。
+    evidence: aiflow/contracts/runs/MVP04_ADAPTIVE_DRILL_GENERATION.run-001.yaml
+    on_fail: 先同步 specs 或合同，再进入验收放行。
+  - id: DRILL_INPUT_PARSE
+    title: coaching.json 可解析
+    automation_level: auto
+    blocking: true
+    stimulus: 读取复制后的 MVP03 raw fixture。
+    observe: coaching.json。
+    oracle: JSON 可解析，并包含 practice_objective 与 drill_spec_candidate。
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/coaching.json
+    on_fail: 修复输入读取或 fixture 复制逻辑。
+  - id: DRILL_OUTPUT_SCHEMA
+    title: drill 输出 schema 完整
+    automation_level: auto
+    blocking: true
+    stimulus: 运行 TypeScript drill 生成器。
+    observe: drill_spec.json 与 drill_session.json。
+    oracle: schema_version 分别为 guidebuddy.drill_spec.v1 与 guidebuddy.drill_session.v1。
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/
+    on_fail: 修复输出结构。
+  - id: SOURCE_TRACEABILITY
+    title: 来源链路完整
+    automation_level: auto
+    blocking: true
+    stimulus: 读取 drill_session.json。
+    observe: source attempt、diagnosis、coaching、practice objective 链路。
+    oracle: 所有来源引用存在且与 coaching.json 对齐。
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/drill_session.json
+    on_fail: 补齐 source_refs。
+  - id: TEMPLATE_WHITELIST
+    title: 模板白名单
+    automation_level: auto
+    blocking: true
+    stimulus: 读取 drill_spec.json。
+    observe: template_id、arena_template 与 enemy_count。
+    oracle: 仅使用 single_enemy_execution_response，enemy_count=1。
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/drill_spec.json
+    on_fail: 修复模板映射或拒绝逻辑。
+  - id: PARAMETER_WHITELIST
+    title: 参数白名单
+    automation_level: auto
+    blocking: true
+    stimulus: 读取 drill_session.json。
+    observe: normalized_parameters。
+    oracle: 所有参数名都来自 MVP04 白名单，并且数值在安全范围内。
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/raw/drill_session.json
+    on_fail: 修复参数验证和规范化。
+  - id: REJECT_UNSUPPORTED_TEMPLATE
+    title: 拒绝非白名单模板
+    automation_level: auto
+    blocking: true
+    stimulus: 使用篡改 template_id 的 coaching fixture。
+    observe: 生成器错误。
+    oracle: 生成器失败，且不会写出正式 drill_spec.json。
+    evidence: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/reject-unsupported-template/
+    on_fail: 修复模板白名单。
+  - id: REJECT_UNKNOWN_PARAMETER
+    title: 拒绝非白名单参数
+    automation_level: auto
+    blocking: true
+    stimulus: 使用新增未知参数的 coaching fixture。
+    observe: 生成器错误。
+    oracle: 生成器失败，且不会写出正式 drill_spec.json。
+    evidence: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/reject-unknown-parameter/
+    on_fail: 修复参数白名单。
+  - id: REJECT_UNSAFE_FIELDS
+    title: 拒绝危险字段或字符串
+    automation_level: auto
+    blocking: true
+    stimulus: 使用包含 console_command 或 Blueprint 字符串的 coaching fixture。
+    observe: 生成器错误。
+    oracle: 生成器失败，且不会写出正式 drill_spec.json。
+    evidence: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/reject-unsafe-fields/
+    on_fail: 修复安全扫描。
+  - id: REJECT_INSUFFICIENT_EVIDENCE
+    title: 证据不足时不生成训练场
+    automation_level: auto
+    blocking: true
+    stimulus: 使用 insufficient_evidence coaching fixture。
+    observe: 生成器错误。
+    oracle: 生成器失败，且不会写出正式 drill_spec.json。
+    evidence: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/reject-insufficient-evidence/
+    on_fail: 修复 final.status guard。
+  - id: RUNTIME_DRILL_ARTIFACTS
+    title: 运行时 guide request 写出 drill artifacts
+    automation_level: auto
+    blocking: true
+    stimulus: 使用 fake GuideBuddyBridge 重放真实 gameplay 片段并发送 guide_request。
+    observe: guide_requests/request-001/drill_spec.json 与 drill_session.json。
+    oracle: 两个文件都被写出，schema 正确，并关联回 runtime coaching 的 practice_objective。
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/runtime_request_verifier.json
+    on_fail: 修复运行时 writeRunFiles 或 drill generator 调用。
+manual_smoke_checks:
+  - id: HUMAN_READABLE_DRILL_SESSION
+    title: 人类能看懂练什么
+    automation_level: manual
+    blocking: false
+    stimulus: 人类阅读 drill_session.json。
+    observe: session 是否只描述一个失败问题和一个练习动作。
+    oracle: 读者能说出练习目标、成功条件和来源诊断。
+    evidence: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/index.md
+    on_fail: 调整 drill_session 可读字段。

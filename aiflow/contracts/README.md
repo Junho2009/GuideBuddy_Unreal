@@ -6,9 +6,11 @@
 
 ## 当前状态
 
-- 当前保留 GuideBuddy MVP 相关的合同结构、共享约定、模板、MVP01 合同和 MVP02 合同。
+- 当前保留 GuideBuddy MVP 相关的合同结构、共享约定、模板和 MVP01-MVP04 合同。
 - `MVP01_COMBAT_TELEMETRY_FOUNDATION@v0.1` 已通过真实 PIE gameplay 验收，结果见 `ledgers/MVP01_COMBAT_TELEMETRY_FOUNDATION.result.md`。
 - `MVP02_DIAGNOSTIC_SIGNAL_LAYER@v0.1` 已通过自动诊断验收，结果见 `ledgers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.result.md`。
+- `MVP03_LLM_COACHING_LOOP@v0.1` 已通过导玩闭环验收，结果见 `ledgers/MVP03_LLM_COACHING_LOOP.result.md`。
+- `MVP04_ADAPTIVE_DRILL_GENERATION@v0.1` 已通过针对性练习场生成验收，结果见 `ledgers/MVP04_ADAPTIVE_DRILL_GENERATION.result.md`。
 
 ## 常用目录
 
@@ -55,5 +57,21 @@
 - `runs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001.yaml`
 - `evidence/MVP02_DIAGNOSTIC_SIGNAL_LAYER/v0.1/run-001/index.md`
 - `ledgers/MVP02_DIAGNOSTIC_SIGNAL_LAYER.result.md`
+- `clarifications/MVP03_LLM_COACHING_LOOP.clarification.md`
+- `briefs/MVP03_LLM_COACHING_LOOP.brief.yaml`
+- `taskpacks/MVP03_LLM_COACHING_LOOP.taskpack.yaml`
+- `manifests/MVP03_LLM_COACHING_LOOP.manifest.yaml`
+- `verifiers/MVP03_LLM_COACHING_LOOP.verifier.yaml`
+- `runs/MVP03_LLM_COACHING_LOOP.run-001.yaml`
+- `evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/index.md`
+- `ledgers/MVP03_LLM_COACHING_LOOP.result.md`
+- `clarifications/MVP04_ADAPTIVE_DRILL_GENERATION.clarification.md`
+- `briefs/MVP04_ADAPTIVE_DRILL_GENERATION.brief.yaml`
+- `taskpacks/MVP04_ADAPTIVE_DRILL_GENERATION.taskpack.yaml`
+- `manifests/MVP04_ADAPTIVE_DRILL_GENERATION.manifest.yaml`
+- `verifiers/MVP04_ADAPTIVE_DRILL_GENERATION.verifier.yaml`
+- `runs/MVP04_ADAPTIVE_DRILL_GENERATION.run-001.yaml`
+- `evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/index.md`
+- `ledgers/MVP04_ADAPTIVE_DRILL_GENERATION.result.md`
 
-下一步建议为 `MVP03_LLM_COACHING_LOOP` 编译执行合同。
+下一步建议为 `MVP05_EVALUATION_AND_ITERATION` 编译执行合同。

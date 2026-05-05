@@ -1,0 +1,39 @@
+id: MVP04_ADAPTIVE_DRILL_GENERATION
+baseline_id: MVP04_ADAPTIVE_DRILL_GENERATION@v0.1
+status: active
+brief_ref: aiflow/contracts/briefs/MVP04_ADAPTIVE_DRILL_GENERATION.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/MVP04_ADAPTIVE_DRILL_GENERATION.taskpack.yaml
+verifier_ref: aiflow/contracts/verifiers/MVP04_ADAPTIVE_DRILL_GENERATION.verifier.yaml
+project:
+  uproject: TCF_Sample.uproject
+  engine: Unreal Engine 5.7
+  map: /Game/TCF_SampleDemo/SampleDemoShowcaseMap.SampleDemoShowcaseMap
+candidate_source_scopes:
+  - TypeScript/GuideBuddy/drill.ts
+  - TypeScript/GuideBuddy/main.ts
+  - Content/JavaScript/GuideBuddy/drill.js
+  - Content/JavaScript/GuideBuddy/main.js
+  - aiflow/contracts/verifiers/verify_mvp04_drill.js
+  - package.json
+input_scopes:
+  - Saved/GuideBuddy/Telemetry/<run-id>/coaching.json
+  - Saved/GuideBuddy/Telemetry/<run-id>/guide_requests/request-001/coaching.json
+  - aiflow/contracts/evidence/MVP03_LLM_COACHING_LOOP/v0.1/run-001/raw/
+expected_outputs:
+  editor_raw_root: Saved/GuideBuddy/Telemetry/<run-id>/
+  packaged_raw_root: <game-exe-directory>/GuideBuddy/Telemetry/<run-id>/
+  files:
+    - Saved/GuideBuddy/Telemetry/<run-id>/drill_spec.json
+    - Saved/GuideBuddy/Telemetry/<run-id>/drill_session.json
+    - Saved/GuideBuddy/Telemetry/<run-id>/guide_requests/request-001/drill_spec.json
+    - Saved/GuideBuddy/Telemetry/<run-id>/guide_requests/request-001/drill_session.json
+  verifier_work_root: Saved/GuideBuddy/DrillVerifier/MVP04_ADAPTIVE_DRILL_GENERATION/
+  contract_evidence_root: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/
+contract_evidence:
+  run_record: aiflow/contracts/runs/MVP04_ADAPTIVE_DRILL_GENERATION.run-001.yaml
+  evidence_index: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/index.md
+  runtime_request_verifier: aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/runtime_request_verifier.json
+notes:
+  - MVP04 consumes MVP03 coaching.json and does not read raw combat_events.jsonl.
+  - The accepted template is single_enemy_execution_response.
+  - Drill artifacts contain metadata and whitelist template requests, not free-form Unreal creation instructions.
