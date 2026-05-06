@@ -23,7 +23,9 @@
 - `aiflow/specs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.md`
 - `aiflow/specs/MVP03_LLM_COACHING_LOOP.md`
 - `aiflow/specs/MVP04_ADAPTIVE_DRILL_GENERATION.md`
-- `aiflow/specs/MVP05_EVALUATION_AND_ITERATION.md`
+- `aiflow/specs/MVP05_DRILL_ARENA_RUNTIME.md`
+- `aiflow/specs/MVP06_EVALUATION_AND_ITERATION.md`
+- `aiflow/specs/MVP07_REAL_LLM_PROVIDER.md`
 - `aiflow/specs/_TEMPLATE_PHASE_PROSE.md`
 
 ## 合同层

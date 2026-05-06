@@ -16,7 +16,7 @@ GuideBuddy 的核心闭环是：
   -> 语义化战斗事件
   -> 诊断信号
   -> LLM 导玩建议与最小练习目标
-  -> 下一次尝试或针对性练习场
+  -> 下一次尝试或可进入的针对性练习场
   -> 指导 / 练习效果评估
 ```
 
@@ -26,7 +26,8 @@ GuideBuddy 的核心闭环是：
 - 诊断层做确定性归因。
 - LLM 负责教学表达，不直接替代诊断层。
 - LLM 可以生成结构化练习目标和 Drill Spec，但不直接自由创建 Unreal 场景；UE 侧只执行白名单模板和受控参数。
-- MVP 先做遥测、诊断、导玩和评估闭环，不先做完整 Blueprint-to-code。
+- MVP 先做遥测、诊断、导玩、受控练习场运行和评估闭环，不先做完整 Blueprint-to-code。
+- 真实 LLM provider 后置到练习场可进入、可评估之后；在此之前允许使用可替换的本地 provider 保持结构稳定。
 - 新增可分析逻辑、遥测、诊断、数据导出和导玩编排优先使用 Puerts + TypeScript，以便 AI 后续阅读、修改、diff 和快速迭代。
 - C++ 主要作为必要桥接层：用于启动 Puerts 环境、暴露 TypeScript 无法直接访问的引擎 / TempestCombatFramework delegate、处理性能敏感或必须 native 的边界。
 - 现有 Blueprint 可以继续承载既有战斗资产与配置；新增关键逻辑不放进二进制 Blueprint 图。
@@ -39,13 +40,15 @@ GuideBuddy 的核心闭环是：
 | `MVP01_COMBAT_TELEMETRY_FOUNDATION` | 已验收 | 在场景中采集语义化战斗事件 |
 | `MVP02_DIAGNOSTIC_SIGNAL_LAYER` | 已验收 | 把事件流转成死亡原因与操作诊断，并预留可选 LLM 复核 |
 | `MVP03_LLM_COACHING_LOOP` | 已验收 | 基于诊断生成导玩建议、最小练习目标和 Drill Spec 草案 |
-| `MVP04_ADAPTIVE_DRILL_GENERATION` | 已验收 | 基于 Drill Spec 生成受控的针对性练习场 |
-| `MVP05_EVALUATION_AND_ITERATION` | 未开始 | 判断指导或练习是否改善玩家表现 |
+| `MVP04_ADAPTIVE_DRILL_GENERATION` | 已验收 | 把 Drill Spec candidate 规范化为白名单模板请求和 session 元数据 |
+| `MVP05_DRILL_ARENA_RUNTIME` | 待编译 | 根据 MVP04 的 `drill_spec.json` 生成可进入的针对性练习场，并允许玩家切换进入单点训练 |
+| `MVP06_EVALUATION_AND_ITERATION` | 未开始 | 判断指导或练习是否改善玩家表现 |
+| `MVP07_REAL_LLM_PROVIDER` | 未开始 | 将 MVP03 或后续 provider 从本地规则模板替换为真实 LLM provider |
 
 ## 默认执行基线
 
 - Latest Accepted Baseline：`MVP04_ADAPTIVE_DRILL_GENERATION@v0.1`
-- Current Execution Baseline：待编译 `MVP05_EVALUATION_AND_ITERATION`
+- Current Execution Baseline：待编译 `MVP05_DRILL_ARENA_RUNTIME`
 - 候选草案：无。
 - Current Brief：`aiflow/contracts/briefs/MVP04_ADAPTIVE_DRILL_GENERATION.brief.yaml`，状态为 `active`。
 - Current Task Pack：`aiflow/contracts/taskpacks/MVP04_ADAPTIVE_DRILL_GENERATION.taskpack.yaml`，状态为 `active`。
@@ -53,7 +56,7 @@ GuideBuddy 的核心闭环是：
 - Current Verifier：`aiflow/contracts/verifiers/MVP04_ADAPTIVE_DRILL_GENERATION.verifier.yaml`，状态为 `active`。
 - Latest Ledger：`aiflow/contracts/ledgers/MVP04_ADAPTIVE_DRILL_GENERATION.result.md`
 
-MVP01 已通过真实 PIE gameplay 验收；MVP02 已基于 MVP01 归档 gameplay fixture 通过自动诊断验收；MVP03 已基于 MVP02 诊断输出生成可替换 provider 的导玩建议、练习目标和 Drill Spec 草案；MVP04 已把 Drill Spec candidate 规范化为白名单模板请求、`drill_spec.json` 与 `drill_session.json`。当前实现默认不修改战斗数值、不改二进制 Blueprint 战斗逻辑，不实现真实 LLM API 或自由形式 UE 场景生成。
+MVP01 已通过真实 PIE gameplay 验收；MVP02 已基于 MVP01 归档 gameplay fixture 通过自动诊断验收；MVP03 已基于 MVP02 诊断输出生成可替换 provider 的导玩建议、练习目标和 Drill Spec 草案；MVP04 已把 Drill Spec candidate 规范化为白名单模板请求、`drill_spec.json` 与 `drill_session.json`。下一步优先让玩家能从当前战斗切换到由这些 drill specs 驱动的针对性练习场；完成后再做效果评估，最后再接真实 LLM provider。当前实现默认不修改战斗数值、不改二进制 Blueprint 战斗逻辑，不实现真实 LLM API 或自由形式 UE 场景生成。
 
 ## 当前战斗入口
 
@@ -74,6 +77,7 @@ MVP01 已通过真实 PIE gameplay 验收；MVP02 已基于 MVP01 归档 gamepla
 - 2026-05-05：MVP02 诊断信号层通过 `npm.cmd run verify:mvp02`，基于 MVP01 归档 gameplay fixture 生成 `diagnosis.json`，accepted run 为 `aiflow/contracts/runs/MVP02_DIAGNOSTIC_SIGNAL_LAYER.run-001.yaml`。
 - 2026-05-05：MVP03 导玩闭环通过 `npm.cmd run verify:mvp03`，基于 MVP02 归档 diagnosis 生成 `coaching.json`、`practice_objective` 与 `drill_spec_candidate`，accepted run 为 `aiflow/contracts/runs/MVP03_LLM_COACHING_LOOP.run-001.yaml`。
 - 2026-05-05：MVP04 针对性练习场生成通过 `npm.cmd run verify:mvp04`，基于 MVP03 归档 coaching 生成 `drill_spec.json` 与 `drill_session.json`，并验证非白名单模板、参数、危险字符串和 insufficient evidence 均被拒绝；accepted run 为 `aiflow/contracts/runs/MVP04_ADAPTIVE_DRILL_GENERATION.run-001.yaml`。
+- 2026-05-06：路线调整为先做 `MVP05_DRILL_ARENA_RUNTIME`，把 MVP04 产出的 drill specs 接成玩家可进入的单点训练场；再做 `MVP06_EVALUATION_AND_ITERATION`；最后做 `MVP07_REAL_LLM_PROVIDER`。
 
 ## 同步要求
 

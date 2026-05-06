@@ -1,0 +1,27 @@
+id: GUIDEBUDDY_ROUTE.CR-001
+status: accepted
+baseline_id: MVP04_ADAPTIVE_DRILL_GENERATION@v0.1
+reason: "MVP04 已生成受控 drill specs，但下一步应先让玩家进入对应练习场，再评估练习是否改善表现；真实 LLM provider 应在可进入、可评估闭环稳定后再接入。"
+change_summary: "插入 MVP05_DRILL_ARENA_RUNTIME；将原 MVP05_EVALUATION_AND_ITERATION 顺延为 MVP06；新增 MVP07_REAL_LLM_PROVIDER。"
+affected_files:
+  - aiflow/CONTEXT.md
+  - aiflow/INDEX.md
+  - aiflow/context/mvp04-current-handoff.md
+  - aiflow/specs/GAME_PHASES.md
+  - aiflow/specs/README.md
+  - aiflow/specs/PROJECT_OVERVIEW.md
+  - aiflow/specs/TELEMETRY_AND_COACHING_REQUIREMENTS.md
+  - aiflow/specs/MVP04_ADAPTIVE_DRILL_GENERATION.md
+  - aiflow/specs/MVP05_DRILL_ARENA_RUNTIME.md
+  - aiflow/specs/MVP06_EVALUATION_AND_ITERATION.md
+  - aiflow/specs/MVP07_REAL_LLM_PROVIDER.md
+  - aiflow/contracts/README.md
+required_updates:
+  specs: true
+  brief: true
+  taskpack: true
+  manifest: true
+  verifier: true
+  context: true
+decision_required: false
+next_baseline: MVP05_DRILL_ARENA_RUNTIME

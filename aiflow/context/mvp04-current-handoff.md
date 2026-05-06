@@ -50,7 +50,7 @@
 - Accepted Run：`aiflow/contracts/runs/MVP04_ADAPTIVE_DRILL_GENERATION.run-001.yaml`
 - Evidence Index：`aiflow/contracts/evidence/MVP04_ADAPTIVE_DRILL_GENERATION/v0.1/run-001/index.md`
 - Result Ledger：`aiflow/contracts/ledgers/MVP04_ADAPTIVE_DRILL_GENERATION.result.md`
-- 下一建议阶段：`MVP05_EVALUATION_AND_ITERATION`
+- 下一建议阶段：`MVP05_DRILL_ARENA_RUNTIME`
 
 `aiflow/CONTEXT.md`、`aiflow/specs/GAME_PHASES.md`、`aiflow/specs/MVP04_ADAPTIVE_DRILL_GENERATION.md` 和 `aiflow/contracts/README.md` 已同步到 MVP04 accepted 状态。
 
@@ -217,11 +217,12 @@ npm.cmd run verify:mvp03:runtime
 
 ## 下一步建议
 
-进入 `MVP05_EVALUATION_AND_ITERATION`：
+路线已调整，下一步进入 `MVP05_DRILL_ARENA_RUNTIME`：
 
 1. 编译 MVP05 contracts。
-2. 读取 `drill_session.json` 和后续 telemetry。
-3. 判断 `terminal_execution_count`、`enemy_execution_after_player_death`、`defensive_input_before_execution_window` 是否相对原始失败窗口改善。
-4. 输出 `evaluation.json` 或等价结果，并把结果接回下一轮 coaching。
+2. 读取 MVP04 生成的 `drill_spec.json` 与 `drill_session.json`。
+3. 在 UE 侧接入 `single_enemy_execution_response` 对应的可进入练习场或练习模式。
+4. 让玩家能从复盘卡或等价入口切换到该练习场做单点训练。
+5. 练习场 run 写出带 `practice_objective_id`、`drill_id`、`session_id` 和 source refs 的 telemetry。
 
-短期不建议马上扩展多模板。先让 MVP05 能证明当前 `single_enemy_execution_response` 练习是否真的改善玩家表现。
+完成可进入练习场后，再进入 `MVP06_EVALUATION_AND_ITERATION` 判断当前 `single_enemy_execution_response` 练习是否真的改善玩家表现。真实 LLM provider 后置到 `MVP07_REAL_LLM_PROVIDER`。

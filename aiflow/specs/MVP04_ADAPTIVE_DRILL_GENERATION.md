@@ -1,12 +1,12 @@
-# MVP04：自适应针对性练习场生成
+# MVP04：Drill Spec 规范化与练习场请求生成
 
 ## 本阶段目标
 
-基于 MVP03 输出的 Drill Spec 草案，使用 UE 侧受控模板生成一个专门练习当前失败要点的训练场。
+基于 MVP03 输出的 Drill Spec 草案，验证并规范化为 UE 侧受控模板可以执行的正式 Drill Spec 和练习场 session 请求。
 
 本阶段完成后，项目应能回答：
 
-**系统能不能为玩家这次失败搭出一个最小、可验证、只练一个问题的练习场。**
+**系统能不能把玩家这次失败转换成一个安全、可追溯、可执行的练习场请求。**
 
 ## 本次一定要有
 
@@ -22,21 +22,22 @@
 - 至少支持一个练习目标：
   - 避免在敌人特殊攻击前摇或危险窗口中过度攻击。
   - 或避免姿态被打空后进入处决窗口。
-- 练习场生成必须可重复、可回收、可由后续遥测评估。
+- 练习场请求必须可重复、可回收、可由后续运行时和遥测评估。
 
 ## 推荐扩展
 
-- 根据 MVP05 评估结果自动升降难度。
+- 根据 MVP06 评估结果自动升降难度。
 - 支持多个白名单模板，例如闪避时机、格挡时机、姿态恢复、治疗时机。
 - 支持固定随机种子，便于复现和验收。
-- 支持练习完成后的 `drill_result.json`。
-- 支持把练习结果回写到下一轮 coaching 输入。
+- 支持 MVP05 练习场运行完成后的 `drill_result.json`。
+- 支持把 MVP06 评估结果回写到下一轮 coaching 输入。
 
 ## 本次先不做
 
 - 不让 LLM 直接生成或修改 Blueprint 图。
 - 不让 LLM 传入任意资产路径、类名、控制台命令或脚本。
 - 不做完整训练关卡编辑器。
+- 不实现玩家切换进入练习场的完整运行时流程；该部分进入 MVP05。
 - 不做多敌人复杂 encounter 编排。
 - 不做长期训练课程系统。
 - 不做在线关卡分发或云端个性化服务。
@@ -81,24 +82,24 @@
 
 1. 使用 MVP03 生成的一份 `coaching.json`，其中包含 `practice_objective` 与 Drill Spec 草案。
 2. 验证并规范化 Drill Spec。
-3. UE 侧根据 Drill Spec 生成或进入一个受控练习场。
-4. 系统写出 `drill_session.json`。
-5. 玩家完成一次练习尝试，并生成常规 telemetry。
-6. MVP05 能基于该 telemetry 判断练习目标是否改善。
+3. 系统验证并规范化 Drill Spec。
+4. 系统写出 `drill_spec.json` 与 `drill_session.json`。
+5. 系统证明非白名单模板、参数和危险字段会被拒绝。
+6. MVP05 能基于该 Drill Spec 和 session 请求接入真实可进入的练习场。
 
 人工验收关注：
 
-- 练习场是否真的只练一个问题。
+- 练习场请求是否真的只练一个问题。
 - 练习目标是否和原始失败证据一致。
-- 训练场是否可控、可重复，不像随机临时拼凑。
-- 玩家是否能立刻理解自己要练什么。
+- 训练场配置是否可控、可重复，不像随机临时拼凑。
+- 后续运行时是否能让玩家理解自己要进入什么练习。
 
 自动验收关注：
 
 - Drill Spec 可解析。
 - 所有模板、敌人、参数都在白名单内。
 - `drill_session.json` 可解析。
-- 练习 run 能关联回 source attempt、diagnosis、coaching 和 practice objective。
+- session 请求能关联回 source attempt、diagnosis、coaching 和 practice objective。
 - 非白名单字段或危险字段会被拒绝。
 
 ## 依赖与衔接
@@ -106,12 +107,12 @@
 - 依赖 MVP01 的 telemetry 输出。
 - 依赖 MVP02 的稳定诊断和 `practice_objective_seed`。
 - 依赖 MVP03 的 `practice_objective` 与 Drill Spec 草案。
-- 输出结果将供 MVP05 关联练习 telemetry 并评估是否改善。
-- 需要 UE 侧提供受控训练场模板、参数白名单和进入 / 退出练习场的稳定入口。
+- 输出结果将供 MVP05 生成可进入的练习场，并供 MVP06 关联练习 telemetry 评估是否改善。
+- 需要 UE 侧提供受控训练场模板、参数白名单；进入 / 退出练习场的稳定入口进入 MVP05。
 
 ## 当前状态
 
-已验收。`MVP04_ADAPTIVE_DRILL_GENERATION@v0.1` 已通过 `npm.cmd run verify:mvp04`，accepted run 为 `aiflow/contracts/runs/MVP04_ADAPTIVE_DRILL_GENERATION.run-001.yaml`。
+已验收。`MVP04_ADAPTIVE_DRILL_GENERATION@v0.1` 已通过 `npm.cmd run verify:mvp04`，accepted run 为 `aiflow/contracts/runs/MVP04_ADAPTIVE_DRILL_GENERATION.run-001.yaml`。本 accepted scope 是 Drill Spec 规范化、白名单验证和 session 请求生成，不包含玩家实际切换进入练习场的运行时流程。
 
 ## 备注
 

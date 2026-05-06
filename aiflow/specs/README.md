@@ -12,8 +12,10 @@
 - `MVP01_COMBAT_TELEMETRY_FOUNDATION.md`：语义化战斗遥测基础
 - `MVP02_DIAGNOSTIC_SIGNAL_LAYER.md`：诊断信号层
 - `MVP03_LLM_COACHING_LOOP.md`：LLM 导玩闭环
-- `MVP04_ADAPTIVE_DRILL_GENERATION.md`：自适应针对性练习场生成
-- `MVP05_EVALUATION_AND_ITERATION.md`：指导与练习效果评估迭代
+- `MVP04_ADAPTIVE_DRILL_GENERATION.md`：Drill Spec 规范化与练习场请求生成
+- `MVP05_DRILL_ARENA_RUNTIME.md`：练习场运行时接入
+- `MVP06_EVALUATION_AND_ITERATION.md`：指导与练习效果评估迭代
+- `MVP07_REAL_LLM_PROVIDER.md`：真实 LLM provider 接入
 - `_TEMPLATE_PHASE_PROSE.md`：后续 phase prose 模板
 
 ## 写作边界
