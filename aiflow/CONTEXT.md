@@ -41,22 +41,23 @@ GuideBuddy 的核心闭环是：
 | `MVP02_DIAGNOSTIC_SIGNAL_LAYER` | 已验收 | 把事件流转成死亡原因与操作诊断，并预留可选 LLM 复核 |
 | `MVP03_LLM_COACHING_LOOP` | 已验收 | 基于诊断生成导玩建议、最小练习目标和 Drill Spec 草案 |
 | `MVP04_ADAPTIVE_DRILL_GENERATION` | 已验收 | 把 Drill Spec candidate 规范化为白名单模板请求和 session 元数据 |
-| `MVP05_DRILL_ARENA_RUNTIME` | 待编译 | 根据 MVP04 的 `drill_spec.json` 生成可进入的针对性练习场，并允许玩家切换进入单点训练 |
+| `MVP05_DRILL_ARENA_RUNTIME` | 实施中 | 先以硬编码方式实现翻滚躲避训练场，确认训练体验；后续再接 MVP04 `drill_spec.json` |
 | `MVP06_EVALUATION_AND_ITERATION` | 未开始 | 判断指导或练习是否改善玩家表现 |
 | `MVP07_REAL_LLM_PROVIDER` | 未开始 | 将 MVP03 或后续 provider 从本地规则模板替换为真实 LLM provider |
 
 ## 默认执行基线
 
 - Latest Accepted Baseline：`MVP04_ADAPTIVE_DRILL_GENERATION@v0.1`
-- Current Execution Baseline：待编译 `MVP05_DRILL_ARENA_RUNTIME`
+- Current Execution Baseline：`MVP05_DRILL_ARENA_RUNTIME@v0.1`（硬编码翻滚躲避训练场，已移除强制敌人攻击触发并补普通攻击训练计数，等待人工 PIE/packaged 烟测）
 - 候选草案：无。
-- Current Brief：`aiflow/contracts/briefs/MVP04_ADAPTIVE_DRILL_GENERATION.brief.yaml`，状态为 `active`。
-- Current Task Pack：`aiflow/contracts/taskpacks/MVP04_ADAPTIVE_DRILL_GENERATION.taskpack.yaml`，状态为 `active`。
-- Current Asset Manifest：`aiflow/contracts/manifests/MVP04_ADAPTIVE_DRILL_GENERATION.manifest.yaml`，状态为 `active`。
-- Current Verifier：`aiflow/contracts/verifiers/MVP04_ADAPTIVE_DRILL_GENERATION.verifier.yaml`，状态为 `active`。
+- Current Brief：`aiflow/contracts/briefs/MVP05_DRILL_ARENA_RUNTIME.brief.yaml`，状态为 `confirmed`。
+- Current Task Pack：`aiflow/contracts/taskpacks/MVP05_DRILL_ARENA_RUNTIME.taskpack.yaml`，状态为 `active`。
+- Current Asset Manifest：`aiflow/contracts/manifests/MVP05_DRILL_ARENA_RUNTIME.manifest.yaml`，状态为 `active`。
+- Current Verifier：`aiflow/contracts/verifiers/MVP05_DRILL_ARENA_RUNTIME.verifier.yaml`，状态为 `active`。
 - Latest Ledger：`aiflow/contracts/ledgers/MVP04_ADAPTIVE_DRILL_GENERATION.result.md`
+- Latest MVP05 Run：`aiflow/contracts/runs/MVP05_DRILL_ARENA_RUNTIME.run-004.yaml`，状态为 `verifier_passed`。
 
-MVP01 已通过真实 PIE gameplay 验收；MVP02 已基于 MVP01 归档 gameplay fixture 通过自动诊断验收；MVP03 已基于 MVP02 诊断输出生成可替换 provider 的导玩建议、练习目标和 Drill Spec 草案；MVP04 已把 Drill Spec candidate 规范化为白名单模板请求、`drill_spec.json` 与 `drill_session.json`。下一步优先让玩家能从当前战斗切换到由这些 drill specs 驱动的针对性练习场；完成后再做效果评估，最后再接真实 LLM provider。当前实现默认不修改战斗数值、不改二进制 Blueprint 战斗逻辑，不实现真实 LLM API 或自由形式 UE 场景生成。
+MVP01 已通过真实 PIE gameplay 验收；MVP02 已基于 MVP01 归档 gameplay fixture 通过自动诊断验收；MVP03 已基于 MVP02 诊断输出生成可替换 provider 的导玩建议、练习目标和 Drill Spec 草案；MVP04 已把 Drill Spec candidate 规范化为白名单模板请求、`drill_spec.json` 与 `drill_session.json`。MVP05 当前按人类新指令先做硬编码翻滚躲避训练场：正式场景右上角进入训练场，训练场左上角显示“通过翻滚来避开敌人攻击”，连续成功默认 5 次后弹窗并返回正式场景。该硬编码版本用于确认训练场体验，后续再迁移回 drill spec 驱动。当前实现默认不修改战斗数值、不改二进制 Blueprint 战斗逻辑，不实现真实 LLM API 或自由形式 UE 场景生成。
 
 ## 当前战斗入口
 
@@ -78,6 +79,8 @@ MVP01 已通过真实 PIE gameplay 验收；MVP02 已基于 MVP01 归档 gamepla
 - 2026-05-05：MVP03 导玩闭环通过 `npm.cmd run verify:mvp03`，基于 MVP02 归档 diagnosis 生成 `coaching.json`、`practice_objective` 与 `drill_spec_candidate`，accepted run 为 `aiflow/contracts/runs/MVP03_LLM_COACHING_LOOP.run-001.yaml`。
 - 2026-05-05：MVP04 针对性练习场生成通过 `npm.cmd run verify:mvp04`，基于 MVP03 归档 coaching 生成 `drill_spec.json` 与 `drill_session.json`，并验证非白名单模板、参数、危险字符串和 insufficient evidence 均被拒绝；accepted run 为 `aiflow/contracts/runs/MVP04_ADAPTIVE_DRILL_GENERATION.run-001.yaml`。
 - 2026-05-06：路线调整为先做 `MVP05_DRILL_ARENA_RUNTIME`，把 MVP04 产出的 drill specs 接成玩家可进入的单点训练场；再做 `MVP06_EVALUATION_AND_ITERATION`；最后做 `MVP07_REAL_LLM_PROVIDER`。
+- 2026-05-06：人类进一步调整 MVP05 计划，要求先硬编码实现一个翻滚躲避训练场以确认体验；已新增 MVP05 contracts，并实现入口按钮、训练 HUD、连续成功计数、无伤亡保护、完成弹窗和返回正式场景路径。首次 C++ build 被 Live Coding 阻塞；补充入口按钮 viewport-ready retry 后，自动构建验证通过。随后根据 Windows 发布版输入要求，把主场景入口改为默认 gameplay 鼠标捕获、按住 Alt 临时进入 UI pointer mode、松开恢复 gameplay；Editor 与 Win64 non-editor target build 均通过，见 `aiflow/contracts/runs/MVP05_DRILL_ARENA_RUNTIME.run-003.yaml`。
+- 2026-05-06：根据人工 PIE 反馈修补训练场：移除硬编码 `State.Attack` 强制触发，避免 PIE 退出时敌人攻击蓝图在对象清理阶段访问空 CombatTarget；训练窗口改为观察敌人实际进入的 Ability/State，并把 GameplayTag、对象名和类名合并识别，使普通攻击 `BP_GS_EnemyCloseRangeAttackAbility` 与跳砍等攻击都可计数。TypeScript build、diff check、Editor target build、Win64 non-editor target build 均通过，见 `aiflow/contracts/runs/MVP05_DRILL_ARENA_RUNTIME.run-004.yaml`。
 
 ## 同步要求
 

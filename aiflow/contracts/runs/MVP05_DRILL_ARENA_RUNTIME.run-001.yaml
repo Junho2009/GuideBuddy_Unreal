@@ -1,0 +1,52 @@
+id: MVP05_DRILL_ARENA_RUNTIME.run-001
+baseline_id: MVP05_DRILL_ARENA_RUNTIME@v0.1
+status: blocked
+started_at: "2026-05-06T12:00:00.000Z"
+finished_at: "2026-05-06T12:00:00.000Z"
+environment: "Windows, Unreal Engine 5.7.4, Node.js/TypeScript, UnrealEditor process already open with Live Coding active"
+verifier_ref: aiflow/contracts/verifiers/MVP05_DRILL_ARENA_RUNTIME.verifier.yaml
+stimulus:
+  - "Updated MVP05 prose and contracts for the hardcoded dodge training arena."
+  - "Implemented GuideBuddyRuntime C++ entry button, training HUD, dodge success counter, no-death attribute guard, completion dialog, and return-to-main-map path."
+  - "Copied SampleDemoShowcaseMap.umap to Content/GuideBuddy/Maps/GuideBuddyDodgeTrainingArena.umap."
+  - "Ran npm run build:guidebuddy."
+  - "Attempted UnrealEditor target build through aiflow/tools/unreal-editor/scripts/BuildAndLaunchEditor.ps1."
+results:
+  - id: SPEC_SYNC
+    status: pass
+    evidence: aiflow/specs/MVP05_DRILL_ARENA_RUNTIME.md
+  - id: TYPESCRIPT_BUILD
+    status: pass
+    evidence: package.json
+    observed:
+      command: npm run build:guidebuddy
+      exit_code: 0
+  - id: MAP_ASSET_PRESENT
+    status: pass
+    evidence: Content/GuideBuddy/Maps/GuideBuddyDodgeTrainingArena.umap
+  - id: CONFIG_DEFAULT
+    status: pass
+    evidence: Config/DefaultGame.ini
+    observed:
+      RequiredSuccessfulDodges: 5
+  - id: CPP_BUILD
+    status: blocked
+    evidence: C:/Users/Administrator/AppData/Local/UnrealBuildTool/Log.txt
+    observed:
+      command: powershell -NoProfile -ExecutionPolicy Bypass -File ./aiflow/tools/unreal-editor/scripts/BuildAndLaunchEditor.ps1 -ProjectDir . -NonInteractive -BuildOnly -LogPath Saved/Automation/MVP05_DRILL_ARENA_RUNTIME/build.log
+      exit_code: 1
+      blocker: "Unable to build while Live Coding is active. Exit the editor and game, or press Ctrl+Alt+F11."
+      running_editor_process: "UnrealEditor pid 62324, TCF_Sample - Unreal Editor"
+  - id: DIFF_CHECK
+    status: pass
+    evidence: git diff --check
+manual_smoke_checks:
+  - id: HUMAN_ENTER_TRAINING
+    status: not_run
+    reason: C++ build was blocked by active Live Coding session.
+  - id: HUMAN_COMPLETE_AND_RETURN
+    status: not_run
+    reason: C++ build was blocked by active Live Coding session.
+notes:
+  - "UnrealHeaderTool processed the changed GuideBuddyTelemetryBridge header before the build was blocked."
+  - "No accepted ledger was written because CPP_BUILD did not complete."

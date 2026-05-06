@@ -15,7 +15,9 @@
 #include "GameFramework/PlayerController.h"
 #include "GameplayTagContainer.h"
 #include "InputAction.h"
+#include "InputCoreTypes.h"
 #include "JsEnv.h"
+#include "Misc/ConfigCacheIni.h"
 #include "Modules/ModuleManager.h"
 #include "Objects/TempestBaseAbilityObject.h"
 #include "Objects/TempestBaseAttributeObject.h"
@@ -26,6 +28,11 @@
 namespace GuideBuddyRuntime
 {
 static constexpr double DiscoveryIntervalSeconds = 0.5;
+static constexpr double TrainingAttackWindowSeconds = 1.4;
+static constexpr double TrainingPreDodgeGraceSeconds = 0.65;
+static constexpr float TrainingSafeAttributeValue = 999999.0f;
+static const TCHAR* MainMapName = TEXT("SampleDemoShowcaseMap");
+static const TCHAR* DodgeTrainingMapName = TEXT("GuideBuddyDodgeTrainingArena");
 
 static bool IsRelevantWorld(const UWorld* World)
 {
@@ -40,7 +47,17 @@ static bool IsRelevantWorld(const UWorld* World)
 		return false;
 	}
 
-	return World->GetMapName().Contains(TEXT("SampleDemoShowcaseMap"));
+	return World->GetMapName().Contains(MainMapName) || World->GetMapName().Contains(DodgeTrainingMapName);
+}
+
+static bool IsDodgeTrainingWorld(const UWorld* World)
+{
+	return World && World->GetMapName().Contains(DodgeTrainingMapName);
+}
+
+static bool IsMainShowcaseWorld(const UWorld* World)
+{
+	return World && World->GetMapName().Contains(MainMapName) && !IsDodgeTrainingWorld(World);
 }
 
 static FString TagToString(const FGameplayTag& Tag)
@@ -54,6 +71,61 @@ static TSharedPtr<FJsonObject> BuildGameplayTagObject(const FGameplayTag& Tag)
 	TagObject->SetBoolField(TEXT("is_valid"), Tag.IsValid());
 	TagObject->SetStringField(TEXT("tag"), TagToString(Tag));
 	return TagObject;
+}
+
+static FString BuildTrainingSignalText(const UObject* Object, const FString& GameplayTag)
+{
+	FString Signal = GameplayTag;
+	if (!Object)
+	{
+		return Signal;
+	}
+
+	if (!Signal.IsEmpty())
+	{
+		Signal.AppendChar(TEXT(' '));
+	}
+	Signal += Object->GetName();
+
+	const UClass* ObjectClass = Object->GetClass();
+	if (ObjectClass)
+	{
+		Signal.AppendChar(TEXT(' '));
+		Signal += ObjectClass->GetName();
+	}
+
+	return Signal;
+}
+
+static bool IsAttackLikeSignal(const FString& Signal)
+{
+	return Signal.Contains(TEXT("Attack"), ESearchCase::IgnoreCase) ||
+		Signal.Contains(TEXT("CloseRange"), ESearchCase::IgnoreCase) ||
+		Signal.Contains(TEXT("Slash"), ESearchCase::IgnoreCase) ||
+		Signal.Contains(TEXT("GroundSmash"), ESearchCase::IgnoreCase);
+}
+
+static bool IsDodgeLikeSignal(const FString& Signal)
+{
+	return Signal.Contains(TEXT("Dodge"), ESearchCase::IgnoreCase) ||
+		Signal.Contains(TEXT("Roll"), ESearchCase::IgnoreCase);
+}
+
+static bool IsTrainingProtectedAttributeTag(const FString& Tag)
+{
+	return Tag.Contains(TEXT("Health"), ESearchCase::IgnoreCase) ||
+		Tag.Contains(TEXT("Posture"), ESearchCase::IgnoreCase);
+}
+
+static int32 ReadRequiredSuccessfulDodges()
+{
+	int32 RequiredDodges = 5;
+	if (GConfig)
+	{
+		GConfig->GetInt(TEXT("GuideBuddyDodgeTraining"), TEXT("RequiredSuccessfulDodges"), RequiredDodges, GGameIni);
+	}
+
+	return FMath::Clamp(RequiredDodges, 1, 99);
 }
 }
 
@@ -134,6 +206,12 @@ private:
 		}
 
 		DiscoverAndPoll(false);
+		if (GuideBuddyRuntime::IsMainShowcaseWorld(ActiveWorld.Get()))
+		{
+			Bridge->ShowDodgeTrainingEntryButton();
+			TickDodgeTrainingEntryPointerMode();
+		}
+		TickDodgeTraining(DeltaTime);
 		return true;
 	}
 
@@ -189,12 +267,23 @@ private:
 		Bridge->EmitBridgeStarted();
 		LastDiscoveryPlatformSeconds = 0.0;
 		DiscoverAndPoll(true);
+
+		if (GuideBuddyRuntime::IsDodgeTrainingWorld(World))
+		{
+			BeginDodgeTrainingSession();
+		}
+		else if (GuideBuddyRuntime::IsMainShowcaseWorld(World))
+		{
+			bDodgeTrainingMode = false;
+			Bridge->ShowDodgeTrainingEntryButton();
+		}
 	}
 
 	void EndSession(const FString& Reason)
 	{
 		if (Bridge.IsValid())
 		{
+			Bridge->RemoveDodgeTrainingWidgets();
 			Bridge->EmitBridgeShutdown(Reason);
 		}
 
@@ -214,6 +303,9 @@ private:
 		LastCombatStatuses.Reset();
 		LastAttributeValues.Reset();
 		LastDiscoveryPlatformSeconds = 0.0;
+		bDodgeTrainingMode = false;
+		bDodgeTrainingCompleted = false;
+		bTrainingAttackWindowActive = false;
 	}
 
 	void DiscoverAndPoll(bool bForceDiscovery)
@@ -319,13 +411,15 @@ private:
 
 	void EmitAbilityChanged(AActor* Actor, UTempestBaseAbilityObject* Ability, const FString& ChangeType)
 	{
+		const FString AbilityTag = Ability ? GuideBuddyRuntime::TagToString(Ability->AbilityGameplayTag) : TEXT("");
 		TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 		Payload->SetStringField(TEXT("change_type"), ChangeType);
 		Payload->SetObjectField(TEXT("actor"), Bridge->BuildActorObject(Actor));
 		Payload->SetObjectField(TEXT("ability"), Bridge->BuildObjectObject(Ability));
-		Payload->SetStringField(TEXT("ability_tag"), Ability ? GuideBuddyRuntime::TagToString(Ability->AbilityGameplayTag) : TEXT(""));
+		Payload->SetStringField(TEXT("ability_tag"), AbilityTag);
 		Payload->SetObjectField(TEXT("ability_gameplay_tag"), Ability ? GuideBuddyRuntime::BuildGameplayTagObject(Ability->AbilityGameplayTag) : MakeShared<FJsonObject>());
 		Bridge->EmitSignal(TEXT("ability_activated"), Payload);
+		HandleDodgeTrainingCombatSignal(Actor, GuideBuddyRuntime::BuildTrainingSignalText(Ability, AbilityTag));
 	}
 
 	void PollState(AActor* Actor)
@@ -362,13 +456,15 @@ private:
 
 	void EmitStateChanged(AActor* Actor, UTempestBaseStateObject* State, const FString& ChangeType)
 	{
+		const FString StateTag = State ? GuideBuddyRuntime::TagToString(State->StateGameplayTag) : TEXT("");
 		TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 		Payload->SetStringField(TEXT("change_type"), ChangeType);
 		Payload->SetObjectField(TEXT("actor"), Bridge->BuildActorObject(Actor));
 		Payload->SetObjectField(TEXT("state"), Bridge->BuildObjectObject(State));
-		Payload->SetStringField(TEXT("state_tag"), State ? GuideBuddyRuntime::TagToString(State->StateGameplayTag) : TEXT(""));
+		Payload->SetStringField(TEXT("state_tag"), StateTag);
 		Payload->SetObjectField(TEXT("state_gameplay_tag"), State ? GuideBuddyRuntime::BuildGameplayTagObject(State->StateGameplayTag) : MakeShared<FJsonObject>());
 		Bridge->EmitSignal(TEXT("state_activated"), Payload);
+		HandleDodgeTrainingCombatSignal(Actor, GuideBuddyRuntime::BuildTrainingSignalText(State, StateTag));
 	}
 
 	void PollCombatStatus(AActor* Actor)
@@ -418,6 +514,228 @@ private:
 		Bridge->EmitSignal(TEXT("combat_status_changed"), Payload);
 	}
 
+	void BeginDodgeTrainingSession()
+	{
+		bDodgeTrainingMode = true;
+		bDodgeTrainingCompleted = false;
+		bTrainingAttackWindowActive = false;
+		bTrainingDodgeSeenInWindow = false;
+		bTrainingDamageTakenInWindow = false;
+		RequiredSuccessfulDodges = GuideBuddyRuntime::ReadRequiredSuccessfulDodges();
+		ConsecutiveSuccessfulDodges = 0;
+		TrainingLastEnemyAttackTime = -1000.0;
+		TrainingAttackWindowEndTime = -1000.0;
+		TrainingLastPlayerDodgeTime = -1000.0;
+		LastTrainingFeedback = TEXT("等待敌人攻击，看到起手后翻滚。");
+
+		if (Bridge.IsValid())
+		{
+			Bridge->ShowDodgeTrainingHud(ConsecutiveSuccessfulDodges, RequiredSuccessfulDodges, LastTrainingFeedback);
+		}
+	}
+
+	void TickDodgeTrainingEntryPointerMode()
+	{
+		if (!Bridge.IsValid())
+		{
+			return;
+		}
+
+		UWorld* World = ActiveWorld.Get();
+		APlayerController* PlayerController = World ? World->GetFirstPlayerController() : nullptr;
+		const bool bWantsPointer = PlayerController &&
+			(PlayerController->IsInputKeyDown(EKeys::LeftAlt) || PlayerController->IsInputKeyDown(EKeys::RightAlt));
+		Bridge->SetDodgeTrainingEntryPointerMode(bWantsPointer);
+	}
+
+	void TickDodgeTraining(float)
+	{
+		if (!bDodgeTrainingMode || bDodgeTrainingCompleted)
+		{
+			return;
+		}
+
+		UWorld* World = ActiveWorld.Get();
+		if (!World)
+		{
+			return;
+		}
+
+		const double NowSeconds = World->GetTimeSeconds();
+		if (bTrainingAttackWindowActive && NowSeconds >= TrainingAttackWindowEndTime)
+		{
+			const bool bSuccess = bTrainingDodgeSeenInWindow && !bTrainingDamageTakenInWindow;
+			ResolveDodgeTrainingWindow(bSuccess, bSuccess
+				? TEXT("躲避成功，保持节奏。")
+				: TEXT("这次没有完成有效翻滚，连续次数重置。"));
+		}
+
+	}
+
+	void HandleDodgeTrainingCombatSignal(AActor* Actor, const FString& Signal)
+	{
+		if (!bDodgeTrainingMode || bDodgeTrainingCompleted || !Bridge.IsValid() || Signal.IsEmpty())
+		{
+			return;
+		}
+
+		const FString Role = Bridge->GetActorRole(Actor);
+		if (Role == TEXT("enemy") && GuideBuddyRuntime::IsAttackLikeSignal(Signal))
+		{
+			StartDodgeTrainingAttackWindow(Signal);
+			return;
+		}
+
+		if (Role == TEXT("player") && GuideBuddyRuntime::IsDodgeLikeSignal(Signal))
+		{
+			RegisterDodgeTrainingDodge();
+		}
+	}
+
+	void StartDodgeTrainingAttackWindow(const FString&)
+	{
+		UWorld* World = ActiveWorld.Get();
+		if (!World)
+		{
+			return;
+		}
+
+		const double NowSeconds = World->GetTimeSeconds();
+		if (NowSeconds - TrainingLastEnemyAttackTime < 0.55)
+		{
+			return;
+		}
+
+		if (bTrainingAttackWindowActive)
+		{
+			ResolveDodgeTrainingWindow(false, TEXT("上一轮没有及时躲避，连续次数重置。"));
+		}
+
+		TrainingLastEnemyAttackTime = NowSeconds;
+		TrainingAttackWindowEndTime = NowSeconds + GuideBuddyRuntime::TrainingAttackWindowSeconds;
+		bTrainingAttackWindowActive = true;
+		bTrainingDamageTakenInWindow = false;
+		bTrainingDodgeSeenInWindow = NowSeconds - TrainingLastPlayerDodgeTime <= GuideBuddyRuntime::TrainingPreDodgeGraceSeconds;
+		LastTrainingFeedback = bTrainingDodgeSeenInWindow
+			? TEXT("翻滚时机已记录，避开这次攻击。")
+			: TEXT("敌人出手了，翻滚避开攻击。");
+		UpdateDodgeTrainingHud();
+	}
+
+	void RegisterDodgeTrainingDodge()
+	{
+		UWorld* World = ActiveWorld.Get();
+		if (!World)
+		{
+			return;
+		}
+
+		const double NowSeconds = World->GetTimeSeconds();
+		TrainingLastPlayerDodgeTime = NowSeconds;
+		if (bTrainingAttackWindowActive && NowSeconds <= TrainingAttackWindowEndTime)
+		{
+			bTrainingDodgeSeenInWindow = true;
+			LastTrainingFeedback = TEXT("翻滚已记录，确认是否避开攻击。");
+			UpdateDodgeTrainingHud();
+		}
+	}
+
+	void RegisterDodgeTrainingDamage()
+	{
+		if (!bDodgeTrainingMode || bDodgeTrainingCompleted)
+		{
+			return;
+		}
+
+		bTrainingDamageTakenInWindow = true;
+		if (bTrainingAttackWindowActive)
+		{
+			ResolveDodgeTrainingWindow(false, TEXT("受击了，连续成功次数重置。"));
+		}
+		else if (ConsecutiveSuccessfulDodges > 0)
+		{
+			ConsecutiveSuccessfulDodges = 0;
+			LastTrainingFeedback = TEXT("受击了，连续成功次数重置。");
+			UpdateDodgeTrainingHud();
+		}
+	}
+
+	void ResolveDodgeTrainingWindow(bool bSuccess, const FString& Feedback)
+	{
+		if (!bDodgeTrainingMode || bDodgeTrainingCompleted)
+		{
+			return;
+		}
+
+		bTrainingAttackWindowActive = false;
+		bTrainingDodgeSeenInWindow = false;
+		bTrainingDamageTakenInWindow = false;
+		LastTrainingFeedback = Feedback;
+
+		if (bSuccess)
+		{
+			ConsecutiveSuccessfulDodges = FMath::Clamp(ConsecutiveSuccessfulDodges + 1, 0, RequiredSuccessfulDodges);
+		}
+		else
+		{
+			ConsecutiveSuccessfulDodges = 0;
+		}
+
+		UpdateDodgeTrainingHud();
+		if (ConsecutiveSuccessfulDodges >= RequiredSuccessfulDodges)
+		{
+			bDodgeTrainingCompleted = true;
+			if (Bridge.IsValid())
+			{
+				Bridge->ShowDodgeTrainingCompleteDialog(RequiredSuccessfulDodges);
+			}
+		}
+	}
+
+	void UpdateDodgeTrainingHud()
+	{
+		if (Bridge.IsValid())
+		{
+			Bridge->ShowDodgeTrainingHud(ConsecutiveSuccessfulDodges, RequiredSuccessfulDodges, LastTrainingFeedback);
+		}
+	}
+
+	float ApplyDodgeTrainingAttributeGuard(
+		AActor* Actor,
+		UTempestBaseAttributeObject* Attribute,
+		float CurrentValue,
+		const float* PreviousValue)
+	{
+		if (!bDodgeTrainingMode || !Attribute)
+		{
+			return CurrentValue;
+		}
+
+		const FString AttributeTag = GuideBuddyRuntime::TagToString(Attribute->AttributeGameplayTag);
+		if (!GuideBuddyRuntime::IsTrainingProtectedAttributeTag(AttributeTag))
+		{
+			return CurrentValue;
+		}
+
+		if (Bridge.IsValid() &&
+			Bridge->GetActorRole(Actor) == TEXT("player") &&
+			PreviousValue &&
+			CurrentValue < *PreviousValue - 0.001f)
+		{
+			RegisterDodgeTrainingDamage();
+		}
+
+		const float SafeValue = FMath::Max(Attribute->AttributeValues.MaxAttributeValue, GuideBuddyRuntime::TrainingSafeAttributeValue);
+		Attribute->AttributeValues.MaxAttributeValue = SafeValue;
+		if (!FMath::IsNearlyEqual(Attribute->AttributeValues.AttributeValue, SafeValue, 0.001f))
+		{
+			Attribute->AttributeValues.AttributeValue = SafeValue;
+			Attribute->OnValueUpdated.Broadcast(Attribute->AttributeGameplayTag);
+		}
+
+		return SafeValue;
+	}
+
 	void PollAttributes(AActor* Actor)
 	{
 		UTempestAttributesComponents* AttributesComponent = Actor->FindComponentByClass<UTempestAttributesComponents>();
@@ -439,15 +757,18 @@ private:
 
 			if (!PreviousValue)
 			{
-				LastAttributeValues.Add(AttributeKey, CurrentValue);
+				const float GuardedValue = ApplyDodgeTrainingAttributeGuard(Actor, Attribute, CurrentValue, nullptr);
+				LastAttributeValues.Add(AttributeKey, GuardedValue);
 				continue;
 			}
 
 			if (!FMath::IsNearlyEqual(*PreviousValue, CurrentValue, 0.001f))
 			{
 				EmitAttributeChanged(Actor, Attribute, *PreviousValue, CurrentValue);
-				LastAttributeValues.Add(AttributeKey, CurrentValue);
 			}
+
+			const float GuardedValue = ApplyDodgeTrainingAttributeGuard(Actor, Attribute, CurrentValue, PreviousValue);
+			LastAttributeValues.Add(AttributeKey, GuardedValue);
 		}
 	}
 
@@ -485,6 +806,17 @@ private:
 	TMap<FObjectKey, FGameplayTagContainer> LastCombatStatuses;
 	TMap<FObjectKey, float> LastAttributeValues;
 	double LastDiscoveryPlatformSeconds = 0.0;
+	bool bDodgeTrainingMode = false;
+	bool bDodgeTrainingCompleted = false;
+	bool bTrainingAttackWindowActive = false;
+	bool bTrainingDodgeSeenInWindow = false;
+	bool bTrainingDamageTakenInWindow = false;
+	int32 RequiredSuccessfulDodges = 5;
+	int32 ConsecutiveSuccessfulDodges = 0;
+	double TrainingLastEnemyAttackTime = -1000.0;
+	double TrainingAttackWindowEndTime = -1000.0;
+	double TrainingLastPlayerDodgeTime = -1000.0;
+	FString LastTrainingFeedback;
 };
 
 IMPLEMENT_MODULE(FGuideBuddyRuntimeModule, GuideBuddyRuntime)

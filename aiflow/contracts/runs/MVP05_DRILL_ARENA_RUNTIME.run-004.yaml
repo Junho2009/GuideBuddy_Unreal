@@ -1,0 +1,63 @@
+id: MVP05_DRILL_ARENA_RUNTIME.run-004
+baseline_id: MVP05_DRILL_ARENA_RUNTIME@v0.1
+status: verifier_passed
+started_at: "2026-05-06T13:50:00.000Z"
+finished_at: "2026-05-06T13:58:00.000Z"
+environment: "Windows, Unreal Engine 5.7.4, Node.js/TypeScript, editor and non-editor Win64 targets"
+verifier_ref: aiflow/contracts/verifiers/MVP05_DRILL_ARENA_RUNTIME.verifier.yaml
+stimulus:
+  - "Human PIE feedback: exiting PIE logged repeated Blueprint runtime errors in BP_GS_EnemyCloseRangeAttackAbility and BP_GS_EnemyRareCloseRangeAttackAbility CanPerformAbility."
+  - "Human gameplay feedback: dodging enemy jump slash counted, but dodging the ordinary close-range attack did not appear to count."
+  - "Removed the hardcoded periodic State.Attack request from the training loop, so training no longer forces enemy attack states during PIE teardown."
+  - "Changed training attack/dodge detection to combine GameplayTag, object name, and class name from active Ability/State objects."
+  - "Broadened attack detection so ordinary close-range attack abilities and jump-slash-like attacks can both open a dodge training window."
+  - "Ran npm run build:guidebuddy."
+  - "Ran git diff --check."
+  - "Built TCF_Sample Win64 Development."
+  - "Built TCF_SampleEditor Win64 Development after the editor was closed."
+results:
+  - id: NO_FORCED_ATTACK_TRIGGER
+    status: pass
+    evidence: Plugins/GuideBuddy/Source/GuideBuddyRuntime/Private/GuideBuddyRuntimeModule.cpp
+    observed:
+      removed: "Periodic RequestTrainingEnemyAttack / TryPerformActorStateByTag path"
+      expected_effect: "PIE exit no longer asks enemy attack Blueprints to evaluate CanPerformAbility while world objects are being cleaned up."
+  - id: ORDINARY_ATTACK_SIGNAL
+    status: pass
+    evidence: Plugins/GuideBuddy/Source/GuideBuddyRuntime/Private/GuideBuddyRuntimeModule.cpp
+    observed:
+      detection_inputs: ["AbilityGameplayTag", "StateGameplayTag", "object name", "class name"]
+      covered_signals: ["Attack", "CloseRange", "Slash", "GroundSmash"]
+  - id: TYPESCRIPT_BUILD
+    status: pass
+    evidence: package.json
+    observed:
+      command: npm run build:guidebuddy
+      exit_code: 0
+  - id: CPP_EDITOR_BUILD
+    status: pass
+    evidence: C:/Users/Administrator/AppData/Local/UnrealBuildTool/Log.txt
+    observed:
+      target: TCF_SampleEditor Win64 Development
+      exit_code: 0
+  - id: CPP_WINDOWS_GAME_BUILD
+    status: pass
+    evidence: C:/Users/Administrator/AppData/Local/UnrealBuildTool/Log.txt
+    observed:
+      target: TCF_Sample Win64 Development
+      exit_code: 0
+  - id: DIFF_CHECK
+    status: pass
+    evidence: git diff --check
+manual_smoke_checks:
+  - id: HUMAN_PIE_EXIT_NO_BP_ERROR
+    status: pending
+    reason: Requires human PIE run and exit to confirm the reported Blueprint runtime errors are gone.
+  - id: HUMAN_ORDINARY_ATTACK_COUNTS
+    status: pending
+    reason: Requires human gameplay to confirm a successful dodge against the ordinary close-range attack increments the consecutive counter.
+  - id: HUMAN_PACKAGED_INPUT
+    status: pending
+    reason: Requires packaged smoke test to confirm camera and UI input remain correct outside the editor.
+notes:
+  - "A first editor build attempt was correctly blocked while Live Coding was active. After the user closed the editor, the same editor target build succeeded."

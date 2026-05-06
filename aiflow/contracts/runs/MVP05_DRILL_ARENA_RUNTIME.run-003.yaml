@@ -1,0 +1,42 @@
+id: MVP05_DRILL_ARENA_RUNTIME.run-003
+baseline_id: MVP05_DRILL_ARENA_RUNTIME@v0.1
+status: verifier_passed
+started_at: "2026-05-06T13:36:00.000Z"
+finished_at: "2026-05-06T13:39:00.000Z"
+environment: "Windows, Unreal Engine 5.7.4, Node.js/TypeScript, editor and non-editor Win64 targets"
+verifier_ref: aiflow/contracts/verifiers/MVP05_DRILL_ARENA_RUNTIME.verifier.yaml
+stimulus:
+  - "Changed entry UI input handling to a packaged-safe pointer mode: default gameplay mouse capture, hold Alt for UI pointer/click mode, restore gameplay mode on release."
+  - "Kept entry and HUD Slate roots SelfHitTestInvisible so non-button areas do not eat mouse input."
+  - "Ran npm run build:guidebuddy."
+  - "Ran git diff --check."
+  - "Built TCF_SampleEditor Win64 Development."
+  - "Built TCF_Sample Win64 Development to cover Windows packaged target compilation."
+results:
+  - id: TYPESCRIPT_BUILD
+    status: pass
+    evidence: package.json
+    observed:
+      command: npm run build:guidebuddy
+      exit_code: 0
+  - id: CPP_EDITOR_BUILD
+    status: pass
+    evidence: C:/Users/Administrator/AppData/Local/UnrealBuildTool/Log.txt
+    observed:
+      target: TCF_SampleEditor Win64 Development
+      exit_code: 0
+  - id: CPP_WINDOWS_GAME_BUILD
+    status: pass
+    evidence: C:/Users/Administrator/AppData/Local/UnrealBuildTool/Log.txt
+    observed:
+      target: TCF_Sample Win64 Development
+      exit_code: 0
+  - id: DIFF_CHECK
+    status: pass
+    evidence: git diff --check
+manual_smoke_checks:
+  - id: HUMAN_CAMERA_AND_UI_INPUT
+    status: pending
+    reason: Requires human PIE or packaged run to confirm camera control remains normal, Alt pointer mode clicks UI, and completion dialog restores input after return.
+notes:
+  - "This run verifies compilation for editor and non-editor Windows targets, but does not perform a full BuildCookRun package."

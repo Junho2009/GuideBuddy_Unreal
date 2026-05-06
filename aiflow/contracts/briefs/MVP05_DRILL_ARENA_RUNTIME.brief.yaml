@@ -1,0 +1,51 @@
+id: MVP05_DRILL_ARENA_RUNTIME
+baseline_id: MVP05_DRILL_ARENA_RUNTIME@v0.1
+status: confirmed
+source_specs:
+  - aiflow/specs/PROJECT_OVERVIEW.md
+  - aiflow/specs/GAME_PHASES.md
+  - aiflow/specs/MVP05_DRILL_ARENA_RUNTIME.md
+clarification_ref: aiflow/contracts/clarifications/MVP05_DRILL_ARENA_RUNTIME.clarification.md
+title: 硬编码翻滚躲避训练场
+one_sentence_goal: 在正式 SampleDemoShowcaseMap 入口提供可进入、可计数、可完成并可返回的翻滚躲避训练场。
+human_confirmation_required: false
+scope:
+  in:
+    - 正式场景右上角显示进入训练场按钮。
+    - 训练场显示训练要点：通过翻滚来避开敌人攻击。
+    - 训练场敌人持续攻击玩家，用于训练翻滚躲避。
+    - 连续成功躲避次数达到配置目标后结束训练。
+    - 连续成功目标默认 5 次，并可通过配置调整。
+    - 完成训练后弹窗提示已熟练，并提供返回正式场景按钮。
+    - 训练场内玩家和敌人不扣血、不死亡，尽量保留受击硬直。
+    - 训练场可复制 SampleDemoShowcaseMap.umap 或等价复用同一地图内容。
+  out:
+    - 不在本轮接入 MVP04 drill_spec.json 或 drill_session.json 参数驱动。
+    - 不新增多个训练模板。
+    - 不做长期课程系统。
+    - 不做训练效果改善评估。
+    - 不接真实 LLM provider。
+acceptance:
+  release_blocking:
+    - C++ 运行时代码编译通过。
+    - 正式场景入口按钮、训练场 HUD、完成弹窗、返回正式场景路径均有实现。
+    - 训练成功目标默认值为 5，且存在配置项。
+    - 训练模式健康值保护逻辑覆盖玩家和敌人。
+  human_smoke:
+    - 人类从正式场景进入训练场后，能明确看到训练要点并练习翻滚躲避。
+    - 连续成功达到目标后弹窗提示符合预期，返回正式场景可用。
+dependencies:
+  upstream:
+    - MVP04_ADAPTIVE_DRILL_GENERATION@v0.1 已验收。
+    - SampleDemoShowcaseMap 可作为正式入口和训练场内容来源。
+  downstream:
+    - 后续 MVP05 迭代可把硬编码训练目标迁移回 drill_spec 驱动。
+    - MVP06 将基于训练 telemetry 评估改善效果。
+risks:
+  - 如果直接复制 umap 未经过编辑器 resave，资产注册可能需要打开编辑器刷新。
+  - 训练成功判定首版基于攻击/翻滚/受击时序启发式，仍需人类手感烟测。
+  - 健康值保护通过运行时恢复实现，可能不能覆盖所有非血量死亡路径。
+non_goals:
+  - Blueprint 关键逻辑重写。
+  - 自由形式场景生成。
+  - 多敌人复杂训练编排。

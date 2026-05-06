@@ -1,0 +1,52 @@
+id: MVP05_DRILL_ARENA_RUNTIME
+baseline_id: MVP05_DRILL_ARENA_RUNTIME@v0.1
+status: active
+brief_ref: aiflow/contracts/briefs/MVP05_DRILL_ARENA_RUNTIME.brief.yaml
+manifest_ref: aiflow/contracts/manifests/MVP05_DRILL_ARENA_RUNTIME.manifest.yaml
+verifier_ref: aiflow/contracts/verifiers/MVP05_DRILL_ARENA_RUNTIME.verifier.yaml
+objective: 实现硬编码翻滚躲避训练场，让玩家从正式场景进入、连续成功后完成，并返回正式场景。
+execution_notes:
+  - 本轮以硬编码训练目标验证体验，不等待 drill_spec 接入。
+  - UI 可以先使用 GuideBuddyRuntime 现有 Slate 风格。
+  - 健康值保护只在训练场地图生效。
+tasks:
+  - id: T01_SYNC_MVP05_CONTRACT
+    title: 同步 MVP05 合同与计划
+    intent: 固定硬编码翻滚躲避训练场的当前执行范围。
+    expected_result: brief、taskpack、manifest、verifier 引用同一 baseline。
+  - id: T02_ADD_MAIN_ENTRY
+    title: 增加正式场景训练入口
+    intent: 在 SampleDemoShowcaseMap 右上角显示进入训练场按钮。
+    expected_result: 点击后打开训练场地图。
+  - id: T03_ADD_TRAINING_RULES
+    title: 增加训练场运行规则
+    intent: 显示训练要点、统计连续成功躲避、完成后弹窗。
+    expected_result: 连续成功达到配置次数后显示完成 UI。
+  - id: T04_ADD_NO_DEATH_GUARD
+    title: 增加训练场无伤亡保护
+    intent: 训练中玩家和敌人健康值保持安全，不触发死亡。
+    expected_result: 攻击和受击反馈可发生，但健康值被恢复到安全值。
+  - id: T05_WIRE_MAP_AND_CONFIG
+    title: 接入训练地图和配置
+    intent: 提供训练场地图资产和默认连续成功次数配置。
+    expected_result: 地图可打开，默认目标为 5 次。
+  - id: T06_VERIFY
+    title: 构建和 smoke 验证
+    intent: 运行可自动执行的 TypeScript/C++ 构建检查。
+    expected_result: 记录通过项和未跑的人类烟测项。
+scope_guard:
+  allowed:
+    - 修改 aiflow/specs/MVP05_DRILL_ARENA_RUNTIME.md。
+    - 新增 MVP05 contracts。
+    - 修改 Plugins/GuideBuddy/Source/GuideBuddyRuntime 下的运行时入口、UI 和训练规则。
+    - 修改 Config/DefaultGame.ini 添加训练目标默认配置。
+    - 复制 Content/TCF_SampleDemo/SampleDemoShowcaseMap.umap 为训练场地图。
+  forbidden:
+    - 重写 TempestCombatFramework 资产或核心战斗逻辑。
+    - 新增关键 Blueprint 图逻辑。
+    - 修改战斗数值和平衡资产。
+    - 接入真实 LLM provider。
+sync_requirements:
+  - 更新 aiflow/specs/MVP05_DRILL_ARENA_RUNTIME.md。
+  - 新增 MVP05 contracts。
+  - 完成后记录验证结果和剩余人工烟测。

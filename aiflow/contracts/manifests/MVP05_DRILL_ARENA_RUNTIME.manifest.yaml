@@ -1,0 +1,31 @@
+id: MVP05_DRILL_ARENA_RUNTIME
+baseline_id: MVP05_DRILL_ARENA_RUNTIME@v0.1
+status: active
+brief_ref: aiflow/contracts/briefs/MVP05_DRILL_ARENA_RUNTIME.brief.yaml
+taskpack_ref: aiflow/contracts/taskpacks/MVP05_DRILL_ARENA_RUNTIME.taskpack.yaml
+verifier_ref: aiflow/contracts/verifiers/MVP05_DRILL_ARENA_RUNTIME.verifier.yaml
+project:
+  uproject: TCF_Sample.uproject
+  engine: Unreal Engine 5.7
+  main_map: /Game/TCF_SampleDemo/SampleDemoShowcaseMap.SampleDemoShowcaseMap
+  training_map: /Game/GuideBuddy/Maps/GuideBuddyDodgeTrainingArena.GuideBuddyDodgeTrainingArena
+candidate_source_scopes:
+  - Plugins/GuideBuddy/Source/GuideBuddyRuntime/Public/GuideBuddyTelemetryBridge.h
+  - Plugins/GuideBuddy/Source/GuideBuddyRuntime/Private/GuideBuddyTelemetryBridge.cpp
+  - Plugins/GuideBuddy/Source/GuideBuddyRuntime/Private/GuideBuddyRuntimeModule.cpp
+  - Config/DefaultGame.ini
+  - Content/GuideBuddy/Maps/GuideBuddyDodgeTrainingArena.umap
+content_assets_read_only_reference:
+  - Content/TCF_SampleDemo/SampleDemoShowcaseMap.umap
+expected_outputs:
+  runtime_ui:
+    - main_scene_training_entry_button
+    - training_focus_hud
+    - training_complete_dialog
+  config:
+    - GuideBuddyDodgeTraining.RequiredSuccessfulDodges
+contract_evidence:
+  run_record: aiflow/contracts/runs/MVP05_DRILL_ARENA_RUNTIME.run-001.yaml
+  evidence_index: aiflow/contracts/evidence/MVP05_DRILL_ARENA_RUNTIME/v0.1/run-001/index.md
+notes:
+  - 本轮训练场是体验验证用硬编码版本，后续再迁移到 MVP04 Drill Spec 驱动。

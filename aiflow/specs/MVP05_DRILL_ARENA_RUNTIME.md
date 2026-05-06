@@ -2,32 +2,37 @@
 
 ## 本阶段目标
 
-基于 MVP04 生成的 `drill_spec.json` 与 `drill_session.json`，在 UE 侧生成或进入对应的受控练习场，让玩家能够切换到该练习场做针对性的单点训练。
+先以硬编码方式在 UE 侧实现一个可进入、可退出、可统计结果的翻滚躲避训练场，用来确认训练体验是否符合预期；后续再把入口和参数接回 MVP04 生成的 `drill_spec.json` 与 `drill_session.json`。
 
 本阶段完成后，项目应能回答：
 
-**玩家能不能真的进入一个由本次诊断驱动、只练一个问题的训练场。**
+**玩家能不能真的进入一个只练“通过翻滚躲避敌人攻击”的训练场，并看到清晰的熟练完成反馈。**
 
 ## 本次一定要有
 
-- 能读取 MVP04 生成的 `drill_spec.json` 与 `drill_session.json`。
-- 能从战斗结束复盘卡或等价入口触发“进入练习场”。
-- 至少支持 `single_enemy_execution_response` 一个白名单练习模板。
-- 能把练习场 run 关联回 source attempt、diagnosis、coaching、practice objective、drill spec 和 drill session。
-- 能在练习场中保留或生成常规 telemetry，使 MVP06 可以评估目标指标。
-- 能稳定退出练习场或重新挑战，不破坏原主场景流程。
-- 练习场参数只来自白名单模板和受控参数，不允许自由资产路径、Blueprint 类名、控制台命令或脚本。
+- 主入口仍为 `SampleDemoShowcaseMap`。
+- 运行游戏后，正式场景右上角显示“进入训练场”按钮。
+- 点击后进入一个基于 `SampleDemoShowcaseMap` 复制或等价复用的训练场。
+- 训练场左上角显示本次训练要点：`通过翻滚来避开敌人攻击`。
+- 训练场敌人主要持续攻击玩家，供玩家练习翻滚躲避。
+- 敌人的普通攻击、跳砍等攻击动作都应能打开一次躲避判定窗口。
+- 训练场统计连续成功躲避次数；连续成功目标默认 5 次，且次数可配置。
+- 达成目标后结束训练，弹窗提示已熟练，并提供按钮返回正式场景 `SampleDemoShowcaseMap`。
+- 训练场中玩家和敌人都不扣血、不触发死亡；受击硬直等反馈尽量保留。
+- 能稳定退出训练场并返回正式场景，不破坏原主场景流程。
 
 ## 推荐实现方式
 
-- 优先复用现有 `SampleDemoShowcaseMap`、敌人资产和战斗挂点，先做最小可进入练习场，不先做完整训练关卡编辑器。
-- 可以先用固定出生点、固定敌人组合和受控行为参数表达 `single_enemy_execution_response`。
-- 练习场入口可以先是 Slate 复盘卡按钮或调试入口，后续再替换成正式 UMG。
-- 如果真实动态场景生成风险过高，可以先实现稳定的练习模式切换：读取 drill spec，进入同一地图中的练习区域或重置到练习配置。
+- 优先复用现有 `SampleDemoShowcaseMap`、敌人资产和战斗挂点。
+- 首版允许直接复制 `SampleDemoShowcaseMap.umap` 作为硬编码训练场地图。
+- 入口、HUD、完成弹窗和计数逻辑可以先用 `GuideBuddyRuntime` 的 Slate UI 实现，后续再替换成正式 UMG。
+- 训练规则优先写在 C++/TypeScript 可 diff 代码中，不新增关键 Blueprint 逻辑。
+- 先以硬编码训练目标验证手感，不在本轮强制读取 MVP04 drill artifacts。
 
 ## 本次先不做
 
 - 不支持多个练习模板。
+- 不在本轮把训练场参数接回 MVP04 `drill_spec.json`。
 - 不做自由形式 UE 场景生成。
 - 不让 LLM 直接指定资产路径、类名、控制台命令或 Blueprint 逻辑。
 - 不做长期课程系统。
@@ -38,36 +43,39 @@
 
 最低验收场景：
 
-1. 使用 MVP04 accepted evidence 中的 `drill_spec.json` 与 `drill_session.json`。
-2. 玩家或 verifier 触发进入练习场。
-3. 系统进入 `single_enemy_execution_response` 对应的受控练习状态。
-4. 练习场 run 写出 telemetry，并带有 `practice_objective_id`、`drill_id`、`session_id` 和 source refs。
-5. 玩家可以退出或重新挑战，原主场景流程保持可用。
+1. 启动 `SampleDemoShowcaseMap`。
+2. 正式场景右上角出现进入训练场按钮。
+3. 点击按钮后进入翻滚躲避训练场。
+4. 训练场左上角显示训练要点和连续成功次数。
+5. 敌人持续攻击玩家，普通攻击和跳砍等攻击都可被统计为一次躲避训练窗口，玩家通过翻滚避开攻击。
+6. 玩家和敌人健康值不会下降到可死亡状态。
+7. 连续成功次数达到配置目标后弹出完成提示。
+8. 点击完成提示中的按钮可以返回正式场景 `SampleDemoShowcaseMap`。
 
 人工验收关注：
 
-- 玩家是否能明确进入了“只练当前问题”的场景。
-- 练习内容是否和 `drill_spec.json` 的目标一致。
-- 切换、退出、重试是否稳定。
-- 练习场是否没有绕过 MVP04 的安全白名单。
+- 玩家是否能明确进入了“只练翻滚躲避”的场景。
+- 敌人攻击节奏是否足以训练躲避反应。
+- 成功次数、连续失败重置和完成弹窗是否符合预期。
+- 切换、退出、返回正式场景是否稳定。
 
 自动验收关注：
 
-- `drill_spec.json` 与 `drill_session.json` 可被运行时读取。
-- 入口触发后能生成练习 run telemetry。
-- 练习 run 能追溯到 source attempt、diagnosis、coaching 和 drill session。
-- 非白名单 template 或参数不会被运行时执行。
+- C++ 运行时代码可以编译。
+- 训练场地图资产存在或训练模式有等价可进入路径。
+- 训练目标次数配置存在且默认值为 5。
+- 主场景入口、训练场 HUD、完成弹窗和返回路径都有代码路径覆盖。
 
 ## 依赖与衔接
 
-- 依赖 MVP04 的正式 Drill Spec 与 Drill Session。
 - 依赖 UE 侧可复用的地图、出生点、敌人资产和稳定的进入 / 退出入口。
+- 后续需要把本轮硬编码训练目标迁移到 MVP04 Drill Spec 驱动的模板参数。
 - 输出的练习 telemetry 将供 MVP06 判断练习是否改善目标问题。
 - 后续可以根据 MVP06 评估结果扩展难度升降、多模板和练习结果回写。
 
 ## 当前状态
 
-待编译 contracts。
+已调整计划，当前优先实现硬编码翻滚躲避训练场。
 
 ## 备注
 

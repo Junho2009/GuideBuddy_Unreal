@@ -15,6 +15,7 @@
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 #include "Styling/CoreStyle.h"
+#include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
@@ -603,6 +604,268 @@ void UGuideBuddyTelemetryBridge::ShowCoachingReviewCard(
 	}
 }
 
+void UGuideBuddyTelemetryBridge::ShowDodgeTrainingEntryButton()
+{
+	if (!DodgeTrainingEntryWidget.IsValid())
+	{
+		TWeakObjectPtr<UGuideBuddyTelemetryBridge> WeakThis(this);
+		const FLinearColor ButtonColor(0.10f, 0.42f, 0.35f, 0.94f);
+
+		DodgeTrainingEntryWidget = SNew(SOverlay)
+			.Visibility(EVisibility::SelfHitTestInvisible)
+			+ SOverlay::Slot()
+			.HAlign(HAlign_Right)
+			.VAlign(VAlign_Top)
+			.Padding(FMargin(0.0f, 28.0f, 32.0f, 0.0f))
+			[
+				SNew(SButton)
+				.ButtonColorAndOpacity(ButtonColor)
+				.ContentPadding(FMargin(18.0f, 10.0f))
+				.OnClicked_Lambda([WeakThis]()
+				{
+					if (WeakThis.IsValid())
+					{
+						WeakThis->EnterDodgeTrainingArena();
+					}
+					return FReply::Handled();
+				})
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString(TEXT("进入训练场")))
+					.Font(FCoreStyle::GetDefaultFontStyle("Bold", 17))
+					.ColorAndOpacity(FLinearColor::White)
+				]
+			];
+	}
+
+	if (!bDodgeTrainingEntryWidgetAdded && GEngine && GEngine->GameViewport && DodgeTrainingEntryWidget.IsValid())
+	{
+		GEngine->GameViewport->AddViewportWidgetContent(DodgeTrainingEntryWidget.ToSharedRef(), 600);
+		bDodgeTrainingEntryWidgetAdded = true;
+	}
+}
+
+void UGuideBuddyTelemetryBridge::SetDodgeTrainingEntryPointerMode(bool bEnabled)
+{
+	if (bDodgeTrainingEntryPointerMode == bEnabled)
+	{
+		return;
+	}
+
+	UWorld* World = WorldPtr.Get();
+	APlayerController* PlayerController = World ? World->GetFirstPlayerController() : nullptr;
+	if (!PlayerController)
+	{
+		return;
+	}
+
+	bDodgeTrainingEntryPointerMode = bEnabled;
+	if (bEnabled)
+	{
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		if (DodgeTrainingEntryWidget.IsValid())
+		{
+			InputMode.SetWidgetToFocus(DodgeTrainingEntryWidget);
+		}
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->SetShowMouseCursor(true);
+		return;
+	}
+
+	PlayerController->SetInputMode(FInputModeGameOnly());
+	PlayerController->SetShowMouseCursor(false);
+}
+
+void UGuideBuddyTelemetryBridge::ShowDodgeTrainingHud(int32 SuccessfulDodges, int32 RequiredDodges, const FString& Feedback)
+{
+	const int32 SafeRequiredDodges = FMath::Max(1, RequiredDodges);
+	const int32 SafeSuccessfulDodges = FMath::Clamp(SuccessfulDodges, 0, SafeRequiredDodges);
+	const FString CountText = FString::Printf(TEXT("连续成功：%d / %d"), SafeSuccessfulDodges, SafeRequiredDodges);
+	const FString FeedbackText = Feedback.IsEmpty() ? TEXT("等待敌人攻击，看到起手后翻滚。") : Feedback;
+
+	if (DodgeTrainingHudWidget.IsValid())
+	{
+		if (DodgeTrainingCountText.IsValid())
+		{
+			DodgeTrainingCountText->SetText(FText::FromString(CountText));
+		}
+		if (DodgeTrainingFeedbackText.IsValid())
+		{
+			DodgeTrainingFeedbackText->SetText(FText::FromString(FeedbackText));
+		}
+		return;
+	}
+
+	const FLinearColor PanelBackground(0.0f, 0.0f, 0.0f, 0.68f);
+	const FLinearColor LabelText(0.58f, 0.82f, 1.0f, 1.0f);
+	const FLinearColor BodyText(0.96f, 0.97f, 0.92f, 1.0f);
+	const FLinearColor FeedbackColor(0.80f, 0.92f, 0.84f, 1.0f);
+
+	DodgeTrainingHudWidget = SNew(SOverlay)
+		.Visibility(EVisibility::SelfHitTestInvisible)
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Top)
+		.Padding(FMargin(28.0f, 28.0f, 0.0f, 0.0f))
+		[
+			SNew(SBorder)
+			.BorderBackgroundColor(PanelBackground)
+			.Padding(FMargin(18.0f, 14.0f))
+			[
+				SNew(SVerticalBox)
+				+ SVerticalBox::Slot()
+				.AutoHeight()
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString(TEXT("训练要点")))
+					.Font(FCoreStyle::GetDefaultFontStyle("Bold", 14))
+					.ColorAndOpacity(LabelText)
+				]
+				+ SVerticalBox::Slot()
+				.AutoHeight()
+				.Padding(0.0f, 4.0f, 0.0f, 10.0f)
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString(TEXT("通过翻滚来避开敌人攻击")))
+					.Font(FCoreStyle::GetDefaultFontStyle("Bold", 20))
+					.ColorAndOpacity(BodyText)
+				]
+				+ SVerticalBox::Slot()
+				.AutoHeight()
+				[
+					SAssignNew(DodgeTrainingCountText, STextBlock)
+					.Text(FText::FromString(CountText))
+					.Font(FCoreStyle::GetDefaultFontStyle("Bold", 17))
+					.ColorAndOpacity(FeedbackColor)
+				]
+				+ SVerticalBox::Slot()
+				.AutoHeight()
+				.Padding(0.0f, 6.0f, 0.0f, 0.0f)
+				[
+					SAssignNew(DodgeTrainingFeedbackText, STextBlock)
+					.Text(FText::FromString(FeedbackText))
+					.Font(FCoreStyle::GetDefaultFontStyle("Regular", 14))
+					.ColorAndOpacity(FLinearColor(0.82f, 0.86f, 0.88f, 1.0f))
+				]
+			]
+		];
+
+	if (GEngine && GEngine->GameViewport && DodgeTrainingHudWidget.IsValid())
+	{
+		GEngine->GameViewport->AddViewportWidgetContent(DodgeTrainingHudWidget.ToSharedRef(), 650);
+	}
+}
+
+void UGuideBuddyTelemetryBridge::ShowDodgeTrainingCompleteDialog(int32 RequiredDodges)
+{
+	RemoveDodgeTrainingCompleteDialog();
+
+	TWeakObjectPtr<UGuideBuddyTelemetryBridge> WeakThis(this);
+	const FLinearColor PanelBackground(0.0f, 0.0f, 0.0f, 0.86f);
+	const FLinearColor MutedText(0.80f, 0.84f, 0.88f, 1.0f);
+	const FLinearColor ButtonColor(0.10f, 0.42f, 0.35f, 1.0f);
+	const FString Message = FString::Printf(
+		TEXT("你已经连续 %d 次通过翻滚避开敌人攻击，可以回到正式场景继续挑战。"),
+		FMath::Max(1, RequiredDodges));
+
+	DodgeTrainingCompleteWidget = SNew(SOverlay)
+		+ SOverlay::Slot()
+		.HAlign(HAlign_Fill)
+		.VAlign(VAlign_Fill)
+		[
+			SNew(SBorder)
+			.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.82f))
+			.Padding(0)
+			[
+				SNew(SBox)
+				.HAlign(HAlign_Center)
+				.VAlign(VAlign_Center)
+				[
+					SNew(SBox)
+					.WidthOverride(680.0f)
+					[
+						SNew(SBorder)
+						.BorderBackgroundColor(PanelBackground)
+						.Padding(FMargin(38.0f, 32.0f))
+						[
+							SNew(SVerticalBox)
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							[
+								SNew(STextBlock)
+								.Text(FText::FromString(TEXT("已熟练")))
+								.Font(FCoreStyle::GetDefaultFontStyle("Bold", 32))
+								.ColorAndOpacity(FLinearColor::White)
+							]
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							.Padding(0.0f, 12.0f, 0.0f, 26.0f)
+							[
+								SNew(STextBlock)
+								.Text(FText::FromString(Message))
+								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 18))
+								.ColorAndOpacity(MutedText)
+								.WrapTextAt(600.0f)
+								.LineHeightPercentage(1.25f)
+							]
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							[
+								SNew(SButton)
+								.ButtonColorAndOpacity(ButtonColor)
+								.ContentPadding(FMargin(20.0f, 12.0f))
+								.OnClicked_Lambda([WeakThis]()
+								{
+									if (WeakThis.IsValid())
+									{
+										WeakThis->ReturnToSampleDemoShowcaseMap();
+									}
+									return FReply::Handled();
+								})
+								[
+									SNew(SBox)
+									.HAlign(HAlign_Center)
+									[
+										SNew(STextBlock)
+										.Text(FText::FromString(TEXT("返回正式场景")))
+										.Font(FCoreStyle::GetDefaultFontStyle("Bold", 18))
+										.ColorAndOpacity(FLinearColor::White)
+									]
+								]
+							]
+						]
+					]
+				]
+			]
+		];
+
+	if (GEngine && GEngine->GameViewport && DodgeTrainingCompleteWidget.IsValid())
+	{
+		GEngine->GameViewport->AddViewportWidgetContent(DodgeTrainingCompleteWidget.ToSharedRef(), 1100);
+	}
+
+	if (UWorld* World = WorldPtr.Get())
+	{
+		UGameplayStatics::SetGamePaused(World, true);
+		if (APlayerController* PlayerController = World->GetFirstPlayerController())
+		{
+			FInputModeUIOnly InputMode;
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			PlayerController->SetInputMode(InputMode);
+			PlayerController->SetShowMouseCursor(true);
+		}
+	}
+}
+
+void UGuideBuddyTelemetryBridge::RemoveDodgeTrainingWidgets()
+{
+	RemoveDodgeTrainingEntryButton();
+	RemoveDodgeTrainingHud();
+	RemoveDodgeTrainingCompleteDialog();
+}
+
 void UGuideBuddyTelemetryBridge::RemoveBattleEndMenu()
 {
 	if (GEngine && GEngine->GameViewport && BattleEndWidget.IsValid())
@@ -610,6 +873,77 @@ void UGuideBuddyTelemetryBridge::RemoveBattleEndMenu()
 		GEngine->GameViewport->RemoveViewportWidgetContent(BattleEndWidget.ToSharedRef());
 	}
 	BattleEndWidget.Reset();
+}
+
+void UGuideBuddyTelemetryBridge::RemoveDodgeTrainingEntryButton()
+{
+	SetDodgeTrainingEntryPointerMode(false);
+	if (GEngine && GEngine->GameViewport && DodgeTrainingEntryWidget.IsValid())
+	{
+		GEngine->GameViewport->RemoveViewportWidgetContent(DodgeTrainingEntryWidget.ToSharedRef());
+	}
+	DodgeTrainingEntryWidget.Reset();
+	bDodgeTrainingEntryWidgetAdded = false;
+}
+
+void UGuideBuddyTelemetryBridge::RemoveDodgeTrainingHud()
+{
+	if (GEngine && GEngine->GameViewport && DodgeTrainingHudWidget.IsValid())
+	{
+		GEngine->GameViewport->RemoveViewportWidgetContent(DodgeTrainingHudWidget.ToSharedRef());
+	}
+	DodgeTrainingHudWidget.Reset();
+	DodgeTrainingCountText.Reset();
+	DodgeTrainingFeedbackText.Reset();
+}
+
+void UGuideBuddyTelemetryBridge::RemoveDodgeTrainingCompleteDialog()
+{
+	if (GEngine && GEngine->GameViewport && DodgeTrainingCompleteWidget.IsValid())
+	{
+		GEngine->GameViewport->RemoveViewportWidgetContent(DodgeTrainingCompleteWidget.ToSharedRef());
+	}
+	DodgeTrainingCompleteWidget.Reset();
+}
+
+void UGuideBuddyTelemetryBridge::EnterDodgeTrainingArena()
+{
+	RemoveDodgeTrainingEntryButton();
+
+	UWorld* World = WorldPtr.Get();
+	if (!World)
+	{
+		return;
+	}
+
+	if (APlayerController* PlayerController = World->GetFirstPlayerController())
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		PlayerController->SetShowMouseCursor(false);
+	}
+
+	UGameplayStatics::SetGamePaused(World, false);
+	UGameplayStatics::OpenLevel(World, FName(TEXT("/Game/GuideBuddy/Maps/GuideBuddyDodgeTrainingArena")), false);
+}
+
+void UGuideBuddyTelemetryBridge::ReturnToSampleDemoShowcaseMap()
+{
+	RemoveDodgeTrainingWidgets();
+
+	UWorld* World = WorldPtr.Get();
+	if (!World)
+	{
+		return;
+	}
+
+	UGameplayStatics::SetGamePaused(World, false);
+	if (APlayerController* PlayerController = World->GetFirstPlayerController())
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		PlayerController->SetShowMouseCursor(false);
+	}
+
+	UGameplayStatics::OpenLevel(World, FName(TEXT("/Game/TCF_SampleDemo/SampleDemoShowcaseMap")), false);
 }
 
 void UGuideBuddyTelemetryBridge::RestartChallenge()

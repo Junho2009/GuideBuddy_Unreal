@@ -8,6 +8,7 @@
 
 class AActor;
 class FJsonObject;
+class STextBlock;
 class SWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGuideBuddyTelemetrySignal, FString, SignalJson);
@@ -71,6 +72,12 @@ public:
 		const FString& SuccessCondition,
 		const FString& DrillTemplateId);
 
+	void ShowDodgeTrainingEntryButton();
+	void SetDodgeTrainingEntryPointerMode(bool bEnabled);
+	void ShowDodgeTrainingHud(int32 SuccessfulDodges, int32 RequiredDodges, const FString& Feedback);
+	void ShowDodgeTrainingCompleteDialog(int32 RequiredDodges);
+	void RemoveDodgeTrainingWidgets();
+
 	UFUNCTION()
 	void HandleBufferedInput(UInputAction* FiredBufferedInput);
 
@@ -82,6 +89,11 @@ public:
 
 private:
 	void RemoveBattleEndMenu();
+	void RemoveDodgeTrainingEntryButton();
+	void RemoveDodgeTrainingHud();
+	void RemoveDodgeTrainingCompleteDialog();
+	void EnterDodgeTrainingArena();
+	void ReturnToSampleDemoShowcaseMap();
 	void RestartChallenge();
 	void RequestBattleEndReview();
 	bool ShouldEmitInputSignal(const FString& InputKey, double NowSeconds);
@@ -94,4 +106,11 @@ private:
 	FString LastError;
 	TMap<FString, double> LastInputEmitSecondsByKey;
 	TSharedPtr<SWidget> BattleEndWidget;
+	TSharedPtr<SWidget> DodgeTrainingEntryWidget;
+	bool bDodgeTrainingEntryWidgetAdded = false;
+	bool bDodgeTrainingEntryPointerMode = false;
+	TSharedPtr<SWidget> DodgeTrainingHudWidget;
+	TSharedPtr<SWidget> DodgeTrainingCompleteWidget;
+	TSharedPtr<STextBlock> DodgeTrainingCountText;
+	TSharedPtr<STextBlock> DodgeTrainingFeedbackText;
 };

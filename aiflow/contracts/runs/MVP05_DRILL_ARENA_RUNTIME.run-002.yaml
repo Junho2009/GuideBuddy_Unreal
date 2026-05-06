@@ -1,0 +1,48 @@
+id: MVP05_DRILL_ARENA_RUNTIME.run-002
+baseline_id: MVP05_DRILL_ARENA_RUNTIME@v0.1
+status: verifier_passed
+started_at: "2026-05-06T13:23:00.000Z"
+finished_at: "2026-05-06T13:24:00.000Z"
+environment: "Windows, Unreal Engine 5.7.4, Node.js/TypeScript, UnrealEditor closed before C++ build"
+verifier_ref: aiflow/contracts/verifiers/MVP05_DRILL_ARENA_RUNTIME.verifier.yaml
+stimulus:
+  - "Added a viewport-ready retry path for the main-scene dodge training entry button."
+  - "Ran npm run build:guidebuddy."
+  - "Ran git diff --check."
+  - "Ran UnrealEditor target build through BuildAndLaunchEditor.ps1."
+results:
+  - id: SPEC_SYNC
+    status: pass
+    evidence: aiflow/specs/MVP05_DRILL_ARENA_RUNTIME.md
+  - id: TYPESCRIPT_BUILD
+    status: pass
+    evidence: package.json
+    observed:
+      command: npm run build:guidebuddy
+      exit_code: 0
+  - id: MAP_ASSET_PRESENT
+    status: pass
+    evidence: Content/GuideBuddy/Maps/GuideBuddyDodgeTrainingArena.umap
+  - id: CONFIG_DEFAULT
+    status: pass
+    evidence: Config/DefaultGame.ini
+    observed:
+      RequiredSuccessfulDodges: 5
+  - id: CPP_BUILD
+    status: pass
+    evidence: C:/Users/Administrator/AppData/Local/UnrealBuildTool/Log.txt
+    observed:
+      command: powershell -NoProfile -ExecutionPolicy Bypass -File ./aiflow/tools/unreal-editor/scripts/BuildAndLaunchEditor.ps1 -ProjectDir . -NonInteractive -BuildOnly -LogPath Saved/Automation/MVP05_DRILL_ARENA_RUNTIME/build.log
+      exit_code: 0
+  - id: DIFF_CHECK
+    status: pass
+    evidence: git diff --check
+manual_smoke_checks:
+  - id: HUMAN_ENTER_TRAINING
+    status: pending
+    reason: Requires human PIE/game run to confirm the visible button and click path.
+  - id: HUMAN_COMPLETE_AND_RETURN
+    status: pending
+    reason: Requires human gameplay to confirm the dodge success counter and return button.
+notes:
+  - "The entry button is now re-attempted from Tick while the main SampleDemoShowcaseMap world is active, so a too-early viewport add no longer permanently hides it."
