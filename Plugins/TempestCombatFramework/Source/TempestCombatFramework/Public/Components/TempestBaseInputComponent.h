@@ -14,6 +14,9 @@
  */
 
 class UTempestBaseInputBuffer;
+class UTempestBaseInputComponent;
+
+DECLARE_DELEGATE_RetVal_ThreeParams(bool, FTempestInputActionGate, UTempestBaseInputComponent*, UInputAction*, bool&);
 
 USTRUCT(BlueprintType)
 struct FInputActionTickInfo
@@ -109,6 +112,8 @@ class TEMPESTCOMBATFRAMEWORK_API UTempestBaseInputComponent : public UTempestBas
 public:
 
 	UTempestBaseInputComponent();
+
+	static FTempestInputActionGate InputActionGate;
 
 	UPROPERTY()
 	TArray<UTempestBaseInputBuffer*> ActiveInputbuffers;

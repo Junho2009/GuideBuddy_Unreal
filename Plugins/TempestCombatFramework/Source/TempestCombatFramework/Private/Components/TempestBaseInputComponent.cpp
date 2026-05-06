@@ -9,6 +9,8 @@
 #include "GameFramework/Pawn.h"
 #include "Components/TempestTickingComponent.h"
 
+FTempestInputActionGate UTempestBaseInputComponent::InputActionGate;
+
 UTempestBaseInputComponent::UTempestBaseInputComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -404,6 +406,15 @@ bool UTempestBaseInputComponent::GetDoesInputActionExistInBoundInputs(class UInp
 void UTempestBaseInputComponent::ProcessInputAction_Implementation(bool& bCanProceed, UInputAction* InputAction)
 {
 	bCanProceed = true;
+	if (InputActionGate.IsBound())
+	{
+		bool bGateCanProceed = true;
+		const bool bHandledByGate = InputActionGate.Execute(this, InputAction, bGateCanProceed);
+		if (bHandledByGate)
+		{
+			bCanProceed = bGateCanProceed;
+		}
+	}
 }
 
 
