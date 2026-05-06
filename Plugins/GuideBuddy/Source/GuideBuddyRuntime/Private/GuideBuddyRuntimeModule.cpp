@@ -1,5 +1,6 @@
 #include "GuideBuddyTelemetryBridge.h"
 
+#include "GuideBuddyCombatControlBridge.h"
 #include "Components/TempestAttributesComponents.h"
 #include "Components/TempestBaseAbilityManagerComponent.h"
 #include "Components/TempestBaseInputComponent.h"
@@ -113,7 +114,7 @@ private:
 		}
 	}
 
-	bool Tick(float)
+	bool Tick(float DeltaTime)
 	{
 		if (!ActiveWorld.IsValid())
 		{
@@ -125,6 +126,11 @@ private:
 		{
 			EndSession(TEXT("bridge_invalid"));
 			return true;
+		}
+
+		if (CombatControlBridge.IsValid())
+		{
+			CombatControlBridge->TickControl(DeltaTime);
 		}
 
 		DiscoverAndPoll(false);
@@ -166,10 +172,17 @@ private:
 		ActiveWorld = World;
 		Bridge = TStrongObjectPtr<UGuideBuddyTelemetryBridge>(NewObject<UGuideBuddyTelemetryBridge>(GetTransientPackage()));
 		Bridge->Initialize(World);
+		CombatControlBridge = TStrongObjectPtr<UGuideBuddyCombatControlBridge>(NewObject<UGuideBuddyCombatControlBridge>(GetTransientPackage()));
+		CombatControlBridge->Initialize(World);
+		CombatControlBridge->SetSoulslikeControlsEnabled(true);
+		UTempestBaseInputComponent::InputActionGate.BindUObject(
+			CombatControlBridge.Get(),
+			&UGuideBuddyCombatControlBridge::HandleInputActionGate);
 
 		JsEnv = MakeShared<PUERTS_NAMESPACE::FJsEnv>(TEXT("JavaScript"));
 		TArray<TPair<FString, UObject*>> Arguments;
 		Arguments.Emplace(TEXT("GuideBuddyBridge"), Bridge.Get());
+		Arguments.Emplace(TEXT("CombatControlBridge"), CombatControlBridge.Get());
 		Arguments.Emplace(TEXT("World"), World);
 		JsEnv->Start(TEXT("GuideBuddy/main"), Arguments);
 
@@ -185,7 +198,14 @@ private:
 			Bridge->EmitBridgeShutdown(Reason);
 		}
 
+		UTempestBaseInputComponent::InputActionGate.Unbind();
+		if (CombatControlBridge.IsValid())
+		{
+			CombatControlBridge->Shutdown();
+		}
+
 		JsEnv.Reset();
+		CombatControlBridge.Reset();
 		Bridge.Reset();
 		ActiveWorld.Reset();
 		BoundInputComponents.Reset();
@@ -456,6 +476,7 @@ private:
 
 	TWeakObjectPtr<UWorld> ActiveWorld;
 	TStrongObjectPtr<UGuideBuddyTelemetryBridge> Bridge;
+	TStrongObjectPtr<UGuideBuddyCombatControlBridge> CombatControlBridge;
 	TSharedPtr<PUERTS_NAMESPACE::FJsEnv> JsEnv;
 
 	TSet<FObjectKey> BoundInputComponents;

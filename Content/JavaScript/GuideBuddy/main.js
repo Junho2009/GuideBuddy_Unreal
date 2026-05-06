@@ -1,12 +1,15 @@
 "use strict";
 const coachingRuntime = require("./coaching");
 const drillRuntime = require("./drill");
+const soulslikeControlsRuntime = require("./soulslike_controls");
 const puerts = require("puerts");
 const maybeBridge = puerts.argv.getByName("GuideBuddyBridge");
+const maybeCombatControlBridge = puerts.argv.getByName("CombatControlBridge");
 if (!maybeBridge) {
     throw new Error("GuideBuddyBridge argv is required.");
 }
 const bridge = maybeBridge;
+const soulslikeControls = soulslikeControlsRuntime.createSoulslikeControls(maybeCombatControlBridge);
 const initialContext = parseJsonObject(bridge.GetInitialContextJson());
 const runId = createRunId(String(initialContext.map || "unknown-map"));
 const telemetryRoot = normalizePath(bridge.GetTelemetryRootDirectory());
@@ -57,6 +60,7 @@ function handleSignal(signalJson) {
         return;
     }
     if (signalType === "player_input") {
+        soulslikeControls.handleTelemetrySignal(signal);
         recordEvent("player_input", flattenPayload(signal, {
             input_name: payload.input_name,
             trigger_event: payload.trigger_event,

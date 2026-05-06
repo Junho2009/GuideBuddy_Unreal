@@ -37,3 +37,28 @@ interface GuideBuddyBridge {
     drillTemplateId: string
   ): void;
 }
+
+interface CombatControlBridge {
+  SetSoulslikeControlsEnabled(isEnabled: boolean): void;
+  ConfigureSoulslikeControls(
+    moveDeadZone: number,
+    lateralPriorityRatio: number,
+    actionPrimeWindowSeconds: number,
+    lockFacingEnabled: boolean,
+    manageDodgeInput: boolean,
+    manageAttackInput: boolean,
+    manageTargetInput: boolean
+  ): void;
+  HandlePlayerInput(inputName: string, triggerEvent: string, watchListTag: string): string;
+  RequestDodge(): boolean;
+  RequestLightAttack(): boolean;
+  RequestToggleTargetLock(): boolean;
+  RequestFaceLockedTarget(): boolean;
+  GetCombatControlSnapshotJson(): string;
+  GetLastError(): string;
+}
+
+interface SoulslikeControls {
+  handleTelemetrySignal(signal: { signal_type: string; payload: Record<string, unknown> }): void;
+  getLastSnapshot(): Record<string, unknown>;
+}

@@ -72,14 +72,19 @@ const drillRuntime = require("./drill") as {
     drillSession: JsonRecord;
   };
 };
+const soulslikeControlsRuntime = require("./soulslike_controls") as {
+  createSoulslikeControls(combatControlBridge?: CombatControlBridge): SoulslikeControls;
+};
 const puerts = require("puerts") as PuertsModule;
 const maybeBridge = puerts.argv.getByName("GuideBuddyBridge") as GuideBuddyBridge | undefined;
+const maybeCombatControlBridge = puerts.argv.getByName("CombatControlBridge") as CombatControlBridge | undefined;
 
 if (!maybeBridge) {
   throw new Error("GuideBuddyBridge argv is required.");
 }
 
 const bridge = maybeBridge;
+const soulslikeControls = soulslikeControlsRuntime.createSoulslikeControls(maybeCombatControlBridge);
 const initialContext = parseJsonObject(bridge.GetInitialContextJson());
 const runId = createRunId(String(initialContext.map || "unknown-map"));
 const telemetryRoot = normalizePath(bridge.GetTelemetryRootDirectory());
@@ -141,6 +146,7 @@ function handleSignal(signalJson: string): void {
   }
 
   if (signalType === "player_input") {
+    soulslikeControls.handleTelemetrySignal(signal);
     recordEvent("player_input", flattenPayload(signal, {
       input_name: payload.input_name,
       trigger_event: payload.trigger_event,
